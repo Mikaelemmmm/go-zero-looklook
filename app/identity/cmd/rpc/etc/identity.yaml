@@ -1,0 +1,29 @@
+Name: identity-rpc
+ListenOn: 0.0.0.0:9001
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: identity-rpc
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: identity-rpc
+  Level: error
+
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505ea0
+  AccessExpire: 31536000
+
+Redis:
+  Host: 172.56.11.22:63799
+  Type: node
+  Pass: G62m50oigInC3011

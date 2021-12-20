@@ -1,0 +1,25 @@
+syntax = "v1"
+
+info(
+	title: "授权认证服务"
+	desc: "授权认证服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+import (
+	"verify/verify.api"
+)
+
+//授权模块v1版本！！！不需要！！！登陆的接口
+@server(
+	group: verify
+	prefix: identity/v1
+)
+service identity {
+	
+	@doc "验证认证请求token"
+	@handler token
+	get /verify/token (VerifyTokenReq) returns (VerifyTokenResp)
+}

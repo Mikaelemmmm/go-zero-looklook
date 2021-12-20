@@ -1,0 +1,15 @@
+# idea
+.idea
+.idea/
+*.iml
+.DS_Store
+**/.DS_Store
+
+# gitlab ci
+.cache
+
+#vscode
+.vscode
+.vscode/
+
+

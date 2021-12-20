@@ -1,0 +1,70 @@
+syntax = "v1"
+
+info(
+	title: "旅游服务"
+	desc: "旅游服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+import (
+	"homestay/homestay.api"
+	"homestayBusiness/homestayBusiness.api"
+	"homestayComment/homestayComment.api"
+)
+
+//民宿模块v1版本的接口
+@server(
+	prefix: travel/v1
+	group: homestay
+)
+service travel {
+	
+	@doc "民宿列表（为你优选）"
+	@handler homestayList
+	post /homestay/homestayList (HomestayListReq) returns (HomestayListResp)
+	
+	@doc "房东所有民宿列表"
+	@handler businessList
+	post /homestay/businessList (BusinessListReq) returns (BusinessListResp)
+	
+	@doc "猜你喜欢民宿列表"
+	@handler guessList
+	post /homestay/guessList (GuessListReq) returns (GuessListResp)
+	
+	@doc "民宿详情"
+	@handler homestayDetail
+	post /homestay/homestayDetail (HomestayDetailReq) returns (HomestayDetailResp)
+	
+}
+
+//店铺模块v1版本的接口
+@server(
+	prefix: travel/v1
+	group: homestayBussiness
+)
+service travel {
+	@doc "最佳房东"
+	@handler goodBoss
+	post /homestayBussiness/goodBoss (GoodBossReq) returns (GoodBossResp)
+	
+	@doc "店铺列表"
+	@handler homestayBussinessList
+	post /homestayBussiness/homestayBussinessList (HomestayBussinessListReq) returns (HomestayBussinessListResp)
+	
+	@doc "房东信息"
+	@handler homestayBussinessDetail
+	post /homestayBussiness/homestayBussinessDetail (HomestayBussinessDetailReq) returns (HomestayBussinessDetailResp)
+}
+
+//民宿评论模块v1版本的接口
+@server(
+	prefix: travel/v1
+	group: homestayComment
+)
+service travel {
+	@doc "民宿评论列表"
+	@handler commentList
+	post /homestayComment/commentList (CommentListReq) returns (CommentListResp)
+}

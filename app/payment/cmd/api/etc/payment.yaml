@@ -1,0 +1,57 @@
+Name: payment-api
+Host: 0.0.0.0
+Port: 8005
+Mode: dev
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: payment-api
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: payment-api
+  Level: error
+
+#小程序配置
+WxMiniConf:
+  AppId: wx2add729fadddddd
+  Secret: 20365395b3de9b2a9351ddddddd
+
+#WxPayConf
+WxPayConf:
+  MchId: "11234455"
+  SerialNo: 333333964008A80E5524718049ABB343232323
+  APIv3Key: twewe23vjXrlnpTd5afyZZJ6FrI2323dsd
+  PrivateKey: |-
+    -----BEGIN PRIVATE KEY-----
+    11BADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBY/kxOoNkZxgK
+    /OKq+xMX5Uv+oeELdbNq9qZOYVs4Vi7FrSyGYcPQyqItRKhl7sCZJRsqec7pFZUv
+    hDyP0yYv+cADRnTHODkdVmogFS0YUH9ocmO4cArZORkG4Mu5+m87PpzsB/637kGa
+    n1lFxzMJqT/YqhynVqJtFhL/kVukig+nYcpueiemye/6EBpQYm9+ffZLr0l6l2n9
+    Zm3zEo+scBBRrrFvZGu1DdskH19Mk9/Z19H+2zb2xu3G/vt8/ndoRrWtwz33beDc
+    Bxm2QfyXjV8GiJ/DYYrgIamPHLVNCSWes8V77nLJNbUS0hLAJJlfnD79CWtQo8gj
+    UrUvj+CzAgMBAAECggEARQGAVKGVaskimiEcXHhUms017bkjjSxFhiBWvVcd7p9J
+    -----END PRIVATE KEY-----
+
+  NotifyUrl : http://xxx.xxx.com/payment/v1/thirdPayment/thirdPaymentWxPayCallback
+
+#rpc service
+PaymentRpcConf:
+  Endpoints:
+    - payment-rpc:9005
+
+OrderRpcConf:
+  Endpoints:
+    - order-rpc:9004
+
+UsercenterRpcConf:
+  Endpoints:
+    - usercenter-rpc:9002

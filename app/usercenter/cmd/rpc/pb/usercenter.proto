@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+
+//model
+message User {
+  int64 id = 1;
+  string mobile = 2;
+  string nickname =3;
+  int64  sex = 4;
+  string avatar = 5;
+  string info = 6;
+}
+
+message UserAuth {
+  int64  id = 1;
+  int64  userId = 2;
+  string authType = 3;
+  string authKey = 4;
+}
+
+
+//req 、resp
+message RegisterReq {
+  string mobile = 1;
+  string nickname = 2;
+  string authKey = 3;
+  string authType = 4;
+}
+message RegisterResp {
+  string accessToken = 1;
+  int64  accessExpire = 2;
+  int64  refreshAfter = 3;
+}
+
+message LoginReq {
+  string  authType = 1;
+  string authKey = 2;
+  string  password = 3;
+}
+message LoginResp {
+  string accessToken = 1;
+  int64  accessExpire = 2;
+  int64  refreshAfter = 3;
+}
+
+message GetUserInfoReq {
+  int64  id = 1;
+}
+message GetUserInfoResp {
+   User user = 1;
+}
+
+message GetUserAuthByAuthKeyReq {
+  string  authKey = 1;
+  string  authType = 2;
+}
+message GetUserAuthByAuthKeyResp {
+   UserAuth userAuth = 1;
+}
+
+message GetUserAuthByUserIdReq {
+  int64  userId = 1;
+  string  authType = 2;
+}
+message GetUserAuthyUserIdResp {
+   UserAuth userAuth = 1;
+}
+
+
+//service
+service usercenter {
+  rpc login(LoginReq) returns(LoginResp);
+  rpc register(RegisterReq) returns(RegisterResp);
+  rpc getUserInfo(GetUserInfoReq) returns(GetUserInfoResp);
+  rpc getUserAuthByAuthKey(GetUserAuthByAuthKeyReq) returns(GetUserAuthByAuthKeyResp);
+  rpc getUserAuthByUserId(GetUserAuthByUserIdReq) returns(GetUserAuthyUserIdResp);
+}

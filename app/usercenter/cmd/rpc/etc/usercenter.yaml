@@ -1,0 +1,36 @@
+Name: usercenter-rpc
+ListenOn: 0.0.0.0:9002
+Mode: dev
+
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: usercenter-rpc
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: usercenter-rpc
+  Level: error
+
+Redis:
+  Host: 172.56.11.22:63799
+  Type: node
+  Pass: G62m50oigInC3011
+DB:
+  DataSource: root:MX1393VRKUm8TeE7@tcp(172.56.11.2:33069)/looklook_usercenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Cache:
+  - Host: 172.56.11.22:63799
+    Pass: G62m50oigInC3011
+
+#rpc service
+IdentityRpcConf:
+  Endpoints:
+    - identity-rpc:9001

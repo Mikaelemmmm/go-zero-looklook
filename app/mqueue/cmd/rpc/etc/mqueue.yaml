@@ -1,0 +1,23 @@
+Name: mqueue-rpc
+ListenOn: 0.0.0.0:9006
+Mode: dev
+
+#链路追踪
+Telemetry:
+  Name: mqueue-rpc
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: mqueue-rpc
+  Level: error
+
+Redis:
+  Host: 172.56.11.22:63799
+  Type: node
+  Pass: G62m50oigInC3011
+
+KqServerConf:
+  Brokers:
+    - kafka:9092

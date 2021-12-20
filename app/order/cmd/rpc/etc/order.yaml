@@ -1,0 +1,40 @@
+Name: order-rpc
+ListenOn: 0.0.0.0:9004
+Mode: dev
+
+Log:
+  ServiceName: order-rpc
+  Level: error
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: order-rpc
+  Endpoint:  http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Redis:
+  Host: 172.56.11.22:63799
+  Type: node
+  Pass: G62m50oigInC3011
+DB:
+  DataSource: root:MX1393VRKUm8TeE7@tcp(172.56.11.2:33069)/looklook_order?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Cache:
+  - Host: 172.56.11.22:63799
+    Pass: G62m50oigInC3011
+
+#rpc
+TravelRpcConf:
+  Endpoints:
+    - travel-rpc:9003
+
+#rpc
+MqueueRpcConf:
+  Endpoints:
+    - mqueue-rpc:9006

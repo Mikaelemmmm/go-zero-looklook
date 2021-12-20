@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+
+
+
+//req 、resp
+message CreatePaymentReq {
+  int64  userId = 1;
+  string payModel = 2;
+  int64  payTotal = 3; //（分）
+  string orderSn = 4;
+  string serviceType = 5;
+}
+message CreatePaymentResp {
+  string sn = 1; //流水记录单号
+}
+
+
+message PaymentDetail{
+  int64  id = 1;
+  string sn = 2;
+  int64  userId = 3;       // 用户id
+  string payMode = 4;      // 支付方式 WECHAT_PAY:微信支付
+  string tradeType = 5;    // 第三方支付类型Jsapi\App等
+  int64  tradeState = 6;   // 交易状态  0:未支付 1:支付成功 -1:支付失败
+  int64  payTotal = 7;     // 支付总金额(分)
+  string transactionId = 8; // 第三方支付单号
+  string tradeStateDesc = 9; // 支付状态描述
+  string orderSn = 10;      // 业务单号
+  string serviceType = 11;  // 业务类型
+  int64  createTime = 12;  
+  int64  updateTime = 13;
+  int64  payStatus = 14; //平台内交易状态  0:未支付 1:支付成功 2:已退款 -1:支付失败
+  int64  payTime = 15; //支付成功时间
+}
+
+message GetPaymentBySnReq {
+  string   sn = 1;
+}
+message GetPaymentBySnResp {
+  PaymentDetail paymentDetail = 1;
+}
+
+message GetPaymentSuccessRefundByOrderSnReq {
+  string orderSn = 1;
+}
+message GetPaymentSuccessRefundByOrderSnResp {
+  PaymentDetail paymentDetail = 1;
+}
+
+//更新交易状态
+message UpdateTradeStateReq {
+  string   sn = 1;
+  string   tradeState = 2;
+  string   transactionId = 3;
+  string   tradeType = 4;
+  string   tradeStateDesc = 5;
+  int64    payStatus = 6;
+  int64    payTime = 7;
+}
+message UpdateTradeStateResp {
+}
+
+
+
+//service
+service payment {
+    //创建微信支付预处理订单
+    rpc CreatePayment(CreatePaymentReq) returns(CreatePaymentResp);
+
+    //根据sn查询流水记录
+    rpc GetPaymentBySn(GetPaymentBySnReq) returns(GetPaymentBySnResp);
+
+    //更新交易状态
+    rpc UpdateTradeState(UpdateTradeStateReq) returns(UpdateTradeStateResp);
+
+    //根据订单sn查询流水记录
+    rpc GetPaymentSuccessRefundByOrderSn(GetPaymentSuccessRefundByOrderSnReq) returns(GetPaymentSuccessRefundByOrderSnResp);
+
+}

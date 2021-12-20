@@ -1,0 +1,50 @@
+Name: order-mq
+Host: 0.0.0.0
+Port: 7004
+Mode: dev
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: order-mq
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: order-mq
+  Level: error
+
+Redis:
+  Host: 123.56.66.22:63799
+  Type: node
+  Pass: G62m50oigInC30sf
+
+#kq
+PaymentUpdateStatusConf:
+  Name: PaymentUpdateStatus
+  Brokers:
+    - kafka:9092
+  Group: payment-update-paystatus-group
+  Topic: payment-update-paystatus-topic
+  Offset: first 
+  Consumers: 1
+  Processors: 1
+
+#rpc
+OrderRpcConf:
+  Endpoints:
+    - order-rpc:9004
+    
+MqueueRpcConf:
+  Endpoints:
+    - mqueue-rpc:9006
+
+UsercenterRpcConf:
+  Endpoints:
+    - usercenter-rpc:9002

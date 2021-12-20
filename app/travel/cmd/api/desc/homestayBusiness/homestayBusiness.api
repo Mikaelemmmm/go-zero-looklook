@@ -1,0 +1,63 @@
+syntax = "v1"
+
+info(
+	title: "民宿店铺服务"
+	desc: "民宿店铺服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+type HomestayBusinessBoss {
+	Id       int64  `json:"id"`
+	UserId   int64  `json:"userId"`
+	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar"`
+	Info     string `json:"info"` //房东介绍
+	Rank     int64  `json:"rank"` //排名
+}
+
+type HomestayBusiness {
+	Id        int64   `json:"id"`
+	Title     string  `json:"title"` //店铺名称
+	Info      string  `json:"info"`  //店铺介绍
+	Tags      string  `json:"tags"`  //标签，多个用“,”分割
+	Cover     string  `json:"cover"` //
+	Star      float64 `json:"star"`
+	IsFav     int64   `json:"isFav"`
+	HeaderImg string  `json:"headerImg"` //店招门头图片
+}
+
+
+type (
+	GoodBossReq {
+	}
+	GoodBossResp {
+		List []HomestayBusinessBoss `json:"list"`
+	}
+)
+
+type (
+	HomestayBusinessListInfo {
+		HomestayBusiness
+		SellMonth     int64 `json:"sellMonth"`     //月销售
+		PersonConsume int64 `json:"personConsume"` //个人消费
+	}
+	HomestayBussinessListReq {
+		LastId   int64 `json:"lastId"`
+		PageSize int64 `json:"pageSize"`
+	}
+	HomestayBussinessListResp {
+		List []HomestayBusinessListInfo `json:"list"`
+	}
+)
+
+type (
+	HomestayBussinessDetailReq{
+		Id int64 `json:"id"`
+	}
+	HomestayBussinessDetailResp{
+		Boss HomestayBusinessBoss `json:"boss"`
+	}
+	
+)

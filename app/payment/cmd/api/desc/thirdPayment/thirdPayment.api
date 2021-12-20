@@ -1,0 +1,33 @@
+syntax = "v1"
+
+info(
+	title: "第三方支付服务"
+	desc: "第三方支付服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+type (
+	ThirdPaymentWxPayReq {
+		OrderSn     string `json:"orderSn"`
+		ServiceType string `json:"serviceType"`
+	}
+
+	ThirdPaymentWxPayResp {
+		Appid     string `json:"appid"`
+		NonceStr  string `json:"nonceStr"`
+		PaySign   string `json:"paySign"`
+		Package  string `json:"package"`
+		Timestamp string `json:"timestamp"`
+		SignType  string `json:"signType"`
+	}
+)
+
+type (
+	ThirdPaymentWxPayCallbackReq {
+	}
+	ThirdPaymentWxPayCallbackResp {
+		ReturnCode string `json:"return_code"`
+	}
+)

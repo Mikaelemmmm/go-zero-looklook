@@ -1,0 +1,47 @@
+Name: identity-api
+Host: 0.0.0.0
+Port: 8001
+
+Log:
+  ServiceName: identity-api
+  Level: error
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+  
+#链路追踪
+Telemetry:
+  Name: identity-api
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505ea0
+
+#不需要授权认证的服务path
+NoAuthUrls:
+  #用户服务
+  - "/usercenter/v1/user/register"
+  - "/usercenter/v1/user/login"
+  - "/usercenter/v1/user/wxMiniAuth"
+  - "/travel/v1/homestay/businessList"
+  - "/travel/v1/homestay/homestayList"
+  - "/travel/v1/homestay/guessList"
+  - "/travel/v1/homestay/homestayDetail"
+  - "/travel/v1/homestayBussiness/goodBoss"
+  - "/travel/v1/homestayBussiness/homestayBussinessList"
+  - "/travel/v1/homestayBussiness/homestayBussinessDetail"
+  - "/payment/v1/thirdPayment/thirdPaymentWxPayCallback"
+  
+
+#rpc service.
+IdentityRpcConf:
+  Endpoints:
+    - identity-rpc:9001
+
+

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+//消息队列
+package pb;
+
+
+message AqDeferHomestayOrderCloseReq {
+  string sn = 1;
+}
+message AqDeferHomestayOrderCloseResp {
+}
+
+message KqPaymenStatusUpdateReq {
+  string orderSn = 1;
+  int64 payStatus = 2;
+}
+message KqPaymenStatusUpdateResp {
+}
+
+message SendWxMiniSubMessageReq {
+  string Openid = 1;
+  string TemplateID = 2;
+  string Page = 3;
+  map<string,string> Data = 4;
+}
+message SendWxMiniSubMessageResp {
+}
+
+//service
+service mqueue {
+    //------------------------------
+    //asynq
+    //asynq defer 
+    //------------------------------
+
+    //添加民宿订单延迟关闭到asynq队列
+    rpc aqDeferHomestayOrderClose(AqDeferHomestayOrderCloseReq)returns(AqDeferHomestayOrderCloseResp);
+
+
+    //------------------------------
+    //asynq job
+    //------------------------------
+
+
+
+
+    //------------------------------
+    //kq
+    //------------------------------
+
+    //支付流水状态变更发送到kq
+    rpc kqPaymenStatusUpdate(KqPaymenStatusUpdateReq)returns(KqPaymenStatusUpdateResp);
+
+    //发送微信小程序订阅消息
+    rpc sendWxMiniSubMessage(SendWxMiniSubMessageReq)returns(SendWxMiniSubMessageResp);
+}

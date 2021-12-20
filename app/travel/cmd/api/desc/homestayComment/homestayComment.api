@@ -1,0 +1,29 @@
+syntax = "v1"
+
+info(
+	title: "民宿评论服务"
+	desc: "民宿评论服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+type HomestayComment {
+	Id         int64   `json:"id"`
+	HomestayId int64   `json:"homestayId"`
+	Content    string  `json:"content"`
+	Star       float64 `json:"star"`
+    UserId     int64   `json:"userId"`
+	Nickname   string  `json:"nickname"`
+	Avatar     string  `json:"avatar"`
+}
+
+type (
+	CommentListReq {
+       lastId  int64 `json:"lastId"`
+       pageSize  int64 `json:"pageSize"`
+	}
+	CommentListResp {
+		List []HomestayComment `json:"list"`
+	}
+)

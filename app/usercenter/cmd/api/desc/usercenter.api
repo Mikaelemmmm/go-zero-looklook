@@ -1,0 +1,37 @@
+syntax = "v1"
+
+info(
+	title: "用户中心服务"
+	desc: "用户中心服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+import (
+	"user/user.api"
+)
+
+//用户模块v1版本的接口
+@server(
+	prefix: usercenter/v1
+	group: user
+)
+service usercenter {
+	
+	@doc "注册"
+	@handler register
+	post /user/register (RegisterReq) returns (RegisterResp)
+	
+	@doc "登陆"
+	@handler login
+	post /user/login (LoginReq) returns (LoginResp)
+	
+	@doc "获取用户信息"
+	@handler detail
+	post /user/detail (UserInfoReq) returns (UserInfoResp)
+	
+	@doc "微信小程序授权"
+	@handler wxMiniAuth
+	post /user/wxMiniAuth (WXMiniAuthReq) returns (WXMiniAuthResp)
+}

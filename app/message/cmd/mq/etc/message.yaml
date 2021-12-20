@@ -1,0 +1,40 @@
+Name: message-mq
+Host: 0.0.0.0
+Port: 7007
+Mode: dev
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: message-mq
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: message-mq
+  Level: error
+
+#WxMiniConf
+WxMiniConf:
+  AppId: wx2add729fadddddd
+  Secret: 20365395b3de9b2a9351ddddddd
+
+#kq
+SendWxMiniTplMessageConf:
+  Name: SendWxMiniTplMessage
+  Brokers:
+    - kafka:9092
+  Group: send-wx-mini-tpl-message
+  Topic: send-wx-mini-tpl-message
+  Offset: first
+  Consumers: 1
+  Processors: 1
+
+
+

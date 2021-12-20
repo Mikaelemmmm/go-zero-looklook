@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+
+//req 、resp
+
+
+message HomestayOrder {
+  int64  id = 1;
+  string sn = 2;
+  int64  userId = 3;
+  int64  homestayId = 4;
+  string title = 5;
+  string subTitle = 6;
+  string cover = 7;
+  string info = 8;
+  int64 peopleNum = 9;
+  int64 rowType = 10;
+  string foodInfo = 11;
+  int64 foodPrice = 12;
+  int64 homestayPrice = 13;
+  int64 marketHomestayPrice = 14;
+  int64 homestayBusinessId = 15;
+  int64 homestayUserId = 16;
+  int64 liveStartDate = 17;
+  int64 liveEndDate = 18;
+  int64 livePeopleNum = 19;
+  int64 tradeState = 20;
+  string tradeCode = 21;
+  string remark = 22;
+  int64 orderTotalPrice = 23;
+  int64 foodTotalPrice = 24;
+  int64 homestayTotalPrice = 25;
+  int64 createTime = 26;
+  int64 needFood = 27;
+}
+
+message CreateHomestayOrderReq {
+  int64  homestayId = 1;
+	bool   isFood = 2;
+	int64  liveStartTime = 3;
+	int64  liveEndTime = 4;
+  int64  userId = 5;
+  int64  livePeopleNum = 6;
+  string remark = 7;
+}
+message CreateHomestayOrderResp {
+  string sn = 1;
+}
+
+
+message  HomestayOrderDetailReq{
+  string sn = 1;
+}
+message  HomestayOrderDetailResp{
+  HomestayOrder homestayOrder= 1;
+}
+
+message  UpdateHomestayOrderTradeStateReq{
+  string sn = 1;
+  int64  tradeState = 2;  //-1: 已取消 0:待支付 1:未使用 2:已使用  3:已过关闭
+}
+message  UpdateHomestayOrderTradeStateResp{
+  int64  id = 1;
+  int64  userId = 2;
+  string sn = 3;
+  string tradeCode = 4;
+  int64  liveStartDate = 5;
+  int64  liveEndDate = 6;
+  int64  orderTotalPrice = 7;
+  string title = 8;
+}
+
+
+message UserHomestayOrderListReq {
+  int64           lastId = 1;
+  int64           pageSize = 2;
+  int64           userId = 3;
+  int64           traderState = 4;
+}
+message UserHomestayOrderListResp {
+  repeated HomestayOrder list = 1;
+}
+
+//service
+service order {
+    //民宿下订单
+    rpc createHomestayOrder(CreateHomestayOrderReq)returns(CreateHomestayOrderResp);
+
+    //民宿订单详情
+    rpc homestayOrderDetail(HomestayOrderDetailReq)returns(HomestayOrderDetailResp);
+
+    //更新民宿订单状态
+    rpc updateHomestayOrderTradeState(UpdateHomestayOrderTradeStateReq)returns(UpdateHomestayOrderTradeStateResp);
+
+    //用户民宿订单
+    rpc userHomestayOrderList(UserHomestayOrderListReq)returns(UserHomestayOrderListResp);
+}

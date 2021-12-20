@@ -1,0 +1,33 @@
+syntax = "v1"
+
+info(
+	title: "旅游服务"
+	desc: "旅游服务"
+	author: "Mikael"
+	email: "13247629622@163.com"
+	version: "v1"
+)
+
+import (
+	"order/order.api"
+)
+
+//订单模块v1版本的接口
+@server(
+	prefix: order/v1
+	group: homestayOrder
+)
+service order {
+	
+	@doc "创建民宿订单"
+	@handler createHomestayOrder
+	post /homestayOrder/createHomestayOrder (CreateHomestayOrderReq) returns (CreateHomestayOrderResp)
+	
+	@doc "用户订单列表"
+	@handler userHomestayOrderList
+	post /homestayOrder/userHomestayOrderList (UserHomestayOrderListReq) returns (UserHomestayOrderListResp)
+	
+	@doc "用户订单明细"
+	@handler userHomestayOrderDetail
+	post /homestayOrder/userHomestayOrderDetail (UserHomestayOrderDetailReq) returns (UserHomestayOrderDetailResp)
+}
