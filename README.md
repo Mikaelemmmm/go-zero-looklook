@@ -47,27 +47,36 @@
 
 
 
-app：所有业务代码包含api、rpc以及mq（消息队列、延迟队列、定时任务）
+- app：所有业务代码包含api、rpc以及mq（消息队列、延迟队列、定时任务）
 
-common：通用组件 error、middleware、interceptor、tool、ctxdata等
+- common：通用组件 error、middleware、interceptor、tool、ctxdata等
 
-deploy：
+- deploy：
 
-​	script：
+    - script：
 
-​		gencode：生成api、rpc，以及创建kafka语句，复制粘贴使用
+        - gencode：生成api、rpc，以及创建kafka语句，复制粘贴使用
 
-​		mysql：生成model的sh工具
+        - mysql：生成model的sh工具
 
-​	gateway:
+    - gateway:
+        - nginx 的网关配置文件
 
-​		nginx 的配置文件
+- data：所有项目依赖的数据与配置 ， 开发时候记得将data目录在git中忽略，不然提交代码一大堆
 
-data:
+    - sql：项目需要用到的sql文件
 
-​	sql文件以及用到的技术栈对应的docker映射文件
+    - goctl : 该项目使用的goctl的template文件模版
 
-​
+    - elasticsearch：项目依赖es保存的数据与配置
+
+    - grafana：项目以来grafana相关数据与配置
+
+    - kafka：项目依赖kafka相关数据与配置
+
+    - prometheus：项目依赖prometheus相关数据与配置
+
+
 
 
 
