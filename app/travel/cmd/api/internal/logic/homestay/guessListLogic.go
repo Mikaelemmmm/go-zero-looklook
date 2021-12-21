@@ -35,7 +35,7 @@ func (l *GuessListLogic) GuessList(req types.GuessListReq) (*types.GuessListResp
 
 	list, err := l.svcCtx.HomestayModel.FindPageList(0, 5)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.ErrDBError, "req : %+v , err : %v", req, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v", req, err)
 	}
 
 	if len(list) > 0 {

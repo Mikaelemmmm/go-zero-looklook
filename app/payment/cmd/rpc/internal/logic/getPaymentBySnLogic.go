@@ -31,7 +31,7 @@ func (l *GetPaymentBySnLogic) GetPaymentBySn(in *pb.GetPaymentBySnReq) (*pb.GetP
 
 	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(in.Sn)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, "查询第三方支付流水记录失败 db err:%v , in : %+v", err, in)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "查询第三方支付流水记录失败 db err:%v , in : %+v", err, in)
 	}
 
 	var resp pb.PaymentDetail

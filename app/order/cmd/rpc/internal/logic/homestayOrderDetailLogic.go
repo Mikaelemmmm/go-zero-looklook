@@ -31,7 +31,7 @@ func (l *HomestayOrderDetailLogic) HomestayOrderDetail(in *pb.HomestayOrderDetai
 
 	homestayOrder, err := l.svcCtx.HomestayOrderModel.FindOneBySn(in.Sn)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, "HomestayOrderModel  FindOne err : %v , sn : %s", err, in.Sn)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "HomestayOrderModel  FindOne err : %v , sn : %s", err, in.Sn)
 	}
 
 	var resp pb.HomestayOrder

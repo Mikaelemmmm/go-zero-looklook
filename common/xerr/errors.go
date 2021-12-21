@@ -8,9 +8,6 @@ import (
 常用通用固定错误
 */
 
-var ErrServerError = NewErrCode(SERVER_COMMON_ERROR) //服务器繁忙
-var ErrDBError = NewErrCode(DB_ERROR)                //数据库繁忙
-
 type CodeError struct {
 	errCode uint32
 	errMsg  string

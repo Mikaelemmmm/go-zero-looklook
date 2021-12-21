@@ -34,7 +34,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 
 	user, err := l.svcCtx.UserModel.FindOneByMobile(in.Mobile)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, "mobile:%s,err:%v", in.Mobile, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "mobile:%s,err:%v", in.Mobile, err)
 	}
 
 	if user != nil {
@@ -50,11 +50,11 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		user.Nickname = in.Nickname
 		insertResult, err := l.svcCtx.UserModel.Insert(session, user)
 		if err != nil {
-			return errors.Wrapf(xerr.ErrDBError, "err:%v,user:%+v", err, user)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err:%v,user:%+v", err, user)
 		}
 		lastId, err := insertResult.LastInsertId()
 		if err != nil {
-			return errors.Wrapf(xerr.ErrDBError, "insertResult.LastInsertId err:%v,user:%+v", err, user)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "insertResult.LastInsertId err:%v,user:%+v", err, user)
 		}
 		userId = lastId
 
@@ -63,7 +63,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		userAuth.AuthKey = in.AuthKey
 		userAuth.AuthType = in.AuthType
 		if _, err := l.svcCtx.UserAuthModel.Insert(session, userAuth); err != nil {
-			return errors.Wrapf(xerr.ErrDBError, "err:%v,userAuth:%v", err, userAuth)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err:%v,userAuth:%v", err, userAuth)
 		}
 		return nil
 	}); err != nil {

@@ -35,7 +35,7 @@ func (l *GetUserInfoLogic) GetUserInfo(in *pb.GetUserInfoReq) (*pb.GetUserInfoRe
 	//get
 	user, err := l.svcCtx.UserModel.FindOne(in.Id)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, "查询用户出错 id:%d , err:%v", in.Id, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "查询用户出错 id:%d , err:%v", in.Id, err)
 	}
 	if user == nil {
 		return nil, errors.Wrapf(ErrUserNoExistsError, "id:%d", in.Id)

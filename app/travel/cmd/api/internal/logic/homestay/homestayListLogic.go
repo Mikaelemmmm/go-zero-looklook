@@ -46,7 +46,7 @@ func (l *HomestayListLogic) getActivityList(req types.HomestayListReq) (*types.H
 	//获取活动数据id集合.
 	homestayIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(req.LastId, req.PageSize, req.RowType, model.HomestayActivityUpStatus)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.ErrDBError, "rowType: %s ,err : %v", req.RowType, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "rowType: %s ,err : %v", req.RowType, err)
 	}
 
 	var resp []types.Homestay

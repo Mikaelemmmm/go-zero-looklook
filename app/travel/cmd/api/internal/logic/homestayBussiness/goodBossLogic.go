@@ -34,7 +34,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 	//获取10个最佳房东.
 	userIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(0, 10, model.HomestayActivityGoodBusiType, model.HomestayActivityUpStatus)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.ErrDBError, "req : %+v , err : %v ", req,err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v ", req,err)
 	}
 
 	var resp []types.HomestayBusinessBoss

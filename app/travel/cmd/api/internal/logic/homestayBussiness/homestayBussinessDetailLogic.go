@@ -32,7 +32,7 @@ func (l *HomestayBussinessDetailLogic) HomestayBussinessDetail(req types.Homesta
 
 	homestayBusiness, err := l.svcCtx.HomestayBusinessModel.FindOne(req.Id)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, " id  : %d , err : %v", req.Id, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " id  : %d , err : %v", req.Id, err)
 	}
 
 	var typeHomestayBusinessBoss types.HomestayBusinessBoss

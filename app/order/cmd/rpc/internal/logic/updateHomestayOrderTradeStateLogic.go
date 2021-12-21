@@ -32,7 +32,7 @@ func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *p
 	//1、查询当前订单
 	homestayOrder, err := l.svcCtx.HomestayOrderModel.FindOneBySn(in.Sn)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.ErrDBError, "err : %v , in:%+v", err, in)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err : %v , in:%+v", err, in)
 	}
 	if homestayOrder == nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("订单不存在"), "in : %+v", in)
