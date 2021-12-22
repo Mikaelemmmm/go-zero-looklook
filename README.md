@@ -25,6 +25,7 @@
 - elasticsearch
 
 - prometheus
+- grafana
 - jager
 - go-queue
 - asynq
