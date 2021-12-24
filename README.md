@@ -23,7 +23,7 @@
 - go-stash
 
 - elasticsearch
-
+- kibana
 - prometheus
 - grafana
 - jager
