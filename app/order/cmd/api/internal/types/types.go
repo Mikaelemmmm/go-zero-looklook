@@ -39,7 +39,7 @@ type UserHomestayOrderListResp struct {
 }
 
 type UserHomestayOrderDetailReq struct {
-	Sn string `json:"sn" validate:"required,max=20,min=6"`
+	Sn string `json:"sn"`
 }
 
 type UserHomestayOrderDetailResp struct {

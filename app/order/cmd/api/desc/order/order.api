@@ -47,7 +47,7 @@ type (
 
 type (
 	UserHomestayOrderDetailReq {
-		Sn string `json:"sn" validate:"required,max=20,min=6"`
+		Sn string `json:"sn"`
 	}
 	UserHomestayOrderDetailResp {
 		//订单基本信息
