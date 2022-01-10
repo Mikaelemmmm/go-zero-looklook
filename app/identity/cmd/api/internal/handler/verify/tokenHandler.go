@@ -26,7 +26,7 @@ func TokenHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 
 		l := verify.NewTokenLogic(r.Context(), ctx)
 		resp, err := l.Token(req, r)
-		if err == nil && !resp.Ok {
+		if err == nil && (resp == nil || !resp.Ok){
 			err = errors.Wrapf(ErrTokenExpireError, "jwtAuthHandler JWT Auth no err , userId is zero , req:%+v,resp:%+v", req, resp)
 		}
 

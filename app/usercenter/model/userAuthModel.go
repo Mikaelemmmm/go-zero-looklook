@@ -66,11 +66,11 @@ func (m *defaultUserAuthModel) Insert(session sqlx.Session, data *UserAuth) (sql
 	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 
-		query := fmt.Sprintf("insert into %s(delete_time,del_state,user_id,auth_key,auth_type) values (?,?,?,?,?)", m.table)
+		query := fmt.Sprintf("insert into %s(user_id,auth_key,auth_type) values (?,?,?)", m.table)
 		if session != nil {
-			return session.Exec(query, data.DeleteTime, data.DelState, data.UserId, data.AuthKey, data.AuthType)
+			return session.Exec(query,  data.UserId, data.AuthKey, data.AuthType)
 		}
-		return conn.Exec(query, data.DeleteTime, data.DelState, data.UserId, data.AuthKey, data.AuthType)
+		return conn.Exec(query,  data.UserId, data.AuthKey, data.AuthType)
 	}, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey, looklookUsercenterUserAuthUserIdAuthTypeKey)
 
 }
