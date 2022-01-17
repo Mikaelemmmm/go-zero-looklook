@@ -21,7 +21,7 @@ Log:
   Level: error
 
 Redis:
-  Host: 123.56.66.22:63799
+  Host: redis:6379
   Type: node
   Pass: G62m50oigInC30sf
 
@@ -32,7 +32,7 @@ PaymentUpdateStatusConf:
     - kafka:9092
   Group: payment-update-paystatus-group
   Topic: payment-update-paystatus-topic
-  Offset: first 
+  Offset: first
   Consumers: 1
   Processors: 1
 
@@ -40,7 +40,7 @@ PaymentUpdateStatusConf:
 OrderRpcConf:
   Endpoints:
     - order-rpc:9004
-    
+
 MqueueRpcConf:
   Endpoints:
     - mqueue-rpc:9006

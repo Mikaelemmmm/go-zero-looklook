@@ -1,0 +1,45 @@
+Clusters:
+  - Input:
+      Kafka:
+        Name: gostash
+        Brokers:
+          - "kafka:9092"
+        Topics:
+          - looklook-log
+        Group: pro
+        Consumers: 16
+    Filters:
+      - Action: drop
+        Conditions:
+          - Key: k8s_container_name
+            Value: "-rpc"
+            Type: contains
+          - Key: level
+            Value: info
+            Type: match
+            Op: and
+      - Action: remove_field
+        Fields:
+          # - message
+          - _source
+          - _type
+          - _score
+          - _id
+          - "@version"
+          - topic
+          - index
+          - beat
+          - docker_container
+          - offset
+          - prospector
+          - source
+          - stream
+          - "@metadata"
+      - Action: transfer
+        Field: message
+        Target: data
+    Output:
+      ElasticSearch:
+        Hosts:
+          - "http://elasticsearch:9200"
+        Index: "looklook-{{yyyy-MM-dd}}"

@@ -21,14 +21,14 @@ Log:
   Level: error
 
 Redis:
-  Host: 172.56.11.22:63799
+  Host: redis:6379
   Type: node
-  Pass: G62m50oigInC3011
+  Pass: G62m50oigInC30sf
 DB:
-  DataSource: root:MX1393VRKUm8TeE7@tcp(172.56.11.2:33069)/looklook_usercenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_usercenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Cache:
-  - Host: 172.56.11.22:63799
-    Pass: G62m50oigInC3011
+  - Host: redis:6379
+    Pass: G62m50oigInC30sf
 
 #rpc service
 IdentityRpcConf:

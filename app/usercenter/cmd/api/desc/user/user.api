@@ -19,7 +19,7 @@ type User {
 type (
 	RegisterReq {
 		Mobile   string `json:"mobile"`
-		Nickname string `json:"nickname"`
+		Password string `json:"password"`
 	}
 	RegisterResp {
 		AccessToken  string `json:"accessToken"`

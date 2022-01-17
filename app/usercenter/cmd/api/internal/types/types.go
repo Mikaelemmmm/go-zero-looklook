@@ -12,7 +12,7 @@ type User struct {
 
 type RegisterReq struct {
 	Mobile   string `json:"mobile"`
-	Nickname string `json:"nickname"`
+	Password string `json:"password"`
 }
 
 type RegisterResp struct {

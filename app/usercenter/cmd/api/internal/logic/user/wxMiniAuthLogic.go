@@ -65,7 +65,7 @@ func (l *WxMiniAuthLogic) WxMiniAuth(req types.WXMiniAuthReq) (*types.WXMiniAuth
 	}
 	if rpcRsp.UserAuth == nil || rpcRsp.UserAuth.Id == 0 {
 
-		//绑定用户
+		//绑定用户.
 
 		//小程序解密返回的数据都如下
 		mobile := userData.PhoneNumber

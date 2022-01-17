@@ -45,7 +45,7 @@ func (l *LoginLogic) Login(in *usercenter.LoginReq) (*usercenter.LoginResp, erro
 		return nil, err
 	}
 
-	//2、生成token..
+	//2、生成token
 	resp, err := l.svcCtx.IdentityRpc.GenerateToken(l.ctx, &identity.GenerateTokenReq{
 		UserId: userId,
 	})

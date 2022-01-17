@@ -27,8 +27,9 @@ message UserAuth {
 message RegisterReq {
   string mobile = 1;
   string nickname = 2;
-  string authKey = 3;
-  string authType = 4;
+  string password = 3;
+  string authKey = 4;
+  string authType = 5;
 }
 message RegisterResp {
   string accessToken = 1;

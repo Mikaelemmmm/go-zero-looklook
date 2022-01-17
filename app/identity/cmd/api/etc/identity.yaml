@@ -11,7 +11,7 @@ Prometheus:
   Host: 0.0.0.0
   Port: 9091
   Path: /metrics
-  
+
 #链路追踪
 Telemetry:
   Name: identity-api
@@ -29,6 +29,7 @@ NoAuthUrls:
   - "/usercenter/v1/user/register"
   - "/usercenter/v1/user/login"
   - "/usercenter/v1/user/wxMiniAuth"
+  #旅行服务
   - "/travel/v1/homestay/businessList"
   - "/travel/v1/homestay/homestayList"
   - "/travel/v1/homestay/guessList"
@@ -36,8 +37,9 @@ NoAuthUrls:
   - "/travel/v1/homestayBussiness/goodBoss"
   - "/travel/v1/homestayBussiness/homestayBussinessList"
   - "/travel/v1/homestayBussiness/homestayBussinessDetail"
+  #支付服务
   - "/payment/v1/thirdPayment/thirdPaymentWxPayCallback"
-  
+
 
 #rpc service.
 IdentityRpcConf:

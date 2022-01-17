@@ -53,29 +53,18 @@
 - common：通用组件 error、middleware、interceptor、tool、ctxdata等
 
 - deploy：
-
+    - filebeat: docker部署filebeat配置
+    - go-stash：go-stash配置
+    - nginx: nginx网关配置
+    - prometheus ： prometheus配置
     - script：
-
         - gencode：生成api、rpc，以及创建kafka语句，复制粘贴使用
-
         - mysql：生成model的sh工具
+    - goctl: 该项目goctl的template，goctl生成自定义代码模版，tempalte用法可参考go-zero文档，复制到家目录下.goctl即可，
+             该项目用到goctl版本是v1.2.3
 
-    - gateway:
-        - nginx 的网关配置文件
+- data：该项目依赖所有中间件(mysql、es、redis、grafana等)产生的数据，此目录下的所有内容应该在git忽略文件中，不需要提交。
 
-- data：所有项目依赖的数据与配置 ， 开发时候记得将data目录在git中忽略，不然提交代码一大堆
-
-    - sql：项目需要用到的sql文件
-
-    - goctl : 该项目使用的goctl的template文件模版
-
-    - elasticsearch：项目依赖es保存的数据与配置
-
-    - grafana：项目以来grafana相关数据与配置
-
-    - kafka：项目依赖kafka相关数据与配置
-
-    - prometheus：项目依赖prometheus相关数据与配置
 
 
 

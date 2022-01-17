@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"looklook/common/tool"
 
 	"looklook/app/identity/cmd/rpc/identity"
 	"looklook/app/usercenter/cmd/rpc/internal/svc"
@@ -44,10 +45,14 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 	var userId int64
 
 	if err := l.svcCtx.UserModel.Trans(func(session sqlx.Session) error {
-
 		user := new(model.User)
 		user.Mobile = in.Mobile
-		user.Nickname = in.Nickname
+		if len(user.Nickname) == 0 {
+			user.Nickname = tool.Krand(tool.KC_RAND_KIND_ALL,8)
+		}
+		if len(user.Password)>0{
+			user.Password = tool.Md5ByString(in.Password)
+		}
 		insertResult, err := l.svcCtx.UserModel.Insert(session, user)
 		if err != nil {
 			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err:%v,user:%+v", err, user)

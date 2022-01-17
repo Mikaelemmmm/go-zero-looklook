@@ -66,9 +66,9 @@ func (m *defaultUserModel) Insert(session sqlx.Session, data *User) (sql.Result,
 	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 
-		query := fmt.Sprintf("insert into %s (`mobile`,`nickname`) values ( ?, ?)", m.table)
+		query := fmt.Sprintf("insert into %s (`mobile`,`nickname`,`password`) values ( ?, ? , ?)", m.table)
 		if session != nil {
-			return session.Exec(query, data.Mobile, data.Nickname)
+			return session.Exec(query, data.Mobile, data.Nickname,data.Password)
 		}
 		return session.Exec(query, data.Mobile, data.Nickname)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)

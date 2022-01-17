@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-
 	"looklook/app/usercenter/cmd/api/internal/svc"
 	"looklook/app/usercenter/cmd/api/internal/types"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
@@ -28,9 +27,10 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) RegisterL
 }
 
 func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, error) {
+
 	registerResp, err := l.svcCtx.UsercenterRpc.Register(l.ctx, &usercenter.RegisterReq{
 		Mobile:   req.Mobile,
-		Nickname: req.Nickname,
+		Password: req.Password,
 		AuthKey:  req.Mobile,
 		AuthType: model.UserAuthTypeSystem,
 	})
