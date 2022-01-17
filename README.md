@@ -13,25 +13,22 @@
 
 
 - go-zero
-
 - nginx网关
-
 - filebeat
-
 - kafka
-
 - go-stash
-
 - elasticsearch
 - kibana
 - prometheus
 - grafana
-- jager
+- jaeger
 - go-queue
 - asynq
 - dtm
 - docker
 - docker-compose
+- mysql
+- redis
 
 
 
