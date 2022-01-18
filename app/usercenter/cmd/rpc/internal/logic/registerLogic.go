@@ -37,13 +37,11 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "mobile:%s,err:%v", in.Mobile, err)
 	}
-
 	if user != nil {
 		return nil, errors.Wrapf(ErrUserAlreadyRegisterError, "用户已经存在 mobile:%s,err:%v", in.Mobile, err)
 	}
 
 	var userId int64
-
 	if err := l.svcCtx.UserModel.Trans(func(session sqlx.Session) error {
 		user := new(model.User)
 		user.Mobile = in.Mobile
