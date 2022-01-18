@@ -12,6 +12,10 @@ api被很多同学理解成了网关，实际意义上来说当你的项目在�
 
 #### 2、nginx网关
 
+【注】：在看这里的时候，建议先看一下前一节的业务架构图
+
+![nignx-svc](./images/2/nignx-svc.png)
+
 本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（设计到资产的最好业务内部做二次鉴权，主要多一层安全），nignx的网关配置在项目的data/nginx/conf.d/looklook-gateway.conf
 
 ```conf
@@ -93,7 +97,7 @@ server{
 
 ​	这里的路由是否需要登陆，可以在identity-api中配置，代码已经实现好了
 
-​	![image-20220117162935341](/Users/seven/Desktop/gozerolooklook/images/2/image-20220117162935341.png)
+​	![image-20220117162935341](./images/2/image-20220117162935341.png)
 
 
 
