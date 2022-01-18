@@ -25,7 +25,6 @@ services:
     depends_on:
       - elasticsearch
 
-
   jager_agent:
     image: jaegertracing/jaeger-agent:1.18
     container_name: jager_agent
@@ -185,6 +184,19 @@ services:
     restart: always
     volumes:
       - ./data/kafka/docker.sock:/var/run/docker.sock
+    networks:
+      - looklook_net
+
+  #asynqmon asynq延迟队列、定时队列的webui
+  asynqmon:
+    image: hibiken/asynqmon:latest
+    container_name: asynqmon
+    ports:
+      - 8980:8080
+    command:
+      - '--redis-addr=redis:6379'
+      - '--redis-password=G62m50oigInC30sf'
+    restart: always
     networks:
       - looklook_net
 

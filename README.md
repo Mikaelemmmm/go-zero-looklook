@@ -24,6 +24,7 @@
 - jaeger
 - go-queue
 - asynq
+- asynqmon
 - dtm
 - docker
 - docker-compose
