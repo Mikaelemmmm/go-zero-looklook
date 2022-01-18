@@ -72,7 +72,7 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 ![jiagou](./doc/images/1/gozerolooklook.png)
 
-##业务架构图
+## 业务架构图
 
 ![jiagou](./doc/images/1/looklook-service.png)
 
