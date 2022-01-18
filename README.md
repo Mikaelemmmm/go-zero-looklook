@@ -32,6 +32,9 @@
 
 
 
+## 项目文档
+https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+
 
 
 ## 项目简介
@@ -71,10 +74,6 @@
 
 ![jiagou](./gozerolooklook.png)
 
-
-
-## 项目文档
-https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 
 ## 网关
