@@ -74,7 +74,7 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 ## 业务架构图
 
-![jiagou](./doc/images/1/looklook-service.png)
+![jiagou](./doc/images/1/looklook-service.jpg)
 
 
 ## 网关
