@@ -68,12 +68,13 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 
 
+## 系统架构图
 
+![jiagou](./doc/images/1/gozerolooklook.png)
 
-## 架构图
+##业务架构图
 
-![jiagou](./gozerolooklook.png)
-
+![jiagou](./doc/images/1/looklook-service.png)
 
 
 ## 网关
@@ -162,5 +163,5 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 ## 赞赏
 
-![wxpay](./wxpay.png)
+![wxpay](doc/images/1/wxpay.png)
 
