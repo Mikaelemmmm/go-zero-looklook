@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/tal-tech/go-zero/core/prometheus"
 
 	"looklook/app/message/cmd/mq/internal/config"
 	"looklook/app/message/cmd/mq/internal/listen"
@@ -17,6 +18,7 @@ func main() {
 	var c config.Config
 
 	conf.MustLoad(*configFile, &c)
+	prometheus.StartAgent(c.Prometheus)
 
 	serviceGroup := service.NewServiceGroup()
 	defer serviceGroup.Stop()
