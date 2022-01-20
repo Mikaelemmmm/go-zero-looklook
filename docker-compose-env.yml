@@ -1,0 +1,262 @@
+version: '3'
+
+######## 项目依赖的环境，启动项目之前要先启动此环境 #######
+
+services:
+  #jaeger链路追踪
+  jager_collector:
+    image: jaegertracing/jaeger-collector:1.18
+    container_name: jager_collector
+    restart: always
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - LOG_LEVEL=debug
+      - TZ=Asia/Shanghai
+    networks:
+      - looklook_net
+    ports:
+      - "14269"
+      - "14268:14268"
+      - "14267"
+      - "14250:14250"
+      - "9411:9411"
+    depends_on:
+      - elasticsearch
+
+  jager_agent:
+    image: jaegertracing/jaeger-agent:1.18
+    container_name: jager_agent
+    restart: always
+    environment:
+      - REPORTER_GRPC_HOST_PORT=jager_collector:14250
+      - LOG_LEVEL=debug
+      - TZ=Asia/Shanghai
+    ports:
+      - "5775:5775/udp"
+      - "5778:5778"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+    networks:
+      - looklook_net
+    depends_on:
+      - jager_collector
+
+  jaeger_query:
+    image: jaegertracing/jaeger-query:1.18
+    restart: always
+    container_name: jaeger_query
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - LOG_LEVEL=debug
+      - TZ=Asia/Shanghai
+    ports:
+      - 16686:16686
+    networks:
+      - looklook_net
+    depends_on:
+      - elasticsearch
+
+  #prometheus监控
+  prometheus:
+    image: prom/prometheus:v2.28.1
+    container_name: prometheus
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    volumes:
+      - ./deploy/prometheus/server/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: always
+    user: root
+    ports:
+      - 9090:9090
+    networks:
+      - looklook_net
+
+  #查看prometheus监控数据
+  grafana:
+    image: grafana/grafana:8.0.6
+    container_name: grafana
+    hostname: grafana
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    restart: always
+    volumes:
+        - ./data/grafana/data:/var/lib/grafana
+    ports:
+        - "3001:3000"
+    networks:
+        - looklook_net
+
+#  #搜集kafka业务日志、存储prometheus监控数据
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+    restart: always
+    ports:
+    - 9200:9200
+    - 9300:9300
+    networks:
+      - looklook_net
+
+  #查看elasticsearch数据
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.4
+    container_name: kibana
+    environment:
+      - elasticsearch.hosts=http://elasticsearch:9200
+      - TZ=Asia/Shanghai
+    restart: always
+    networks:
+      - looklook_net
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  #消费kafka中filebeat收集的数据输出到es
+  go-stash:
+    image: kevinwan/go-stash:latest
+    container_name: go-stash
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    user: root
+    restart: always
+    volumes:
+      - ./deploy/go-stash/etc:/app/etc
+    networks:
+      - looklook_net
+    depends_on:
+      - elasticsearch
+      - kafka
+
+  #收集业务数据
+  filebeat:
+    image: elastic/filebeat:7.13.4
+    container_name: filebeat
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    user: root
+    restart: always
+    volumes:
+      - ./deploy/filebeat/conf/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    networks:
+      - looklook_net
+    depends_on:
+      - kafka
+
+
+  #zookeeper是kafka的依赖
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    restart: always
+    ports:
+      - 2181:2181
+    networks:
+      - looklook_net
+
+  #消息队列
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - 9092:9092
+    # host ip
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      TZ: Asia/Shanghai
+    restart: always
+    volumes:
+      - ./data/kafka/docker.sock:/var/run/docker.sock
+    networks:
+      - looklook_net
+    depends_on:
+      - zookeeper
+
+  #asynqmon asynq延迟队列、定时队列的webui
+  asynqmon:
+    image: hibiken/asynqmon:latest
+    container_name: asynqmon
+    ports:
+      - 8980:8080
+    command:
+      - '--redis-addr=redis:6379'
+      - '--redis-password=G62m50oigInC30sf'
+    restart: always
+    networks:
+      - looklook_net
+    depends_on:
+      - redis
+
+  mysql:
+    image: mysql:8.0.24
+    container_name: mysql
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      # root 密码
+      MYSQL_ROOT_PASSWORD: PXDN93VRKUm8TeE7
+    ports:
+      - 33069:3306
+    volumes:
+      # 数据挂载
+      - ./data/mysql/data:/var/lib/mysql
+      # 日志
+    command:
+      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    privileged: true
+    restart: always
+    networks:
+      - looklook_net
+
+  #redis容器
+  redis:
+    image: redis:6.2.5
+    container_name: redis
+    ports:
+      - 63799:6379
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    volumes:
+      # 数据文件
+      - ./data/redis/data:/data:rw
+    command: "redis-server --requirepass G62m50oigInC30sf  --appendonly yes"
+    privileged: true
+    restart: always
+    networks:
+      - looklook_net
+
+
+networks:
+  looklook_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
