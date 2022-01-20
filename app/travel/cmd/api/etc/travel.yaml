@@ -33,6 +33,4 @@ UsercenterRpcConf:
 TravelRpcConf:
   Endpoints:
     - travel-rpc:9003
-OrderRpcConf:
-  Endpoints:
-    - order-rpc:9004
+

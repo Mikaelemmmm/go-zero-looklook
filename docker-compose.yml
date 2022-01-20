@@ -123,8 +123,6 @@ services:
       # 时区上海
       TZ: Asia/Shanghai
       GOPROXY: https://goproxy.cn,direct
-    #    ports:
-    #      - 8003:8003
     working_dir: /go/src/github.com/looklook/app/travel/cmd/api
     volumes:
       -  .:/go/src/github.com/looklook
@@ -134,7 +132,6 @@ services:
       - looklook_net
     depends_on:
       - usercenter-rpc
-      - order-rpc
       - travel-rpc
 
   #订单服务rpc
@@ -145,8 +142,6 @@ services:
       # 时区上海
       TZ: Asia/Shanghai
       GOPROXY: https://goproxy.cn,direct
-    #    ports:
-    #      - 9004:9004
     working_dir: /go/src/github.com/looklook/app/order/cmd/rpc
     volumes:
       -  .:/go/src/github.com/looklook

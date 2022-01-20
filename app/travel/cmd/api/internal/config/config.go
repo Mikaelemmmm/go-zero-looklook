@@ -16,5 +16,4 @@ type Config struct {
 
 	UsercenterRpcConf zrpc.RpcClientConf
 	TravelRpcConf     zrpc.RpcClientConf
-	OrderRpcConf      zrpc.RpcClientConf
 }
