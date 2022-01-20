@@ -36,7 +36,7 @@ func (l *AqDeferHomestayOrderCloseLogic) AqDeferHomestayOrderClose(in *pb.AqDefe
 		return nil, err
 	}
 
-	_, err = l.svcCtx.AsynqClient.Enqueue(task, asynq.ProcessIn(1*time.Minute))
+	_, err = l.svcCtx.AsynqClient.Enqueue(task, asynq.ProcessIn(20*time.Minute))
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("添加民宿订单到延迟队列失败"), "添加民宿订单到延迟队列失败 sn:%s ,err:%v", in.Sn, err)
 	}
