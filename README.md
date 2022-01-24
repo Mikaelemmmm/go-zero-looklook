@@ -166,5 +166,5 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 ## 赞赏
 
-![wxpay](doc/images/1/wxpay.png)
+![image-20220124142937169](./doc/images/1/info.jpg)
 
