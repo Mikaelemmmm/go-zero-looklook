@@ -17,7 +17,7 @@ func main() {
 
 	conf.MustLoad(*configFile, &c)
 
-	//日志、prometheus、trace、metricsUrl
+	//log、prometheus、trace、metricsUrl
 	if err := c.SetUp(); err!= nil{
 		panic(err)
 	}
