@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/tal-tech/go-zero/core/prometheus"
-
 	"looklook/app/order/cmd/mq/internal/config"
 	"looklook/app/order/cmd/mq/internal/listen"
 
@@ -18,7 +16,11 @@ func main() {
 	var c config.Config
 
 	conf.MustLoad(*configFile, &c)
-	prometheus.StartAgent(c.Prometheus)
+
+	//日志、prometheus、trace、metricsUrl
+	if err := c.SetUp(); err!= nil{
+		panic(err)
+	}
 
 	serviceGroup := service.NewServiceGroup()
 	defer serviceGroup.Stop()

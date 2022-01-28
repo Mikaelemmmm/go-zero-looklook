@@ -20,6 +20,7 @@ func Mqs(c config.Config) []service.Service {
 	services = append(services, KqMqs(c, ctx, svcContext)...)
 	//asynq ： 延迟队列、定时任务
 	services = append(services, AsynqMqs(c, ctx, svcContext)...)
+	//other mq ....
 
 	return services
 }
