@@ -6,7 +6,7 @@ import (
 	"looklook/common/result"
 	{{.ImportPackages}}
 
-	{{if .After1_1_10}}"github.com/tal-tech/go-zero/rest/httpx"{{end}}
+	{{if .After1_1_10}}{{if .HasRequest}}"github.com/tal-tech/go-zero/rest/httpx"{{end}}{{end}}
 )
 
 func {{.HandlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
