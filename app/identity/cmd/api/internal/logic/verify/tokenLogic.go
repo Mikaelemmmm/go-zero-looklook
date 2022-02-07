@@ -3,6 +3,7 @@ package verify
 import (
 	"context"
 	"encoding/json"
+	"github.com/zeromicro/go-zero/rest/token"
 	"net/http"
 	"strings"
 
@@ -12,10 +13,9 @@ import (
 	"looklook/common/ctxdata"
 	"looklook/common/xerr"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/rest/token"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type TokenLogic struct {
@@ -102,12 +102,13 @@ func (l *TokenLogic) urlNoAuth(path string) bool {
 
 //当前url是否需要授权验证.
 func (l *TokenLogic) isPass(r *http.Request) (int64, error) {
+
 	parser := token.NewTokenParser()
 	tok, err := parser.ParseToken(r, l.svcCtx.Config.JwtAuth.AccessSecret, "")
+
 	if err != nil {
 		return 0, errors.Wrapf(ValidateTokenError, "JwtAuthLogic isPass  ParseToken err : %v", err)
 	}
-
 	if tok.Valid {
 		claims, ok := tok.Claims.(jwt.MapClaims) //解析token中对内容
 		if ok {

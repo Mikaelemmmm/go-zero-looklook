@@ -5,7 +5,7 @@ import (
 	"looklook/app/message/cmd/mq/internal/config"
 	"looklook/app/message/cmd/mq/internal/svc"
 
-	"github.com/tal-tech/go-zero/core/service"
+	"github.com/zeromicro/go-zero/core/service"
 )
 
 //返回所有消费者

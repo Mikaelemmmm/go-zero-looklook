@@ -5,7 +5,6 @@ import (
 
 	"looklook/common/result"
 	{{.ImportPackages}}
-
 	{{if .After1_1_10}}{{if .HasRequest}}"github.com/tal-tech/go-zero/rest/httpx"{{end}}{{end}}
 )
 

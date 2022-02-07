@@ -5,7 +5,7 @@ import (
 	"looklook/common/xerr"
 
 	"github.com/pkg/errors"
-	"github.com/tal-tech/go-queue/kq"
+	"github.com/zeromicro/go-queue/kq"
 )
 
 type KqueueClient interface {

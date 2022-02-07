@@ -6,8 +6,8 @@ import (
 	"looklook/app/travel/model"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {

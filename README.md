@@ -8,7 +8,7 @@
 
 
 
-因为大家都在说目前go-zero没有一个完整的项目例子，本人接触go-zero可能比较早，go-zero在大约1000start左右我就在用了，后来跟go-zero作者加了微信也熟悉了，go-zero作者非常热心以及耐心的帮我解答了很多问题，我也想积极帮助go-zero推广社区，基本是在社区群内回答大家相关的问题，因为在这个过程中发现很多人觉得go-zero没有一个完整的项目例子，作为想推动社区的一员，索性我就把内部项目删减了一些关键东西，就搞了个可用版本开源出来，主要技术栈包含如下：
+因为大家都在说目前go-zero没有一个完整的项目例子，本人接触go-zero可能比较早，go-zero在大约1000star左右我就在用了，后来跟go-zero作者加了微信也熟悉了，go-zero作者非常热心以及耐心的帮我解答了很多问题，我也想积极帮助go-zero推广社区，基本是在社区群内回答大家相关的问题，因为在这个过程中发现很多人觉得go-zero没有一个完整的项目例子，作为想推动社区的一员，索性我就把内部项目删减了一些关键东西，就搞了个可用版本开源出来，主要技术栈包含如下：
 
 
 
@@ -64,7 +64,7 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
         - gencode：生成api、rpc，以及创建kafka语句，复制粘贴使用
         - mysql：生成model的sh工具
     - goctl: 该项目goctl的template，goctl生成自定义代码模版，tempalte用法可参考go-zero文档，复制到家目录下.goctl即可，
-      该项目用到goctl版本是v1.2.3
+      该项目用到goctl版本是v1.3.0
 
 - doc : 该项目系列文档
 

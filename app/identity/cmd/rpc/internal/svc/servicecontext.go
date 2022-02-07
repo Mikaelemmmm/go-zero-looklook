@@ -3,17 +3,17 @@ package svc
 import (
 	"looklook/app/identity/cmd/rpc/internal/config"
 
-	"github.com/tal-tech/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 type ServiceContext struct {
-	Config config.Config
+	Config      config.Config
 	RedisClient *redis.Redis
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		RedisClient:redis.NewRedis(c.Redis.Host,c.Redis.Type,c.Redis.Pass),
+		Config:      c,
+		RedisClient: redis.NewRedis(c.Redis.Host, c.Redis.Type, c.Redis.Pass),
 	}
 }

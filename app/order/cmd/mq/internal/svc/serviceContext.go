@@ -6,7 +6,7 @@ import (
 	"looklook/app/order/cmd/rpc/order"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {

@@ -5,8 +5,8 @@ import (
 	"looklook/app/message/cmd/mq/internal/config"
 	"looklook/app/message/cmd/mq/internal/listen"
 
-	"github.com/tal-tech/go-zero/core/conf"
-	"github.com/tal-tech/go-zero/core/service"
+	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/service"
 )
 
 var configFile = flag.String("f", "etc/message.yaml", "Specify the config file")
@@ -18,7 +18,7 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	//log、prometheus、trace、metricsUrl.
-	if err := c.SetUp(); err!= nil{
+	if err := c.SetUp(); err != nil {
 		panic(err)
 	}
 

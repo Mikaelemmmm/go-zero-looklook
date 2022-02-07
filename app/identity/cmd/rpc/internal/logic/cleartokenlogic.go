@@ -10,7 +10,7 @@ import (
 	"looklook/common/xerr"
 
 	"github.com/pkg/errors"
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 var ErrClearTokenError = xerr.NewErrMsg("退出token失败")
