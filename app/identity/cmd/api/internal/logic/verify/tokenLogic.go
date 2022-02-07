@@ -2,6 +2,8 @@ package verify
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/zeromicro/go-zero/rest/token"
 	"net/http"
 	"strings"
 
@@ -11,7 +13,7 @@ import (
 	"looklook/common/ctxdata"
 	"looklook/common/xerr"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -100,12 +102,9 @@ func (l *TokenLogic) urlNoAuth(path string) bool {
 
 //当前url是否需要授权验证.
 func (l *TokenLogic) isPass(r *http.Request) (int64, error) {
-	//parser := token.NewTokenParser()
-	//tok, err := parser.ParseToken(r, l.svcCtx.Config.JwtAuth.AccessSecret, "")
-	authorization := r.Header.Get("Authorization")
-	tok, err := jwt.Parse(authorization, func(token *jwt.Token) (interface{}, error) {
-		return []byte(l.svcCtx.Config.JwtAuth.AccessSecret), nil
-	})
+
+	parser := token.NewTokenParser()
+	tok, err := parser.ParseToken(r, l.svcCtx.Config.JwtAuth.AccessSecret, "")
 
 	if err != nil {
 		return 0, errors.Wrapf(ValidateTokenError, "JwtAuthLogic isPass  ParseToken err : %v", err)
@@ -113,8 +112,7 @@ func (l *TokenLogic) isPass(r *http.Request) (int64, error) {
 	if tok.Valid {
 		claims, ok := tok.Claims.(jwt.MapClaims) //解析token中对内容
 		if ok {
-			//userId, _ := claims[ctxdata.CtxKeyJwtUserId].(json.Number).Int64() //获取userId 并且到后端redis校验是否过期
-			userId := int64(claims[ctxdata.CtxKeyJwtUserId].(float64)) //获取userId 并且到后端redis校验是否过期
+			userId, _ := claims[ctxdata.CtxKeyJwtUserId].(json.Number).Int64() //获取userId 并且到后端redis校验是否过期
 			if userId <= 0 {
 				return 0, errors.Wrapf(ValidateTokenError, "JwtAuthLogic.isPass invalid userId  tokRaw:%s , tokValid :%v ,userId:%d ", tok.Raw, tok.Valid, userId)
 			}

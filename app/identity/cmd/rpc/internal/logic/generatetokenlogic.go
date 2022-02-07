@@ -11,7 +11,7 @@ import (
 	"looklook/common/globalkey"
 	"looklook/common/xerr"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
