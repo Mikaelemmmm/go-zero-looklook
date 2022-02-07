@@ -11,8 +11,8 @@ import (
 	"looklook/common/xerr"
 
 	"github.com/pkg/errors"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 var ErrUserAlreadyRegisterError = xerr.NewErrMsg("该用户已被注册")
@@ -46,9 +46,9 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		user := new(model.User)
 		user.Mobile = in.Mobile
 		if len(user.Nickname) == 0 {
-			user.Nickname = tool.Krand(tool.KC_RAND_KIND_ALL,8)
+			user.Nickname = tool.Krand(tool.KC_RAND_KIND_ALL, 8)
 		}
-		if len(user.Password)>0{
+		if len(user.Password) > 0 {
 			user.Password = tool.Md5ByString(in.Password)
 		}
 		insertResult, err := l.svcCtx.UserModel.Insert(session, user)

@@ -4,8 +4,8 @@ import (
 	"looklook/app/identity/cmd/api/internal/config"
 	"looklook/app/identity/cmd/rpc/identity"
 
-	"github.com/tal-tech/go-zero/core/stores/redis"
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {

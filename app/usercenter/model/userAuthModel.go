@@ -8,11 +8,11 @@ import (
 
 	"looklook/common/globalkey"
 
-	"github.com/tal-tech/go-zero/core/stores/builder"
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/stores/sqlc"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
-	"github.com/tal-tech/go-zero/core/stringx"
+	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/core/stringx"
 )
 
 var (
@@ -68,9 +68,9 @@ func (m *defaultUserAuthModel) Insert(session sqlx.Session, data *UserAuth) (sql
 
 		query := fmt.Sprintf("insert into %s(user_id,auth_key,auth_type) values (?,?,?)", m.table)
 		if session != nil {
-			return session.Exec(query,  data.UserId, data.AuthKey, data.AuthType)
+			return session.Exec(query, data.UserId, data.AuthKey, data.AuthType)
 		}
-		return conn.Exec(query,  data.UserId, data.AuthKey, data.AuthType)
+		return conn.Exec(query, data.UserId, data.AuthKey, data.AuthType)
 	}, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey, looklookUsercenterUserAuthUserIdAuthTypeKey)
 
 }

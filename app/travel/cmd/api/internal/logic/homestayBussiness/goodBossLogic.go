@@ -11,8 +11,8 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/core/mr"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/mr"
 )
 
 type GoodBossLogic struct {
@@ -34,7 +34,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 	//获取10个最佳房东.
 	userIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(0, 10, model.HomestayActivityGoodBusiType, model.HomestayActivityUpStatus)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v ", req,err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v ", req, err)
 	}
 
 	var resp []types.HomestayBusinessBoss
