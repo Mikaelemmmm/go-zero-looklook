@@ -6,7 +6,7 @@ tables=$2
 modeldir=./genModel
 
 # 数据库配置
-host=123.56.66.22
+host=127.0.0.1
 port=33069
 dbname=looklook_$1
 username=root
