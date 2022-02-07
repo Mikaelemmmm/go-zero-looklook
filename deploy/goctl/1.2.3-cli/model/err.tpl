@@ -3,7 +3,7 @@ package {{.pkg}}
 
 import (
     "database/sql"
-    "github.com/tal-tech/go-zero/core/stores/sqlx"
+    "github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 //统一model 执行接口

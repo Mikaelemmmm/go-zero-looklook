@@ -7,7 +7,7 @@ import (
 	"looklook/app/mqueue/cmd/rpc/pb"
 	"looklook/common/kqueue"
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type SendWxMiniSubMessageLogic struct {

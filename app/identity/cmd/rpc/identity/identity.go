@@ -10,7 +10,7 @@ import (
 
 	"looklook/app/identity/cmd/rpc/pb"
 
-	"github.com/tal-tech/go-zero/zrpc"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type (

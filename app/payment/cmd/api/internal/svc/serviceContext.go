@@ -6,8 +6,8 @@ import (
 	"looklook/app/payment/cmd/rpc/payment"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 
-	"github.com/tal-tech/go-zero/zrpc"
 	"github.com/wechatpay-apiv3/wechatpay-go/core"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
