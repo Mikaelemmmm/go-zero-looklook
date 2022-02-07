@@ -5,8 +5,7 @@ import (
 
 	"looklook/common/result"
 	{{.ImportPackages}}
-
-	{{if .After1_1_10}}"github.com/zeromicro/go-zero/rest/httpx"{{end}}
+	{{if .After1_1_10}}{{if .HasRequest}}"github.com/tal-tech/go-zero/rest/httpx"{{end}}{{end}}
 )
 
 func {{.HandlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
@@ -19,6 +18,6 @@ func {{.HandlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
 
 		{{end}}l := {{.LogicName}}.New{{.LogicType}}(r.Context(), ctx)
 		{{if .HasResp}}resp, {{end}}err := l.{{.Call}}({{if .HasRequest}}req{{end}})
-		result.HttpResult(r, w, resp, err)
+		result.HttpResult(r, w, {{if .HasResp}}resp{{else}}nil{{end}}, err)
 	}
 }
