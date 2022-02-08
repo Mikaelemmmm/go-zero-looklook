@@ -1,6 +1,6 @@
 version: '3'
 
-######## 启动本项目之前，要先启动本项目依赖的环境docker-compse-env.yml #######
+######## 启动本项目之前，要先启动本项目依赖的环境docker-compose-env.yml #######
 services:
 
   #网关nginx
