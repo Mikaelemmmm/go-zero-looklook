@@ -10,6 +10,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: default
           containers:
           - name: {{.Name}}
             image: # todo image url

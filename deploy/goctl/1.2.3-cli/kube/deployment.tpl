@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{.Name}}
     spec:
+      serviceAccountName: default
       containers:
       - name: {{.Name}}
         image: {{.Image}}
