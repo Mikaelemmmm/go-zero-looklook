@@ -143,24 +143,15 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 ## 部署
 
-部署的话，目前这个直接使用docker可以部署整套技术栈，如果上k8s的话 ，最简单直接用阿里云的吧
+本项目开发推荐docker-compose
 
-我说下思路，这个后续会出一个基于阿里云效的部署到k8s文档教程，自己搭建一个gitlab、jenkins、harbor去做的话太费时间了
+线上部署使用k8s有详细教程（搭建+部署），非常easy
 
+文档地址：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
-1、将代码放在阿里云效（当然你整到gitlab也行）
+gitlab + jenkins + harbor + k8s
 
-2、在阿里云效创建流水线，基本是一个服务一个流水线了
-
-3、流水线步骤 ：
-
-​		拉取代码--->ci检测（这里可以省略哈，自己看着办）--->构建镜像（go-zero官方有Dockerfile还有教程，别告诉我不会）-->推送到阿里云镜像服务--->使用kubectl去阿里云k8s拉取镜像（ack、ask都行，ask无法使用daemonset 不能用filebeat）---->ok了
-
-
-
-另外， 如果你想自己基于gitlab、jenkins、harbor去做的话，嗯 自己去找运维弄吧，我之前也写过一个教程，有空在整吧老哥们！！
-
-
+在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->组懂构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nignx做网关统一入口、鉴权、限流等
 
 
 
