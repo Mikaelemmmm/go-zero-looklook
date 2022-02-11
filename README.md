@@ -149,7 +149,7 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 本项目开发环境推荐docker-compose，使用直链方式，放弃服务注册发现中间件（etcd、nacos、consul等）带来的麻烦
 
-线上部署使用k8s（也不需要etcd、nacos、consul等）有详细教程（搭建+部署），非常easy
+测试、线上部署使用k8s（也不需要etcd、nacos、consul等）有详细教程（搭建+部署），非常easy
 
 文档地址：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
