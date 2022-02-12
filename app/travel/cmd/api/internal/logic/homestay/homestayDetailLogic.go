@@ -2,8 +2,6 @@ package homestay
 
 import (
 	"context"
-	"fmt"
-
 	"looklook/app/travel/cmd/api/internal/svc"
 	"looklook/app/travel/cmd/api/internal/types"
 	"looklook/app/travel/cmd/rpc/travel"
@@ -37,8 +35,6 @@ func (l *HomestayDetailLogic) HomestayDetail(req types.HomestayDetailReq) (*type
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("获取民宿详情信息失败"), " id : %d , err : %v ", req.Id, err)
 	}
-
-	fmt.Printf("homestay : %+v \n", homestayResp.Homestay)
 
 	var typeHomestay types.Homestay
 	if homestayResp.Homestay != nil {

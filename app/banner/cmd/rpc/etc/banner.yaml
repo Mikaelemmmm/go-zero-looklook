@@ -1,0 +1,19 @@
+Name: banner-rpc
+ListenOn: 0.0.0.0:8008
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: identity-rpc
+  Endpoint: http://jager_collector:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: identity-rpc
+  Level: error

@@ -1,0 +1,83 @@
+[looklook/admin]2022/02/12 - 16:45:06.148	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 16:45:06.148	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 16:45:06.148	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 16:45:06.152	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 16:45:06.153	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:37	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 16:49:24.522	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 16:49:24.522	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 16:49:24.522	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 16:49:24.542	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 16:49:24.542	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:37	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 16:52:09.420	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 16:52:09.420	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 16:52:09.420	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 16:52:09.428	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 16:52:09.428	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:37	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 16:53:44.439	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 16:53:44.448	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 16:53:44.448	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 16:53:44.454	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 16:53:44.454	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:37	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 16:54:45.544	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/api/v1/system/sys_initdb.go:57	前往初始化数据库
+[looklook/admin]2022/02/12 - 17:45:30.137	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 17:47:00.549	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 17:47:00.562	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 17:47:00.562	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 17:47:00.562	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 17:47:00.568	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 17:47:00.571	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 17:53:08.969	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 17:53:08.971	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 17:53:08.971	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 17:53:08.971	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 17:53:08.978	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:82	router register success
+[looklook/admin]2022/02/12 - 17:53:08.979	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 17:55:39.504	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 17:55:39.505	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 17:55:39.505	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 17:55:39.506	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 17:55:39.510	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 17:55:39.510	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 18:07:06.976	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 18:07:06.993	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 18:07:06.993	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 18:07:06.994	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 18:07:07.001	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 18:07:07.001	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 18:09:56.582	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 18:09:56.584	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 18:09:56.584	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 18:09:56.584	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 18:09:56.592	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 18:09:56.592	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 18:10:27.817	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 18:10:27.818	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 18:10:27.819	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 18:10:27.819	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 18:10:27.823	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 18:10:27.823	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 18:34:32.465	[34minfo[0m	/Users/seven/Developer/goenv/go-zero-looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 18:53:00.527	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 18:53:00.531	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 18:53:00.532	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 18:53:00.535	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 18:53:00.536	[34minfo[0m	/go/src/github.com/looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 19:10:43.002	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 19:14:02.847	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 19:14:02.868	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 19:14:02.869	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 19:14:02.870	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 19:14:02.878	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 19:14:02.879	[34minfo[0m	/go/src/github.com/looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 19:30:33.624	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 19:30:33.636	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 19:30:33.636	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 19:30:33.638	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 19:30:33.643	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 19:30:33.644	[34minfo[0m	/go/src/github.com/looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}
+[looklook/admin]2022/02/12 - 19:43:00.320	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/gorm.go:59	register table success
+[looklook/admin]2022/02/12 - 19:43:00.350	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:31	use middleware logger
+[looklook/admin]2022/02/12 - 19:43:00.351	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:35	use middleware cors
+[looklook/admin]2022/02/12 - 19:43:00.352	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:37	register swagger handler
+[looklook/admin]2022/02/12 - 19:43:00.354	[34minfo[0m	/go/src/github.com/looklook/admin/initialize/router.go:85	router register success
+[looklook/admin]2022/02/12 - 19:43:00.354	[34minfo[0m	/go/src/github.com/looklook/admin/core/server.go:41	server run success on 	{"address": ":8888"}

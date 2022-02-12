@@ -4,7 +4,7 @@ version: '3'
 services:
 
   #网关nginx
-  nginx:
+  nginx-gateway:
     image: nginx:1.21.5
     container_name: nginx-gateway
     restart: always
@@ -19,14 +19,53 @@ services:
     networks:
       - looklook_net
     depends_on:
-      - identity-api
-      - usercenter-api
-      - travel-api
-      - order-api
-      - payment-api
+      - admin-api
+#      - usercenter-api
+#      - travel-api
+#      - order-api
+#      - payment-api
+#      - payment-api
 
 
   ########################################    业务   ########################################
+
+  #总后台api , admin只有一个api聚合，不走nginx-gateway网关了，直接暴露端口访问就好了
+  admin-api:
+    image: cosmtrek/air:latest
+    container_name: admin-api
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      GOPROXY: https://goproxy.cn,direct
+    working_dir: /go/src/github.com/looklook/admin
+    ports:
+      - 7080:8080
+      - 7888:8888
+      - 7081:8081
+    volumes:
+      - .:/go/src/github.com/looklook
+    privileged: true
+    restart: always
+    networks:
+      - looklook_net
+    depends_on:
+      - banner-rpc
+
+  #为后台api提供数据的测试服务
+  banner-rpc:
+    image: cosmtrek/air:latest
+    container_name: banner-rpc
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      GOPROXY: https://goproxy.cn,direct
+    working_dir: /go/src/github.com/looklook/app/banner/cmd/rpc
+    volumes:
+      - .:/go/src/github.com/looklook
+    privileged: true
+    restart: always
+    networks:
+      - looklook_net
 
   #认证服务、颁发token
   identity-rpc:
@@ -261,6 +300,7 @@ services:
     restart: always
     networks:
       - looklook_net
+
 
 
 networks:

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+//本服务不会继续实现，只是用来演示与后台admin模块调用，留给开发者自己完成实现
+
+message Banner {
+  int64 id = 1;
+  string title = 2;
+  string forward = 3;
+  string img = 4;
+}
+
+message BannerInfoReq {
+  int64 id = 1;
+}
+message BannerInfoResp {
+  Banner banner = 1;
+}
+
+//广告
+service bannerSrv {
+  //广告详情
+  rpc bannerInfo(BannerInfoReq) returns(BannerInfoResp);
+}

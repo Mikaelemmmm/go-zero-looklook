@@ -51,6 +51,9 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 项目目录结构如下：
 
+-  admin：后台代码（整合了gin-vue-admin，充当一个后台大网关），使用grpc与app下的rpc业务交互，后台gin-vue-admin与go-zero的代码交互在banner功能上有个例子可以查看
+- admin/web : 后台web端代码，gin-vue-admin的
+
 
 - app：所有业务代码包含api、rpc以及mq（消息队列、延迟队列、定时任务）
 
@@ -156,6 +159,18 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 gitlab + jenkins + harbor + k8s
 
 在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->组懂构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nignx做网关统一入口、鉴权、限流等
+
+
+
+## 感谢
+
+go-zero 微服务: https://github.com/zeromicro/go-zero
+
+dtm分布式事务：https://github.com/dtm-labs/dtm
+
+gin-vue-admin后台：https://github.com/flipped-aurora/gin-vue-admin
+
+
 
 
 
