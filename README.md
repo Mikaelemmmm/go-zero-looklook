@@ -51,7 +51,7 @@ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 项目目录结构如下：
 
--  admin：后台代码（整合了gin-vue-admin，充当一个后台大网关），使用grpc与app下的rpc业务交互，后台gin-vue-admin与go-zero的代码交互在banner功能上有个例子可以查看
+-  admin：后台代码（整合了gin-vue-admin，充当一个后台大网关），使用grpc与app下的rpc业务交互，后台gin-vue-admin与go-zero的代码交互在banner功能上有个例子可以查看，如果不想要后台，直接删除admin整个文件夹即可
 - admin/web : 后台web端代码，gin-vue-admin的
 
 
