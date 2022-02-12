@@ -30,6 +30,7 @@
 - docker-compose
 - mysql
 - redis
+- gin-vue-admin
 
 
 
