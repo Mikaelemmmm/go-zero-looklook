@@ -16,7 +16,7 @@ api被很多同学理解成了网关，实际意义上来说当你的项目在�
 
 【注】：在看这里的时候，建议先看一下前一节的业务架构图
 
-![nignx-svc](./images/2/nignx-svc.jpg)
+![nignx-svc](./images/2/nginx-gateway.jpg)
 
 本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（设计到资产的最好业务内部做二次鉴权，主要多一层安全），nignx的网关配置在项目的data/nginx/conf.d/looklook-gateway.conf
 
