@@ -10,8 +10,8 @@ import (
 	"github.com/zeromicro/go-zero/core/service"
 )
 
-//kq
-//消息队列
+// kq
+// 消息队列
 func KqMqs(c config.Config, ctx context.Context, svcContext *svc.ServiceContext) []service.Service {
 
 	return []service.Service{
