@@ -39,7 +39,7 @@ func (l *HomestayDetailLogic) HomestayDetail(req types.HomestayDetailReq) (*type
 	var typeHomestay types.Homestay
 	if homestayResp.Homestay != nil {
 
-		//整合民宿详情
+		// 整合民宿详情
 		_ = copier.Copy(&typeHomestay, homestayResp.Homestay)
 
 		typeHomestay.FoodPrice = tool.Fen2Yuan(homestayResp.Homestay.FoodPrice)

@@ -1,6 +1,6 @@
 package config
 
-//微信支付配置
+// 微信支付配置
 type WxPayConf struct {
 	MchId      string `json:"MchId"`      //微信商户id
 	SerialNo   string `json:"SerialNo"`   //商户证书的证书序列号

@@ -24,7 +24,7 @@ func main() {
 	defer server.Stop()
 
 	// 全局中间件
-	//将nginx网关验证后的userId设置到ctx中
+	// 将nginx网关验证后的userId设置到ctx中
 	server.Use(middleware.NewSetUidToCtxMiddleware().Handle)
 
 	handler.RegisterHandlers(server, ctx)

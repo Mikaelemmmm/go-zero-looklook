@@ -29,7 +29,7 @@ func NewGuessListLogic(ctx context.Context, svcCtx *svc.ServiceContext) GuessLis
 
 func (l *GuessListLogic) GuessList(req types.GuessListReq) (*types.GuessListResp, error) {
 
-	//@todo 先返回所有列表数据 ， 后续根据当前标签关联相同属性的民宿推荐给用户.
+	// @todo 先返回所有列表数据 ， 后续根据当前标签关联相同属性的民宿推荐给用户.
 
 	var resp []types.Homestay
 

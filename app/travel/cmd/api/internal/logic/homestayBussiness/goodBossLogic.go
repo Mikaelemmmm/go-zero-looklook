@@ -31,7 +31,7 @@ func NewGoodBossLogic(ctx context.Context, svcCtx *svc.ServiceContext) GoodBossL
 
 func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, error) {
 
-	//获取10个最佳房东.
+	// 获取10个最佳房东.
 	userIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(0, 10, model.HomestayActivityGoodBusiType, model.HomestayActivityUpStatus)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v ", req, err)
@@ -63,7 +63,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 				var typesHomestayBusiness types.HomestayBusinessBoss
 				_ = copier.Copy(&typesHomestayBusiness, item)
 
-				//计算star todo
+				// 计算star todo
 				resp = append(resp, typesHomestayBusiness)
 			}
 		})

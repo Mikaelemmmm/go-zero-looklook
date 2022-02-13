@@ -31,10 +31,10 @@ message ValidateTokenResp {
 }
 
 service identity {
-  //生成token，只针对用户服务开放访问
+  // 生成token，只针对用户服务开放访问
   rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
-  //清除token，只针对用户服务开放访问
+  // 清除token，只针对用户服务开放访问
   rpc clearToken(ClearTokenReq) returns(ClearTokenResp);
-  //validateToken ，只很对用户服务、授权服务api开放
+  // validateToken ，只很对用户服务、授权服务api开放
   rpc validateToken(ValidateTokenReq) returns(ValidateTokenResp);
 }

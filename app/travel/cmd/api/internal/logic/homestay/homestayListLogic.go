@@ -31,7 +31,7 @@ func NewHomestayListLogic(ctx context.Context, svcCtx *svc.ServiceContext) Homes
 	}
 }
 
-//获取民宿列表
+// 获取民宿列表
 func (l *HomestayListLogic) HomestayList(req types.HomestayListReq) (*types.HomestayListResp, error) {
 
 	switch req.RowType {
@@ -40,17 +40,17 @@ func (l *HomestayListLogic) HomestayList(req types.HomestayListReq) (*types.Home
 	}
 }
 
-//活动民宿
+// 活动民宿
 func (l *HomestayListLogic) getActivityList(req types.HomestayListReq) (*types.HomestayListResp, error) {
 
-	//获取活动数据id集合.
+	// 获取活动数据id集合.
 	homestayIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(req.LastId, req.PageSize, req.RowType, model.HomestayActivityUpStatus)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "rowType: %s ,err : %v", req.RowType, err)
 	}
 
 	var resp []types.Homestay
-	if len(homestayIds) > 0 { //mr从缓存中捞数据
+	if len(homestayIds) > 0 { // mr从缓存中捞数据
 		mr.MapReduceVoid(func(source chan<- interface{}) {
 			for _, id := range homestayIds {
 				source <- id
@@ -60,7 +60,7 @@ func (l *HomestayListLogic) getActivityList(req types.HomestayListReq) (*types.H
 
 			homestay, err := l.svcCtx.HomestayModel.FindOne(id)
 			if err != nil && err != model.ErrNotFound {
-				//列表数据不返回错误，记录日志即可.
+				// 列表数据不返回错误，记录日志即可.
 				logx.WithContext(l.ctx).Errorf("ActivityHomestayListLogic ActivityHomestayList 获取活动数据失败 id : %d ,err : %v", id, err)
 				return
 			}

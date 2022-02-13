@@ -30,7 +30,7 @@ func TokenHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			err = errors.Wrapf(ErrTokenExpireError, "jwtAuthHandler JWT Auth no err , userId is zero , req:%+v,resp:%+v", req, resp)
 		}
 
-		XUser := "0" //ide会有警告，实际resp不会为nil
+		XUser := "0" // ide会有警告，实际resp不会为nil
 		if resp != nil {
 			XUser = fmt.Sprintf("%d", resp.UserId)
 		}

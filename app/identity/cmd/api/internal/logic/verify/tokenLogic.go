@@ -45,8 +45,8 @@ func (l *TokenLogic) Token(req types.VerifyTokenReq, r *http.Request) (*types.Ve
 
 	var resultUserId int64
 	if l.urlNoAuth(realRequestPath) {
-		//不需要登陆的页面.
-		if len(authorization) > 0 { //如果有传递token，就验证解析出来uid，没有token不验证..
+		// 不需要登陆的页面.
+		if len(authorization) > 0 { // 如果有传递token，就验证解析出来uid，没有token不验证..
 			userId, err := l.isPass(r)
 			if err != nil {
 				logx.WithContext(l.ctx).Errorf("authorization:%s, realRequestPath:%s", authorization, realRequestPath)
@@ -59,7 +59,7 @@ func (l *TokenLogic) Token(req types.VerifyTokenReq, r *http.Request) (*types.Ve
 			resultUserId = userId
 		}
 	} else {
-		//需要登陆的页面.
+		// 需要登陆的页面.
 		userId, err := l.isPass(r)
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("authorization:%s, realRequestPath:%s", authorization, realRequestPath)
@@ -78,7 +78,7 @@ func (l *TokenLogic) Token(req types.VerifyTokenReq, r *http.Request) (*types.Ve
 	}, nil
 }
 
-//获取token.
+// 获取token.
 func (l *TokenLogic) getJwtToken(secretKey string, iat, seconds, userId int64) (string, error) {
 
 	claims := make(jwt.MapClaims)
@@ -90,7 +90,7 @@ func (l *TokenLogic) getJwtToken(secretKey string, iat, seconds, userId int64) (
 	return t.SignedString([]byte(secretKey))
 }
 
-//当前url是否需要授权验证
+// 当前url是否需要授权验证
 func (l *TokenLogic) urlNoAuth(path string) bool {
 	for _, val := range l.svcCtx.Config.NoAuthUrls {
 		if val == path {
@@ -100,7 +100,7 @@ func (l *TokenLogic) urlNoAuth(path string) bool {
 	return false
 }
 
-//当前url是否需要授权验证.
+// 当前url是否需要授权验证.
 func (l *TokenLogic) isPass(r *http.Request) (int64, error) {
 
 	parser := token.NewTokenParser()
@@ -110,9 +110,9 @@ func (l *TokenLogic) isPass(r *http.Request) (int64, error) {
 		return 0, errors.Wrapf(ValidateTokenError, "JwtAuthLogic isPass  ParseToken err : %v", err)
 	}
 	if tok.Valid {
-		claims, ok := tok.Claims.(jwt.MapClaims) //解析token中对内容
+		claims, ok := tok.Claims.(jwt.MapClaims) // 解析token中对内容
 		if ok {
-			userId, _ := claims[ctxdata.CtxKeyJwtUserId].(json.Number).Int64() //获取userId 并且到后端redis校验是否过期
+			userId, _ := claims[ctxdata.CtxKeyJwtUserId].(json.Number).Int64() // 获取userId 并且到后端redis校验是否过期
 			if userId <= 0 {
 				return 0, errors.Wrapf(ValidateTokenError, "JwtAuthLogic.isPass invalid userId  tokRaw:%s , tokValid :%v ,userId:%d ", tok.Raw, tok.Valid, userId)
 			}
