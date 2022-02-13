@@ -5,7 +5,8 @@ package {{.filePackage}}
 import (
 	"context"
 
-	{{.package}}
+    {{.pbPackage}}
+    {{if ne .pbPackage .protoGoPackage}}{{.protoGoPackage}}{{end}}
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

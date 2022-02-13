@@ -10,6 +10,7 @@ import (
 
 type {{.server}}Server struct {
 	svcCtx *svc.ServiceContext
+	{{.unimplementedServer}}
 }
 
 func New{{.server}}Server(svcCtx *svc.ServiceContext) *{{.server}}Server {
