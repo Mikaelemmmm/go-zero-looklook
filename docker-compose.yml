@@ -20,11 +20,11 @@ services:
       - looklook_net
     depends_on:
       - admin-api
-#      - usercenter-api
-#      - travel-api
-#      - order-api
-#      - payment-api
-#      - payment-api
+      - usercenter-api
+      - travel-api
+      - order-api
+      - payment-api
+      - payment-api
 
 
   ########################################    业务   ########################################
