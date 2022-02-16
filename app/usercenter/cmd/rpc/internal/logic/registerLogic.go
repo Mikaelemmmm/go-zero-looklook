@@ -48,7 +48,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		if len(user.Nickname) == 0 {
 			user.Nickname = tool.Krand(tool.KC_RAND_KIND_ALL, 8)
 		}
-		if len(user.Password) > 0 {
+		if len(in.Password) > 0 {
 			user.Password = tool.Md5ByString(in.Password)
 		}
 		insertResult, err := l.svcCtx.UserModel.Insert(session, user)

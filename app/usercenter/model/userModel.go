@@ -70,7 +70,7 @@ func (m *defaultUserModel) Insert(session sqlx.Session, data *User) (sql.Result,
 		if session != nil {
 			return session.Exec(query, data.Mobile, data.Nickname, data.Password)
 		}
-		return conn.Exec(query, data.Mobile, data.Nickname)
+		return conn.Exec(query, data.Mobile, data.Nickname,data.Password)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
 
 }
