@@ -19,11 +19,10 @@ services:
     networks:
       - looklook_net
     depends_on:
-      - admin-api
+      - identity-api
       - usercenter-api
       - travel-api
       - order-api
-      - payment-api
       - payment-api
 
 
