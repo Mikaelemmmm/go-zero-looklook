@@ -1,4 +1,4 @@
-### 一、使用nginx做网关
+### 二、使用nginx做网关
 
 本项目地址 :  https://github.com/Mikaelemmmm/go-zero-looklook
 
