@@ -12,7 +12,7 @@ Prometheus:
 #链路追踪
 Telemetry:
   Name: order-api
-  Endpoint: http://jager_collector:14268/api/traces
+  Endpoint: http://jaeger:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
 
@@ -24,7 +24,7 @@ OrderRpcConf:
 PaymentRpcConf:
   Endpoints:
     - payment-rpc:9005
-    
+
 Log:
   ServiceName: order-api
   Level: error
