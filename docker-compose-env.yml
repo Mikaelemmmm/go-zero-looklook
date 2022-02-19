@@ -202,7 +202,7 @@ services:
     image: redis:6.2.5
     container_name: redis
     ports:
-      - 63799:6379
+      - 36379:6379
     environment:
       # 时区上海
       TZ: Asia/Shanghai
