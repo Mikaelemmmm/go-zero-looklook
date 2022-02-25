@@ -31,6 +31,10 @@
 - mysql
 - redis
 - gin-vue-admin
+- air
+- jenkins
+- gitlab
+- harbor
 
 
 
