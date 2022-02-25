@@ -35,7 +35,7 @@
 
 
 ## 项目文档
-（地址一）https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+（地址一）https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc 即该项目的doc目录下
 
 （地址二）go-zero官方微信公众号（微服务从代码到k8s部署应有尽有系列）
 
