@@ -39,7 +39,7 @@
 
 （地址二）go-zero官方微信公众号（微服务从代码到k8s部署应有尽有系列）
 
-【注】另外，go-zero的知识点在这都能找到
+【注】go-zero的相关资料、知识点在这都能找到
 
 ![go-zero-public-qcode](./doc/images/1/go-zero-public-qcode.jpeg)
 
