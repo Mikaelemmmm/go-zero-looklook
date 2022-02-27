@@ -92,7 +92,8 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es
   go-stash:
-    image: kevinwan/go-stash:latest
+    image: kevinwan/kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
+#    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
     container_name: go-stash
     environment:
       # 时区上海
@@ -145,9 +146,10 @@ services:
     ports:
       - 9092:9092
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      TZ: Asia/Shanghai
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+      - TZ=Asia/Shanghai
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -172,7 +174,7 @@ services:
       - redis
 
   mysql:
-    image: mysql:8.0.24
+    image: mysql/mysql-server:8.0.28
     container_name: mysql
     environment:
       # 时区上海
