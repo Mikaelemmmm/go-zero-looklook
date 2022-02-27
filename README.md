@@ -64,7 +64,7 @@
 
 项目目录结构如下：
 
--  admin：后台代码（整合了gin-vue-admin，充当一个后台大网关），使用grpc与app下的rpc业务交互，后台gin-vue-admin与go-zero的代码交互在banner功能上有个例子可以查看，如果不想要后台，直接删除admin整个文件夹即可
+-  admin：后台代码（整合了gin-vue-admin，充当一个后台大网关），使用grpc与app下的rpc业务交互，后台gin-vue-admin与go-zero的代码交互在banner功能上有个例子可以查看，如果不想要后台，直接删除admin整个文件夹，在执行一次 go mod tidy即可
 - admin/web : 后台web端代码，gin-vue-admin的
 
 
@@ -171,7 +171,7 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 gitlab + jenkins + harbor + k8s
 
-在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->组懂构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nignx做网关统一入口、鉴权、限流等
+在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->自动构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nignx做网关统一入口、鉴权、限流等
 
 
 
