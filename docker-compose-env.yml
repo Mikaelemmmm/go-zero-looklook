@@ -92,8 +92,8 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es
   go-stash:
-    image: kevinwan/kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
-#    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
+#    image: kevinwan/kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
+    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
     container_name: go-stash
     environment:
       # 时区上海
@@ -117,6 +117,7 @@ services:
       TZ: Asia/Shanghai
     user: root
     restart: always
+    entrypoint: "filebeat -e -strict.perms=false"  #解决配置文件权限问题
     volumes:
       - ./deploy/filebeat/conf/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - /var/lib/docker/containers:/var/lib/docker/containers
