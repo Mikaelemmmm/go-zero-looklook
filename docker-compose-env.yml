@@ -95,7 +95,7 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es
   go-stash:
-    image: kevinwan/kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
+    image: kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
 #    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
     container_name: go-stash
     environment:
