@@ -7,6 +7,7 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
+    restart: always
     ports:
       - "5775:5775/udp"
       - "6831:6831/udp"
@@ -47,6 +48,7 @@ services:
     image: grafana/grafana:8.0.6
     container_name: grafana
     hostname: grafana
+    user: root
     environment:
       # 时区上海
       TZ: Asia/Shanghai
@@ -62,6 +64,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     container_name: elasticsearch
+    user: root
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -92,7 +95,8 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es
   go-stash:
-    image: kevinwan/go-stash:latest
+    image: kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
+#    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
     container_name: go-stash
     environment:
       # 时区上海
@@ -116,6 +120,7 @@ services:
       TZ: Asia/Shanghai
     user: root
     restart: always
+    entrypoint: "filebeat -e -strict.perms=false"  #解决配置文件权限问题
     volumes:
       - ./deploy/filebeat/conf/filebeat.yml:/usr/share/filebeat/filebeat.yml
       # 此处需指定docker的containers目录，取决于你docker的配置
@@ -148,9 +153,10 @@ services:
     ports:
       - 9092:9092
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      TZ: Asia/Shanghai
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+      - TZ=Asia/Shanghai
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -175,7 +181,7 @@ services:
       - redis
 
   mysql:
-    image: mysql:8.0.24
+    image: mysql/mysql-server:8.0.28
     container_name: mysql
     environment:
       # 时区上海
