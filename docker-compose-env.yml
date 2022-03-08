@@ -123,6 +123,9 @@ services:
     entrypoint: "filebeat -e -strict.perms=false"  #解决配置文件权限问题
     volumes:
       - ./deploy/filebeat/conf/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      # 此处需指定docker的containers目录，取决于你docker的配置
+      # 如snap安装的docker，则为/var/snap/docker/common/var-lib-docker/containers
+      # - /var/snap/docker/common/var-lib-docker/containers:/var/lib/docker/containers
       - /var/lib/docker/containers:/var/lib/docker/containers
     networks:
       - looklook_net

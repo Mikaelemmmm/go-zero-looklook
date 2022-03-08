@@ -14,11 +14,13 @@
 # 1）goctl >= 1.3 进入"服务/cmd/rpc/pb"目录下，执行下面命令
 #    goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
 #    去除proto中的json的omitempty
-#    sed -i "" 's/,omitempty//g' *.pb.go
+#    mac: sed -i "" 's/,omitempty//g' *.pb.go
+#    linux: sed -i 's/,omitempty//g' *.pb.go
 # 2）goctl < 1.3 进入"服务/cmd"目录下，执行下面命令
 #    goctl rpc proto -src rpc/pb/*.proto -dir ./rpc -style=goZero
 #    去除proto中的json的omitempty
-#    sed -i "" 's/,omitempty//g'  ./rpc/pb/*.pb.go
+#    mac: sed -i "" 's/,omitempty//g'  ./rpc/pb/*.pb.go
+#    linux: sed -i 's/,omitempty//g'  ./rpc/pb/*.pb.go
 
 
 
