@@ -24,6 +24,14 @@ Redis:
   Type: node
   Pass: G62m50oigInC30sf
 
-KqServerConf:
+#支付成功回调通知
+KqPaymentUpdatePayStatusConf:
   Brokers:
     - kafka:9092
+  Topic: payment-update-paystatus-topic
+
+#修改订单状态后发送小程序通知用户
+KqSendWxMiniTplMessageConf:
+  Brokers:
+    - kafka:9092
+  Topic: send-wx-mini-tpl-message

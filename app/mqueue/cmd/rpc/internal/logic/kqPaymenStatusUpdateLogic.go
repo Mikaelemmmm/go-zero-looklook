@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"looklook/common/xerr"
+	"encoding/json"
 
 	"looklook/app/mqueue/cmd/rpc/internal/svc"
 	"looklook/app/mqueue/cmd/rpc/pb"
@@ -32,7 +35,13 @@ func (l *KqPaymenStatusUpdateLogic) KqPaymenStatusUpdate(in *pb.KqPaymenStatusUp
 		PayStatus: in.PayStatus,
 	}
 
-	if err := l.svcCtx.KqueueClient.Push(kqueue.PAYMENT_UPDATE_PAYSTATUS, m); err != nil {
+	//2、序列化
+	body, err := json.Marshal(m)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrMsg("kq kqPaymenStatusUpdateLogic  task marshal error "), "kq kqPaymenStatusUpdateLogic  task marshal error , v : %+v", m)
+	}
+
+	if err := l.svcCtx.KqueuePaymentUpdatePayStatusClient.Push(string(body)); err != nil {
 		return nil, err
 	}
 

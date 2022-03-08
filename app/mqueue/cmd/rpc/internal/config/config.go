@@ -5,7 +5,6 @@ import "github.com/zeromicro/go-zero/zrpc"
 type Config struct {
 	zrpc.RpcServerConf
 
-	KqServerConf struct {
-		Brokers []string
-	}
+	KqPaymentUpdatePayStatusConf KqConfig
+	KqSendWxMiniTplMessageConf KqConfig
 }

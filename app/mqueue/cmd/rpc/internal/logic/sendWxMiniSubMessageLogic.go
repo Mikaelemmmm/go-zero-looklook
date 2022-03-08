@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"looklook/common/xerr"
+	"encoding/json"
 
 	"looklook/app/mqueue/cmd/rpc/internal/svc"
 	"looklook/app/mqueue/cmd/rpc/pb"
@@ -34,7 +37,13 @@ func (l *SendWxMiniSubMessageLogic) SendWxMiniSubMessage(in *pb.SendWxMiniSubMes
 		Page:       in.Page,
 	}
 
-	if err := l.svcCtx.KqueueClient.Push(kqueue.SEND_WX_MINI_TPL_MESSAGE, m); err != nil {
+	//2、序列化
+	body, err := json.Marshal(m)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrMsg("kq sendWxMiniSubMessageLogic task marshal error "), "kq sendWxMiniSubMessageLogic task marshal error , v : %+v", m)
+	}
+
+	if err := l.svcCtx.KqueueSendWxMiniTplMessageClient.Push(string(body)); err != nil {
 		return nil, err
 	}
 
