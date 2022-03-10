@@ -30,7 +30,7 @@ services:
 
   #总后台api , admin只有一个api聚合，不走nginx-gateway网关了，直接暴露端口访问就好了
   admin-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: admin-api
     environment:
       # 时区上海
@@ -52,7 +52,7 @@ services:
 
   #为后台api提供数据的测试服务
   banner-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: banner-rpc
     environment:
       # 时区上海
@@ -68,7 +68,7 @@ services:
 
   #认证服务、颁发token
   identity-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: identity-rpc
     environment:
       # 时区上海
@@ -84,7 +84,7 @@ services:
 
   #认证服务api
   identity-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: identity-api
     environment:
       # 时区上海
@@ -102,7 +102,7 @@ services:
 
   #用户服务grpc
   usercenter-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: usercenter-rpc
     environment:
       # 时区上海
@@ -120,7 +120,7 @@ services:
 
   #用户服务api
   usercenter-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: usercenter-api
     environment:
       # 时区上海
@@ -139,7 +139,7 @@ services:
 
   #旅行服务rpc
   travel-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: travel-rpc
     environment:
       # 时区上海
@@ -155,7 +155,7 @@ services:
 
   #旅行服务api
   travel-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: travel-api
     environment:
       # 时区上海
@@ -174,7 +174,7 @@ services:
 
   #订单服务rpc
   order-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: order-rpc
     environment:
       # 时区上海
@@ -193,7 +193,7 @@ services:
 
   #订单服务api
   order-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: order-api
     environment:
       # 时区上海
@@ -212,7 +212,7 @@ services:
 
   #订单服务消息队列、延迟队列
   order-mq:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: order-mq
     environment:
       # 时区上海
@@ -232,7 +232,7 @@ services:
 
   #支付服务rpc
   payment-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: payment-rpc
     environment:
       # 时区上海
@@ -250,7 +250,7 @@ services:
 
   #支付服务api
   payment-api:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: payment-api
     environment:
       # 时区上海
@@ -270,7 +270,7 @@ services:
 
   #内部消息队列、延迟消息队列
   mqueue-rpc:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: mqueue-rpc
     environment:
       # 时区上海
@@ -286,7 +286,7 @@ services:
 
   #内部消息服务(发送手机、邮件、微信模版消息)
   message-mq:
-    image: cosmtrek/air:latest
+    image: cosmtrek/air:v1.28.0
     container_name: message-mq
     environment:
       # 时区上海
