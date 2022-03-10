@@ -6,7 +6,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3004
   Path: /metrics
 
 #链路追踪
@@ -39,12 +39,15 @@ PaymentUpdateStatusConf:
 #rpc
 OrderRpcConf:
   Endpoints:
-    - order-rpc:9004
+    - 127.0.0.1:9004
+  NonBlock: true
 
 MqueueRpcConf:
   Endpoints:
-    - mqueue-rpc:9006
+    - 127.0.0.1:9006
+  NonBlock: true
 
 UsercenterRpcConf:
   Endpoints:
-    - usercenter-rpc:9002
+    - 127.0.0.1:9002
+  NonBlock: true

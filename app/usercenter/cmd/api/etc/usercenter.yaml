@@ -6,7 +6,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3005
   Path: /metrics
 
 #链路追踪
@@ -32,9 +32,11 @@ WxMiniConf:
 #rpc service
 UsercenterRpcConf:
   Endpoints:
-    - usercenter-rpc:9002
+    - 127.0.0.1:9002
+  NonBlock: true
 
 IdentityRpcConf:
   Endpoints:
-    - identity-rpc:9001
+    - 127.0.0.1:9001
+  NonBlock: true
 

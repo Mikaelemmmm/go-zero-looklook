@@ -2,17 +2,15 @@ package logic
 
 import (
 	"context"
-	"looklook/common/tool"
-
+	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"looklook/app/identity/cmd/rpc/identity"
 	"looklook/app/usercenter/cmd/rpc/internal/svc"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 	"looklook/app/usercenter/model"
+	"looklook/common/tool"
 	"looklook/common/xerr"
-
-	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 var ErrUserAlreadyRegisterError = xerr.NewErrMsg("该用户已被注册")

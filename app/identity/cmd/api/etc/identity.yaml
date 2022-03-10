@@ -9,7 +9,7 @@ Log:
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3013
   Path: /metrics
 
 #链路追踪
@@ -44,6 +44,7 @@ NoAuthUrls:
 #rpc service.
 IdentityRpcConf:
   Endpoints:
-    - identity-rpc:9001
+    - 127.0.0.1:9001
+  NonBlock: true
 
 

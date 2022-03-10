@@ -6,7 +6,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3009
   Path: /metrics
 
 #链路追踪
@@ -46,12 +46,15 @@ WxPayConf:
 #rpc service
 PaymentRpcConf:
   Endpoints:
-    - payment-rpc:9005
+    - 127.0.0.1:9005
+  NonBlock: true
 
 OrderRpcConf:
   Endpoints:
-    - order-rpc:9004
+    - 127.0.0.1:9004
+  NonBlock: true
 
 UsercenterRpcConf:
   Endpoints:
-    - usercenter-rpc:9002
+    - 127.0.0.1:9002
+  NonBlock: true

@@ -2,6 +2,7 @@ package homestayBussiness
 
 import (
 	"context"
+	"github.com/Masterminds/squirrel"
 
 	"looklook/app/travel/cmd/api/internal/svc"
 	"looklook/app/travel/cmd/api/internal/types"
@@ -32,17 +33,22 @@ func NewGoodBossLogic(ctx context.Context, svcCtx *svc.ServiceContext) GoodBossL
 func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, error) {
 
 	// 获取10个最佳房东.
-	userIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(0, 10, model.HomestayActivityGoodBusiType, model.HomestayActivityUpStatus)
+
+	whereBuilder := l.svcCtx.HomestayActivityModel.RowBuilder().Where(squirrel.Eq{
+		"row_type":  model.HomestayActivityGoodBusiType,
+		"row_status" : model.HomestayActivityUpStatus,
+	})
+	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(whereBuilder,0, 10,"data_id desc")
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v ", req, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取10个最佳房东. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
 	}
 
 	var resp []types.HomestayBusinessBoss
-	if len(userIds) > 0 {
+	if len(homestayActivityList) > 0 {
 
 		mr.MapReduceVoid(func(source chan<- interface{}) {
-			for _, id := range userIds {
-				source <- id
+			for _, homestayActivity := range homestayActivityList {
+				source <- homestayActivity.DataId
 			}
 		}, func(item interface{}, writer mr.Writer, cancel func(error)) {
 			id := item.(int64)

@@ -2,7 +2,7 @@ package homestay
 
 import (
 	"context"
-
+	"github.com/Masterminds/squirrel"
 	"looklook/app/travel/cmd/api/internal/svc"
 	"looklook/app/travel/cmd/api/internal/types"
 	"looklook/app/travel/model"
@@ -34,26 +34,21 @@ func NewHomestayListLogic(ctx context.Context, svcCtx *svc.ServiceContext) Homes
 // 获取民宿列表
 func (l *HomestayListLogic) HomestayList(req types.HomestayListReq) (*types.HomestayListResp, error) {
 
-	switch req.RowType {
-	default:
-		return l.getActivityList(req)
-	}
-}
-
-// 活动民宿
-func (l *HomestayListLogic) getActivityList(req types.HomestayListReq) (*types.HomestayListResp, error) {
-
-	// 获取活动数据id集合.
-	homestayIds, err := l.svcCtx.HomestayActivityModel.FindPageByRowTypeStatus(req.LastId, req.PageSize, req.RowType, model.HomestayActivityUpStatus)
+	// 获取活动民宿id集合.
+	whereBuilder := l.svcCtx.HomestayActivityModel.RowBuilder().Where(squirrel.Eq{
+		"row_type": model.HomestayActivityPreferredType,
+		"row_status" : model.HomestayActivityUpStatus,
+	})
+	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(whereBuilder,req.Page, req.PageSize,"data_id desc")
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "rowType: %s ,err : %v", req.RowType, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取活动民宿id集合出错 rowType: %s ,err : %v", model.HomestayActivityPreferredType, err)
 	}
 
 	var resp []types.Homestay
-	if len(homestayIds) > 0 { // mr从缓存中捞数据
+	if len(homestayActivityList) > 0 { // mr从缓存中捞数据
 		mr.MapReduceVoid(func(source chan<- interface{}) {
-			for _, id := range homestayIds {
-				source <- id
+			for _, homestayActivity := range homestayActivityList {
+				source <- homestayActivity.DataId
 			}
 		}, func(item interface{}, writer mr.Writer, cancel func(error)) {
 			id := item.(int64)
@@ -85,3 +80,4 @@ func (l *HomestayListLogic) getActivityList(req types.HomestayListReq) (*types.H
 		List: resp,
 	}, nil
 }
+

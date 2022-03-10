@@ -1,17 +1,17 @@
 /*
  Navicat MySQL Data Transfer
 
- Source Server         : marketing-dev
+ Source Server         : looklook
  Source Server Type    : MySQL
- Source Server Version : 80024
- Source Host           : mkdevecs:33069
+ Source Server Version : 80028
+ Source Host           : 127.0.0.1:33069
  Source Schema         : looklook_payment
 
  Target Server Type    : MySQL
- Target Server Version : 80024
+ Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 21/12/2021 00:10:57
+ Date: 10/03/2022 17:14:12
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `third_payment` (
   `user_id` bigint NOT NULL DEFAULT '0' COMMENT '用户id',
   `pay_mode` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '支付方式 1:微信支付',
   `trade_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '第三方支付类型',
-  `trade_state` varchar(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '第三方交易状态',
+  `trade_state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '第三方交易状态',
   `pay_total` bigint NOT NULL DEFAULT '0' COMMENT '支付总金额(分)',
   `transaction_id` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '第三方支付单号',
   `trade_state_desc` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '支付状态描述',

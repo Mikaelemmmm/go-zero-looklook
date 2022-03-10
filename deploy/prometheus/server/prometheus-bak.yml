@@ -1,0 +1,103 @@
+global:
+  scrape_interval:
+  external_labels:
+    monitor: 'codelab-monitor'
+
+# 这里表示抓取对象的配置
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s  #重写了全局抓取间隔时间，由15秒重写成5秒
+    static_configs:
+      - targets: ['127.0.0.1:9090']
+
+  - job_name: 'order-api'
+    static_configs:
+      - targets: ['order-api:9091']
+        labels:
+          job: order-api
+          app: order-api
+          env: dev
+  - job_name: 'order-rpc'
+    static_configs:
+      - targets: ['order-rpc:9091']
+        labels:
+          job: order-rpc
+          app: order-rpc
+          env: dev
+  - job_name: 'order-mq'
+    static_configs:
+      - targets: ['order-mq:9091']
+        labels:
+          job: order-mq
+          app: order-mq
+          env: dev
+  - job_name: 'usercenter-api'
+    static_configs:
+      - targets: ['usercenter-api:9091']
+        labels:
+          job: usercenter-api
+          app: usercenter-api
+          env: dev
+  - job_name: 'usercenter-rpc'
+    static_configs:
+      - targets: ['usercenter-rpc:9091']
+        labels:
+          job: usercenter-rpc
+          app: usercenter-rpc
+          env: dev
+  - job_name: 'travel-api'
+    static_configs:
+      - targets: ['travel-api:9091']
+        labels:
+          job: travel-api
+          app: travel-api
+          env: dev
+  - job_name: 'travel-rpc'
+    static_configs:
+      - targets: ['travel-rpc:9091']
+        labels:
+          job: travel-rpc
+          app: travel-rpc
+          env: dev
+  - job_name: 'payment-api'
+    static_configs:
+      - targets: ['payment-api:9091']
+        labels:
+          job: payment-api
+          app: payment-api
+          env: dev
+  - job_name: 'payment-rpc'
+    static_configs:
+      - targets: ['payment-rpc:9091']
+        labels:
+          job: payment-rpc
+          app: payment-rpc
+          env: dev
+  - job_name: 'mqueue-rpc'
+    static_configs:
+      - targets: ['mqueue-rpc:9091']
+        labels:
+          job: mqueue-rpc
+          app: mqueue-rpc
+          env: dev
+  - job_name: 'message-mq'
+    static_configs:
+      - targets: ['message-mq:9091']
+        labels:
+          job: message-mq
+          app: message-mq
+          env: dev
+  - job_name: 'identity-api'
+    static_configs:
+      - targets: ['identity-api:9091']
+        labels:
+          job: identity-api
+          app: identity-api
+          env: dev
+  - job_name: 'identity-rpc'
+    static_configs:
+      - targets: [ 'identity-rpc:9091' ]
+        labels:
+          job: identity-rpc
+          app: identity-rpc
+          env: dev

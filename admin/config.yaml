@@ -88,7 +88,7 @@ mysql:
   path: mysql
   port: "3306"
   config: charset=utf8mb4&parseTime=True&loc=Local
-  db-name: looklook-admin
+  db-name: looklook_admin
   username: root
   password: PXDN93VRKUm8TeE7
   max-idle-conns: 0
@@ -156,4 +156,4 @@ zap:
 rpcConf:
   bannerRpcConf:
     Endpoints:
-      - banner-rpc:8008
+      - looklook:8008

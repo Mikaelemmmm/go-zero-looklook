@@ -4,6 +4,7 @@ import (
 	"looklook/app/order/cmd/api/internal/config"
 	"looklook/app/order/cmd/rpc/order"
 	"looklook/app/payment/cmd/rpc/payment"
+	"looklook/app/travel/cmd/rpc/travel"
 
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -13,6 +14,7 @@ type ServiceContext struct {
 
 	OrderRpc   order.Order
 	PaymentrPC payment.Payment
+	TravelRpc  travel.Travel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -21,5 +23,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 		OrderRpc:   order.NewOrder(zrpc.MustNewClient(c.OrderRpcConf)),
 		PaymentrPC: payment.NewPayment(zrpc.MustNewClient(c.PaymentRpcConf)),
+		TravelRpc:  travel.NewTravel(zrpc.MustNewClient(c.TravelRpcConf)),
 	}
 }

@@ -2,6 +2,7 @@ package homestayOrder
 
 import (
 	"context"
+	"looklook/app/travel/cmd/rpc/pb"
 	"looklook/common/ctxdata"
 
 	"looklook/app/order/cmd/api/internal/svc"
@@ -29,6 +30,16 @@ func NewCreateHomestayOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext
 
 //民宿下单
 func (l *CreateHomestayOrderLogic) CreateHomestayOrder(req types.CreateHomestayOrderReq) (*types.CreateHomestayOrderResp, error) {
+
+	homestayResp , err:=l.svcCtx.TravelRpc.HomestayDetail(l.ctx,&pb.HomestayDetailReq{
+		Id: req.HomestayId,
+	})
+	if err != nil{
+		return nil, err
+	}
+	if homestayResp.Homestay == nil || homestayResp.Homestay .Id == 0{
+		return nil,errors.Wrapf(xerr.NewErrMsg("该民宿不存在"),"民宿下单 民宿不存在 id : %d",req.HomestayId)
+	}
 
 	userId := ctxdata.GetUidFromCtx(l.ctx)
 
