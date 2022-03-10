@@ -10,4 +10,5 @@ type Config struct {
 
 	OrderRpcConf   zrpc.RpcClientConf
 	PaymentRpcConf zrpc.RpcClientConf
+	TravelRpcConf  zrpc.RpcClientConf
 }

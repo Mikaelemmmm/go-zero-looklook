@@ -4,7 +4,7 @@ ListenOn: 0.0.0.0:9001
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3014
   Path: /metrics
 
 #链路追踪

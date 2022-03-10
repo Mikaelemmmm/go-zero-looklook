@@ -5,7 +5,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3011
   Path: /metrics
 
 #链路追踪

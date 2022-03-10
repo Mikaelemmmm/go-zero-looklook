@@ -6,7 +6,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3007
   Path: /metrics
 
 #链路追踪
@@ -29,8 +29,11 @@ Cache:
 #rpc
 UsercenterRpcConf:
   Endpoints:
-    - usercenter-rpc:9002
+    - 12.0.0.1:9002
+  NonBlock: true
+
 TravelRpcConf:
   Endpoints:
-    - travel-rpc:9003
+    - 127.0.0.1:9003
+  NonBlock: true
 

@@ -38,9 +38,8 @@ type (
 
 type (
 	HomestayListReq {
-		LastId   int64  `json:"lastId"`
-		PageSize int64  `json:"pageSize"`
-		RowType  string `json:"rowType"` //preferredHomestay:优选民宿
+		Page     int64 `json:"page"`
+		PageSize int64 `json:"pageSize"`
 	}
 	HomestayListResp {
 		List []Homestay `json:"list"`
@@ -49,7 +48,6 @@ type (
 
 type (
 	GuessListReq {
-		HomestayId int64 `json:"homestayId"`
 	}
 	GuessListResp {
 		List []Homestay `json:"list"`

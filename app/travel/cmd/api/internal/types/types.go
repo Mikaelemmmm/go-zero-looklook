@@ -29,9 +29,8 @@ type BusinessListResp struct {
 }
 
 type HomestayListReq struct {
-	LastId   int64  `json:"lastId"`
-	PageSize int64  `json:"pageSize"`
-	RowType  string `json:"rowType"` //preferredHomestay:优选民宿
+	Page     int64 `json:"page"`
+	PageSize int64 `json:"pageSize"`
 }
 
 type HomestayListResp struct {
@@ -39,7 +38,6 @@ type HomestayListResp struct {
 }
 
 type GuessListReq struct {
-	HomestayId int64 `json:"homestayId"`
 }
 
 type GuessListResp struct {

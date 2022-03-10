@@ -28,7 +28,8 @@ func NewHomestayBussinessListLogic(ctx context.Context, svcCtx *svc.ServiceConte
 
 func (l *HomestayBussinessListLogic) HomestayBussinessList(req types.HomestayBussinessListReq) (*types.HomestayBussinessListResp, error) {
 
-	list, err := l.svcCtx.HomestayBusinessModel.FindPageList(req.LastId, req.PageSize)
+	whereBuilder := l.svcCtx.HomestayBusinessModel.RowBuilder()
+	list, err := l.svcCtx.HomestayBusinessModel.FindPageListByIdDESC(whereBuilder,req.LastId, req.PageSize)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err:%v", req, err)
 	}

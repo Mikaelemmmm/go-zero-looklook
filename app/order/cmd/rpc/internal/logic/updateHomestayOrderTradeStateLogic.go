@@ -49,7 +49,7 @@ func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *p
 
 	// 3、更新前状态判断.
 	homestayOrder.TradeState = in.TradeState
-	if err := l.svcCtx.HomestayOrderModel.Update(nil, homestayOrder); err != nil {
+	if err := l.svcCtx.HomestayOrderModel.UpdateWithVersion(nil, homestayOrder); err != nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("更新民宿订单状态失败"), "更新民宿订单状态失败 err:%v , in : %v", err, in)
 	}
 

@@ -29,11 +29,11 @@ func NewGuessListLogic(ctx context.Context, svcCtx *svc.ServiceContext) GuessLis
 
 func (l *GuessListLogic) GuessList(req types.GuessListReq) (*types.GuessListResp, error) {
 
-	// @todo 先返回所有列表数据 ， 后续根据当前标签关联相同属性的民宿推荐给用户.
+	// 猜你喜欢，这里只随便返回前5个
 
 	var resp []types.Homestay
 
-	list, err := l.svcCtx.HomestayModel.FindPageList(0, 5)
+	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(l.svcCtx.HomestayModel.RowBuilder(),0, 5)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v", req, err)
 	}

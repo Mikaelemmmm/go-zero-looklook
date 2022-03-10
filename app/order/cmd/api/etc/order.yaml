@@ -6,7 +6,7 @@ Mode: dev
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 9091
+  Port: 3002
   Path: /metrics
 
 #链路追踪
@@ -19,11 +19,18 @@ Telemetry:
 #rpc
 OrderRpcConf:
   Endpoints:
-    - order-rpc:9004
+    - 127.0.0.1:9004
+  NonBlock: true
 
 PaymentRpcConf:
   Endpoints:
-    - payment-rpc:9005
+    - 127.0.0.1:9005
+  NonBlock: true
+
+TravelRpcConf:
+  Endpoints:
+    - 127.0.0.1:9003
+  NonBlock: true
 
 Log:
   ServiceName: order-api

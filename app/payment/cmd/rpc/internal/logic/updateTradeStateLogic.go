@@ -66,7 +66,7 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 	thirdPayment.TradeStateDesc = in.TradeStateDesc
 	thirdPayment.PayStatus = in.PayStatus
 	thirdPayment.PayTime = time.Unix(in.PayTime, 0)
-	if err := l.svcCtx.ThirdPaymentModel.Update(nil, thirdPayment); err != nil {
+	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(nil, thirdPayment); err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " 更新流水状态失败 err:%v ", err)
 	}
 
