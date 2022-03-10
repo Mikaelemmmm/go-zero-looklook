@@ -32,6 +32,7 @@
 - redis
 - gin-vue-admin
 - air
+- modd
 - jenkins
 - gitlab
 - harbor
