@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"fmt"
-	"looklook/deploy/script/mysql/genModel"
 	"strings"
 	"time"
 
@@ -113,11 +112,11 @@ func (m *defaultHomestayActivityModel) FindOne(id int64) (*HomestayActivity, err
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, genModel.ErrNotFound
+			return nil, ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, genModel.ErrNotFound
+		return nil, ErrNotFound
 	default:
 		return nil, err
 	}
