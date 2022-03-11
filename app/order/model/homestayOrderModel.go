@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"looklook/deploy/script/mysql/genModel"
 	"strings"
 	"time"
 
@@ -43,19 +44,19 @@ type (
 		//更新数据，使用乐观锁
 		UpdateWithVersion(session sqlx.Session, data *HomestayOrder) error
 		//根据条件查询一条数据，不走缓存
-		FindOneByQuery(sumBuilder squirrel.SelectBuilder) (*HomestayOrder, error)
+		FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*HomestayOrder, error)
 		//sum某个字段
 		FindSum(sumBuilder squirrel.SelectBuilder) (float64, error)
 		//根据条件统计条数
 		FindCount(countBuilder squirrel.SelectBuilder) (int64, error)
 		//查询所有数据不分页
-		FindAll(sqlBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayOrder, error)
+		FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayOrder, error)
 		//根据页码分页查询分页数据
-		FindPageListByPage(sqlBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayOrder, error)
+		FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayOrder, error)
 		//根据id倒序分页查询分页数据
-		FindPageListByIdDESC(sqlBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayOrder, error)
+		FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayOrder, error)
 		//根据id升序分页查询分页数据
-		FindPageListByIdASC(sqlBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayOrder, error)
+		FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayOrder, error)
 		//暴露给logic，开启事务
 		Trans(fn func(session sqlx.Session) error) error
 		//暴露给logic，查询数据的builder
@@ -118,15 +119,15 @@ func (m *defaultHomestayOrderModel) Insert(session sqlx.Session, data *HomestayO
 
 	data.DeleteTime = time.Unix(0, 0)
 
-	looklookOrderHomestayOrderSnKey := fmt.Sprintf("%s%v", cacheLooklookOrderHomestayOrderSnPrefix, data.Sn)
 	looklookOrderHomestayOrderIdKey := fmt.Sprintf("%s%v", cacheLooklookOrderHomestayOrderIdPrefix, data.Id)
+	looklookOrderHomestayOrderSnKey := fmt.Sprintf("%s%v", cacheLooklookOrderHomestayOrderSnPrefix, data.Sn)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, homestayOrderRowsExpectAutoSet)
 		if session != nil {
 			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Sn, data.UserId, data.HomestayId, data.Title, data.SubTitle, data.Cover, data.Info, data.PeopleNum, data.RowType, data.NeedFood, data.FoodInfo, data.FoodPrice, data.HomestayPrice, data.MarketHomestayPrice, data.HomestayBusinessId, data.HomestayUserId, data.LiveStartDate, data.LiveEndDate, data.LivePeopleNum, data.TradeState, data.TradeCode, data.Remark, data.OrderTotalPrice, data.FoodTotalPrice, data.HomestayTotalPrice)
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Sn, data.UserId, data.HomestayId, data.Title, data.SubTitle, data.Cover, data.Info, data.PeopleNum, data.RowType, data.NeedFood, data.FoodInfo, data.FoodPrice, data.HomestayPrice, data.MarketHomestayPrice, data.HomestayBusinessId, data.HomestayUserId, data.LiveStartDate, data.LiveEndDate, data.LivePeopleNum, data.TradeState, data.TradeCode, data.Remark, data.OrderTotalPrice, data.FoodTotalPrice, data.HomestayTotalPrice)
-	}, looklookOrderHomestayOrderIdKey, looklookOrderHomestayOrderSnKey)
+	}, looklookOrderHomestayOrderSnKey, looklookOrderHomestayOrderIdKey)
 
 }
 
@@ -141,11 +142,11 @@ func (m *defaultHomestayOrderModel) FindOne(id int64) (*HomestayOrder, error) {
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
+			return nil, genModel.ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, genModel.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -165,11 +166,11 @@ func (m *defaultHomestayOrderModel) FindOneBySn(sn string) (*HomestayOrder, erro
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
+			return nil, genModel.ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, genModel.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -221,9 +222,9 @@ func (m *defaultHomestayOrderModel) UpdateWithVersion(session sqlx.Session, data
 }
 
 //根据条件查询一条数据
-func (m *defaultHomestayOrderModel) FindOneByQuery(sumBuilder squirrel.SelectBuilder) (*HomestayOrder, error) {
+func (m *defaultHomestayOrderModel) FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*HomestayOrder, error) {
 
-	query, values, err := sumBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -275,15 +276,15 @@ func (m *defaultHomestayOrderModel) FindCount(countBuilder squirrel.SelectBuilde
 }
 
 //查询所有数据
-func (m *defaultHomestayOrderModel) FindAll(sqlBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayOrder, error) {
+func (m *defaultHomestayOrderModel) FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayOrder, error) {
 
 	if orderBy == "" {
-		sqlBuilder = sqlBuilder.OrderBy("id DESC")
+		rowBuilder = rowBuilder.OrderBy("id DESC")
 	} else {
-		sqlBuilder = sqlBuilder.OrderBy(orderBy)
+		rowBuilder = rowBuilder.OrderBy(orderBy)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -299,12 +300,12 @@ func (m *defaultHomestayOrderModel) FindAll(sqlBuilder squirrel.SelectBuilder, o
 }
 
 //按照页码分页查询数据
-func (m *defaultHomestayOrderModel) FindPageListByPage(sqlBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayOrder, error) {
+func (m *defaultHomestayOrderModel) FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayOrder, error) {
 
 	if orderBy == "" {
-		sqlBuilder = sqlBuilder.OrderBy("id DESC")
+		rowBuilder = rowBuilder.OrderBy("id DESC")
 	} else {
-		sqlBuilder = sqlBuilder.OrderBy(orderBy)
+		rowBuilder = rowBuilder.OrderBy(orderBy)
 	}
 
 	if page < 1 {
@@ -312,7 +313,7 @@ func (m *defaultHomestayOrderModel) FindPageListByPage(sqlBuilder squirrel.Selec
 	}
 	offset := (page - 1) * pageSize
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -328,13 +329,13 @@ func (m *defaultHomestayOrderModel) FindPageListByPage(sqlBuilder squirrel.Selec
 }
 
 //按照id倒序分页查询数据，不支持排序
-func (m *defaultHomestayOrderModel) FindPageListByIdDESC(sqlBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayOrder, error) {
+func (m *defaultHomestayOrderModel) FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayOrder, error) {
 
 	if preMinId > 0 {
-		sqlBuilder = sqlBuilder.Where(" id < ? ", preMinId)
+		rowBuilder = rowBuilder.Where(" id < ? ", preMinId)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id DESC").Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id DESC").Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -350,13 +351,13 @@ func (m *defaultHomestayOrderModel) FindPageListByIdDESC(sqlBuilder squirrel.Sel
 }
 
 //按照id升序分页查询数据，不支持排序
-func (m *defaultHomestayOrderModel) FindPageListByIdASC(sqlBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayOrder, error) {
+func (m *defaultHomestayOrderModel) FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayOrder, error) {
 
 	if preMaxId > 0 {
-		sqlBuilder = sqlBuilder.Where(" id > ? ", preMaxId)
+		rowBuilder = rowBuilder.Where(" id > ? ", preMaxId)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id ASC").Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id ASC").Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}

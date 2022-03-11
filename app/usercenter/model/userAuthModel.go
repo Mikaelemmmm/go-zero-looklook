@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"looklook/deploy/script/mysql/genModel"
 	"strings"
 	"time"
 
@@ -46,19 +47,19 @@ type (
 		//更新数据，使用乐观锁
 		UpdateWithVersion(session sqlx.Session, data *UserAuth) error
 		//根据条件查询一条数据，不走缓存
-		FindOneByQuery(sumBuilder squirrel.SelectBuilder) (*UserAuth, error)
+		FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*UserAuth, error)
 		//sum某个字段
 		FindSum(sumBuilder squirrel.SelectBuilder) (float64, error)
 		//根据条件统计条数
 		FindCount(countBuilder squirrel.SelectBuilder) (int64, error)
 		//查询所有数据不分页
-		FindAll(sqlBuilder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error)
+		FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error)
 		//根据页码分页查询分页数据
-		FindPageListByPage(sqlBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error)
+		FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error)
 		//根据id倒序分页查询分页数据
-		FindPageListByIdDESC(sqlBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error)
+		FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error)
 		//根据id升序分页查询分页数据
-		FindPageListByIdASC(sqlBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error)
+		FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error)
 		//暴露给logic，开启事务
 		Trans(fn func(session sqlx.Session) error) error
 		//暴露给logic，查询数据的builder
@@ -123,11 +124,11 @@ func (m *defaultUserAuthModel) FindOne(id int64) (*UserAuth, error) {
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
+			return nil, genModel.ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, genModel.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -147,11 +148,11 @@ func (m *defaultUserAuthModel) FindOneByAuthTypeAuthKey(authType string, authKey
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
+			return nil, genModel.ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, genModel.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -171,11 +172,11 @@ func (m *defaultUserAuthModel) FindOneByUserIdAuthType(userId int64, authType st
 	switch err {
 	case nil:
 		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
+			return nil, genModel.ErrNotFound
 		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, genModel.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -183,9 +184,9 @@ func (m *defaultUserAuthModel) FindOneByUserIdAuthType(userId int64, authType st
 
 //修改数据 ,推荐优先使用乐观锁更新
 func (m *defaultUserAuthModel) Update(session sqlx.Session, data *UserAuth) (sql.Result, error) {
+	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
 	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
@@ -204,9 +205,9 @@ func (m *defaultUserAuthModel) UpdateWithVersion(session sqlx.Session, data *Use
 	var sqlResult sql.Result
 	var err error
 
+	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
 	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	sqlResult, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
@@ -229,9 +230,9 @@ func (m *defaultUserAuthModel) UpdateWithVersion(session sqlx.Session, data *Use
 }
 
 //根据条件查询一条数据
-func (m *defaultUserAuthModel) FindOneByQuery(sumBuilder squirrel.SelectBuilder) (*UserAuth, error) {
+func (m *defaultUserAuthModel) FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*UserAuth, error) {
 
-	query, values, err := sumBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -283,15 +284,15 @@ func (m *defaultUserAuthModel) FindCount(countBuilder squirrel.SelectBuilder) (i
 }
 
 //查询所有数据
-func (m *defaultUserAuthModel) FindAll(sqlBuilder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error) {
+func (m *defaultUserAuthModel) FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error) {
 
 	if orderBy == "" {
-		sqlBuilder = sqlBuilder.OrderBy("id DESC")
+		rowBuilder = rowBuilder.OrderBy("id DESC")
 	} else {
-		sqlBuilder = sqlBuilder.OrderBy(orderBy)
+		rowBuilder = rowBuilder.OrderBy(orderBy)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -307,12 +308,12 @@ func (m *defaultUserAuthModel) FindAll(sqlBuilder squirrel.SelectBuilder, orderB
 }
 
 //按照页码分页查询数据
-func (m *defaultUserAuthModel) FindPageListByPage(sqlBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error) {
+func (m *defaultUserAuthModel) FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error) {
 
 	if orderBy == "" {
-		sqlBuilder = sqlBuilder.OrderBy("id DESC")
+		rowBuilder = rowBuilder.OrderBy("id DESC")
 	} else {
-		sqlBuilder = sqlBuilder.OrderBy(orderBy)
+		rowBuilder = rowBuilder.OrderBy(orderBy)
 	}
 
 	if page < 1 {
@@ -320,7 +321,7 @@ func (m *defaultUserAuthModel) FindPageListByPage(sqlBuilder squirrel.SelectBuil
 	}
 	offset := (page - 1) * pageSize
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -336,13 +337,13 @@ func (m *defaultUserAuthModel) FindPageListByPage(sqlBuilder squirrel.SelectBuil
 }
 
 //按照id倒序分页查询数据，不支持排序
-func (m *defaultUserAuthModel) FindPageListByIdDESC(sqlBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error) {
+func (m *defaultUserAuthModel) FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error) {
 
 	if preMinId > 0 {
-		sqlBuilder = sqlBuilder.Where(" id < ? ", preMinId)
+		rowBuilder = rowBuilder.Where(" id < ? ", preMinId)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id DESC").Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id DESC").Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -358,13 +359,13 @@ func (m *defaultUserAuthModel) FindPageListByIdDESC(sqlBuilder squirrel.SelectBu
 }
 
 //按照id升序分页查询数据，不支持排序
-func (m *defaultUserAuthModel) FindPageListByIdASC(sqlBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error) {
+func (m *defaultUserAuthModel) FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error) {
 
 	if preMaxId > 0 {
-		sqlBuilder = sqlBuilder.Where(" id > ? ", preMaxId)
+		rowBuilder = rowBuilder.Where(" id > ? ", preMaxId)
 	}
 
-	query, values, err := sqlBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id ASC").Limit(uint64(pageSize)).ToSql()
+	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id ASC").Limit(uint64(pageSize)).ToSql()
 	if err != nil {
 		return nil, err
 	}
