@@ -24,8 +24,8 @@ services:
 
   #前端api + 业务rpc
   looklook:
-    image: lyumikael/go-modd-env:v1.0.0
-
+    image: lyumikael/gomodd:v1.0.0 # if you "macOs intel" or "linux amd"
+    #image: lyumikael/go-modd-env:v1.0.0  # if you macOs m1
     container_name: looklook
     environment:
       # 时区上海
