@@ -10,7 +10,9 @@ English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/ma
 
 
 
-Because everyone is saying that there is no complete project example of go zero at present, I may have contacted go zero earlier. I have been using go zero since about 1000star. Later, I became familiar with the go zero author through wechat. The go zero author was very enthusiastic and patient to help me answer many questions. I also want to actively help go zero promote the community, Basically, I answered the relevant questions in the community group, because in this process, I found that many people felt that go zero did not have a complete project example. As a member of the community who wanted to promote the community, I made an available version open source. The main technology stack includes the following：
+#### The old rule is to give a star before you see it. Ha ~ ~, if the star is caught, you have to spank, ha ha
+
+I may have contacted go zero earlier. I have been using go zero since about 1000star. Later, I became familiar with the go zero author through wechat. The go zero author was very enthusiastic and patient to help me answer many questions. I also want to actively help go zero promote the community, Basically, I answered the relevant questions in the community group, because in this process, I found that many people felt that go zero did not have a complete project example. As a member of the community who wanted to promote the community, I made an available version open source. The main technology stack includes the following：
 
 
 - k8s
