@@ -17,7 +17,7 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 
 - k8s
 - go-zero
-- nginx网关
+- nginx-gateway
 - filebeat
 - kafka
 - go-stash
