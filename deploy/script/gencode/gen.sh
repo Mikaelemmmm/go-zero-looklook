@@ -17,7 +17,7 @@
 #    mac: sed -i "" 's/,omitempty//g' *.pb.go
 #    linux: sed -i 's/,omitempty//g' *.pb.go
 # 2）goctl < 1.3 进入"服务/cmd"目录下，执行下面命令
-#    goctl rpc proto -src rpc/pb/*.proto -dir ./rpc -style=goZero
+#    goctl rpc proto -src rpc/pb/*.proto -dir ./rpc --style=goZero
 #    去除proto中的json的omitempty
 #    mac: sed -i "" 's/,omitempty//g'  ./rpc/pb/*.pb.go
 #    linux: sed -i 's/,omitempty//g'  ./rpc/pb/*.pb.go
