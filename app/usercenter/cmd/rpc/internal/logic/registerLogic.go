@@ -44,7 +44,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		user := new(model.User)
 		user.Mobile = in.Mobile
 		if len(user.Nickname) == 0 {
-			user.Nickname = tool.Krand( 8,tool.KC_RAND_KIND_ALL)
+			user.Nickname = tool.Krand( 8, tool.KC_RAND_KIND_ALL)
 		}
 		if len(in.Password) > 0 {
 			user.Password = tool.Md5ByString(in.Password)
