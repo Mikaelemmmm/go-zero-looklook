@@ -30,14 +30,17 @@ var (
 
 type (
 	HomestayBusinessModel interface {
+
+		//新增数据
+		Insert(session sqlx.Session, data *HomestayBusiness) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
 		FindOne(id int64) (*HomestayBusiness, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneByUserId(userId int64) (*HomestayBusiness, error)
-		//新增数据
-		Insert(session sqlx.Session, data *HomestayBusiness) (sql.Result, error)
 		//删除数据
-		Delete(session sqlx.Session, data *HomestayBusiness) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *HomestayBusiness) error
 		//更新数据
 		Update(session sqlx.Session, data *HomestayBusiness) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -112,7 +115,7 @@ func (m *defaultHomestayBusinessModel) Insert(session sqlx.Session, data *Homest
 			return session.Exec(query, data.DeleteTime, data.DelState, data.Title, data.UserId, data.Info, data.BossInfo, data.LicenseFron, data.LicenseBack, data.RowState, data.Star, data.Tags, data.Cover, data.HeaderImg, data.Version)
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Title, data.UserId, data.Info, data.BossInfo, data.LicenseFron, data.LicenseBack, data.RowState, data.Star, data.Tags, data.Cover, data.HeaderImg, data.Version)
-	}, looklookTravelHomestayBusinessIdKey, looklookTravelHomestayBusinessUserIdKey)
+	}, looklookTravelHomestayBusinessUserIdKey, looklookTravelHomestayBusinessIdKey)
 
 }
 
@@ -163,8 +166,8 @@ func (m *defaultHomestayBusinessModel) FindOneByUserId(userId int64) (*HomestayB
 
 //修改数据 ,推荐优先使用乐观锁更新
 func (m *defaultHomestayBusinessModel) Update(session sqlx.Session, data *HomestayBusiness) (sql.Result, error) {
-	looklookTravelHomestayBusinessIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessIdPrefix, data.Id)
 	looklookTravelHomestayBusinessUserIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessUserIdPrefix, data.UserId)
+	looklookTravelHomestayBusinessIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessIdPrefix, data.Id)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, homestayBusinessRowsWithPlaceHolder)
 		if session != nil {
@@ -183,8 +186,8 @@ func (m *defaultHomestayBusinessModel) UpdateWithVersion(session sqlx.Session, d
 	var sqlResult sql.Result
 	var err error
 
-	looklookTravelHomestayBusinessIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessIdPrefix, data.Id)
 	looklookTravelHomestayBusinessUserIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessUserIdPrefix, data.UserId)
+	looklookTravelHomestayBusinessIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessIdPrefix, data.Id)
 	sqlResult, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, homestayBusinessRowsWithPlaceHolder)
 		if session != nil {
@@ -192,6 +195,9 @@ func (m *defaultHomestayBusinessModel) UpdateWithVersion(session sqlx.Session, d
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Title, data.UserId, data.Info, data.BossInfo, data.LicenseFron, data.LicenseBack, data.RowState, data.Star, data.Tags, data.Cover, data.HeaderImg, data.Version, data.Id, oldVersion)
 	}, looklookTravelHomestayBusinessIdKey, looklookTravelHomestayBusinessUserIdKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -373,7 +379,26 @@ func (m *defaultHomestayBusinessModel) SumBuilder(field string) squirrel.SelectB
 }
 
 //删除数据
-func (m *defaultHomestayBusinessModel) Delete(session sqlx.Session, data *HomestayBusiness) error {
+func (m *defaultHomestayBusinessModel) Delete(session sqlx.Session, id int64) error {
+	data, err := m.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	looklookTravelHomestayBusinessIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessIdPrefix, id)
+	looklookTravelHomestayBusinessUserIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayBusinessUserIdPrefix, data.UserId)
+	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookTravelHomestayBusinessIdKey, looklookTravelHomestayBusinessUserIdKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultHomestayBusinessModel) DeleteSoft(session sqlx.Session, data *HomestayBusiness) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {

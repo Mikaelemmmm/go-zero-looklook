@@ -30,14 +30,17 @@ var (
 
 type (
 	ThirdPaymentModel interface {
+
+		//新增数据
+		Insert(session sqlx.Session, data *ThirdPayment) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
 		FindOne(id int64) (*ThirdPayment, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneBySn(sn string) (*ThirdPayment, error)
-		//新增数据
-		Insert(session sqlx.Session, data *ThirdPayment) (sql.Result, error)
 		//删除数据
-		Delete(session sqlx.Session, data *ThirdPayment) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *ThirdPayment) error
 		//更新数据
 		Update(session sqlx.Session, data *ThirdPayment) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -193,6 +196,9 @@ func (m *defaultThirdPaymentModel) UpdateWithVersion(session sqlx.Session, data 
 		}
 		return conn.Exec(query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime, data.Id, oldVersion)
 	}, looklookPaymentThirdPaymentIdKey, looklookPaymentThirdPaymentSnKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -374,7 +380,26 @@ func (m *defaultThirdPaymentModel) SumBuilder(field string) squirrel.SelectBuild
 }
 
 //删除数据
-func (m *defaultThirdPaymentModel) Delete(session sqlx.Session, data *ThirdPayment) error {
+func (m *defaultThirdPaymentModel) Delete(session sqlx.Session, id int64) error {
+	data, err := m.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, id)
+	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)
+	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookPaymentThirdPaymentSnKey, looklookPaymentThirdPaymentIdKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultThirdPaymentModel) DeleteSoft(session sqlx.Session, data *ThirdPayment) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {
