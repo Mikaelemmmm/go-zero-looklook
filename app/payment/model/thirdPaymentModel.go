@@ -30,7 +30,6 @@ var (
 
 type (
 	ThirdPaymentModel interface {
-
 		//新增数据
 		Insert(session sqlx.Session, data *ThirdPayment) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
