@@ -30,14 +30,17 @@ var (
 
 type (
 	UserModel interface {
+
+		//新增数据
+		Insert(session sqlx.Session, data *User) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
 		FindOne(id int64) (*User, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneByMobile(mobile string) (*User, error)
-		//新增数据
-		Insert(session sqlx.Session, data *User) (sql.Result, error)
 		//删除数据
-		Delete(session sqlx.Session, data *User) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *User) error
 		//更新数据
 		Update(session sqlx.Session, data *User) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -99,15 +102,15 @@ func (m *defaultUserModel) Insert(session sqlx.Session, data *User) (sql.Result,
 
 	data.DeleteTime = time.Unix(0, 0)
 
-	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, data.Id)
 	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
+	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, data.Id)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
 		if session != nil {
 			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
-	}, looklookUsercenterUserMobileKey, looklookUsercenterUserIdKey)
+	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
 
 }
 
@@ -187,6 +190,9 @@ func (m *defaultUserModel) UpdateWithVersion(session sqlx.Session, data *User) e
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id, oldVersion)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -368,7 +374,26 @@ func (m *defaultUserModel) SumBuilder(field string) squirrel.SelectBuilder {
 }
 
 //删除数据
-func (m *defaultUserModel) Delete(session sqlx.Session, data *User) error {
+func (m *defaultUserModel) Delete(session sqlx.Session, id int64) error {
+	data, err := m.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, id)
+	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
+	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultUserModel) DeleteSoft(session sqlx.Session, data *User) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {

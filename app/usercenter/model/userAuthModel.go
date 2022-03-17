@@ -31,16 +31,19 @@ var (
 
 type (
 	UserAuthModel interface {
+
+		//新增数据
+		Insert(session sqlx.Session, data *UserAuth) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
 		FindOne(id int64) (*UserAuth, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneByAuthTypeAuthKey(authType string, authKey string) (*UserAuth, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneByUserIdAuthType(userId int64, authType string) (*UserAuth, error)
-		//新增数据
-		Insert(session sqlx.Session, data *UserAuth) (sql.Result, error)
 		//删除数据
-		Delete(session sqlx.Session, data *UserAuth) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *UserAuth) error
 		//更新数据
 		Update(session sqlx.Session, data *UserAuth) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -99,9 +102,9 @@ func (m *defaultUserAuthModel) Insert(session sqlx.Session, data *UserAuth) (sql
 
 	data.DeleteTime = time.Unix(0, 0)
 
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
 	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
 	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, userAuthRowsExpectAutoSet)
 		if session != nil {
@@ -183,9 +186,9 @@ func (m *defaultUserAuthModel) FindOneByUserIdAuthType(userId int64, authType st
 
 //修改数据 ,推荐优先使用乐观锁更新
 func (m *defaultUserAuthModel) Update(session sqlx.Session, data *UserAuth) (sql.Result, error) {
+	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
 	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
 	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
@@ -204,9 +207,9 @@ func (m *defaultUserAuthModel) UpdateWithVersion(session sqlx.Session, data *Use
 	var sqlResult sql.Result
 	var err error
 
+	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
 	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
 	sqlResult, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
@@ -214,6 +217,9 @@ func (m *defaultUserAuthModel) UpdateWithVersion(session sqlx.Session, data *Use
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType, data.Id, oldVersion)
 	}, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey, looklookUsercenterUserAuthUserIdAuthTypeKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -395,7 +401,27 @@ func (m *defaultUserAuthModel) SumBuilder(field string) squirrel.SelectBuilder {
 }
 
 //删除数据
-func (m *defaultUserAuthModel) Delete(session sqlx.Session, data *UserAuth) error {
+func (m *defaultUserAuthModel) Delete(session sqlx.Session, id int64) error {
+	data, err := m.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, id)
+	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
+	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey, looklookUsercenterUserAuthUserIdAuthTypeKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultUserAuthModel) DeleteSoft(session sqlx.Session, data *UserAuth) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {

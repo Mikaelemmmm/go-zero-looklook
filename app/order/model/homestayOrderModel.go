@@ -30,14 +30,17 @@ var (
 
 type (
 	HomestayOrderModel interface {
+
+		//新增数据
+		Insert(session sqlx.Session, data *HomestayOrder) (sql.Result, error)
 		//根据主键查询一条数据，走缓存
 		FindOne(id int64) (*HomestayOrder, error)
 		//根据唯一索引查询一条数据，走缓存
 		FindOneBySn(sn string) (*HomestayOrder, error)
-		//新增数据
-		Insert(session sqlx.Session, data *HomestayOrder) (sql.Result, error)
 		//删除数据
-		Delete(session sqlx.Session, data *HomestayOrder) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *HomestayOrder) error
 		//更新数据
 		Update(session sqlx.Session, data *HomestayOrder) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -126,7 +129,7 @@ func (m *defaultHomestayOrderModel) Insert(session sqlx.Session, data *HomestayO
 			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Sn, data.UserId, data.HomestayId, data.Title, data.SubTitle, data.Cover, data.Info, data.PeopleNum, data.RowType, data.NeedFood, data.FoodInfo, data.FoodPrice, data.HomestayPrice, data.MarketHomestayPrice, data.HomestayBusinessId, data.HomestayUserId, data.LiveStartDate, data.LiveEndDate, data.LivePeopleNum, data.TradeState, data.TradeCode, data.Remark, data.OrderTotalPrice, data.FoodTotalPrice, data.HomestayTotalPrice)
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Sn, data.UserId, data.HomestayId, data.Title, data.SubTitle, data.Cover, data.Info, data.PeopleNum, data.RowType, data.NeedFood, data.FoodInfo, data.FoodPrice, data.HomestayPrice, data.MarketHomestayPrice, data.HomestayBusinessId, data.HomestayUserId, data.LiveStartDate, data.LiveEndDate, data.LivePeopleNum, data.TradeState, data.TradeCode, data.Remark, data.OrderTotalPrice, data.FoodTotalPrice, data.HomestayTotalPrice)
-	}, looklookOrderHomestayOrderSnKey, looklookOrderHomestayOrderIdKey)
+	}, looklookOrderHomestayOrderIdKey, looklookOrderHomestayOrderSnKey)
 
 }
 
@@ -206,6 +209,9 @@ func (m *defaultHomestayOrderModel) UpdateWithVersion(session sqlx.Session, data
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Sn, data.UserId, data.HomestayId, data.Title, data.SubTitle, data.Cover, data.Info, data.PeopleNum, data.RowType, data.NeedFood, data.FoodInfo, data.FoodPrice, data.HomestayPrice, data.MarketHomestayPrice, data.HomestayBusinessId, data.HomestayUserId, data.LiveStartDate, data.LiveEndDate, data.LivePeopleNum, data.TradeState, data.TradeCode, data.Remark, data.OrderTotalPrice, data.FoodTotalPrice, data.HomestayTotalPrice, data.Id, oldVersion)
 	}, looklookOrderHomestayOrderIdKey, looklookOrderHomestayOrderSnKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -387,7 +393,26 @@ func (m *defaultHomestayOrderModel) SumBuilder(field string) squirrel.SelectBuil
 }
 
 //删除数据
-func (m *defaultHomestayOrderModel) Delete(session sqlx.Session, data *HomestayOrder) error {
+func (m *defaultHomestayOrderModel) Delete(session sqlx.Session, id int64) error {
+	data, err := m.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	looklookOrderHomestayOrderIdKey := fmt.Sprintf("%s%v", cacheLooklookOrderHomestayOrderIdPrefix, id)
+	looklookOrderHomestayOrderSnKey := fmt.Sprintf("%s%v", cacheLooklookOrderHomestayOrderSnPrefix, data.Sn)
+	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookOrderHomestayOrderIdKey, looklookOrderHomestayOrderSnKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultHomestayOrderModel) DeleteSoft(session sqlx.Session, data *HomestayOrder) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {

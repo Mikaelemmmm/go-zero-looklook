@@ -29,12 +29,15 @@ var (
 
 type (
 	HomestayActivityModel interface {
-		//根据主键查询一条数据，走缓存
-		FindOne(id int64) (*HomestayActivity, error)
+
 		//新增数据
 		Insert(session sqlx.Session, data *HomestayActivity) (sql.Result, error)
+		//根据主键查询一条数据，走缓存
+		FindOne(id int64) (*HomestayActivity, error)
 		//删除数据
-		Delete(session sqlx.Session, data *HomestayActivity) error
+		Delete(session sqlx.Session, id int64) error
+		//软删除数据
+		DeleteSoft(session sqlx.Session, data *HomestayActivity) error
 		//更新数据
 		Update(session sqlx.Session, data *HomestayActivity) (sql.Result, error)
 		//更新数据，使用乐观锁
@@ -151,6 +154,9 @@ func (m *defaultHomestayActivityModel) UpdateWithVersion(session sqlx.Session, d
 		}
 		return conn.Exec(query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version, data.Id, oldVersion)
 	}, looklookTravelHomestayActivityIdKey)
+	if err != nil {
+		return err
+	}
 
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
@@ -332,7 +338,21 @@ func (m *defaultHomestayActivityModel) SumBuilder(field string) squirrel.SelectB
 }
 
 //删除数据
-func (m *defaultHomestayActivityModel) Delete(session sqlx.Session, data *HomestayActivity) error {
+func (m *defaultHomestayActivityModel) Delete(session sqlx.Session, id int64) error {
+
+	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, id)
+	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.Exec(query, id)
+		}
+		return conn.Exec(query, id)
+	}, looklookTravelHomestayActivityIdKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultHomestayActivityModel) DeleteSoft(session sqlx.Session, data *HomestayActivity) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
 	if err := m.UpdateWithVersion(session, data); err != nil {
