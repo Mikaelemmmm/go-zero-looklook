@@ -13,9 +13,7 @@ services:
       GOPROXY: https://goproxy.cn,direct
     working_dir: /go/src/github.com/looklook/admin
     ports:
-      - 7080:8080
       - 7888:8888
-      - 7081:8081
     volumes:
       - .:/go/src/github.com/looklook
     privileged: true
