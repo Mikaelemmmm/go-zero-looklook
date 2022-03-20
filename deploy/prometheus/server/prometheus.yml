@@ -14,8 +14,8 @@ scrape_configs:
     static_configs:
       - targets: [ 'looklook:3001' ]
         labels:
-          job: order-api
-          app: order-api
+          job: banner-rpc
+          app: banner-rpc
           env: dev
   - job_name: 'order-api'
     static_configs:
@@ -104,6 +104,13 @@ scrape_configs:
   - job_name: 'identity-rpc'
     static_configs:
       - targets: [ 'looklook:3014' ]
+        labels:
+          job: identity-rpc
+          app: identity-rpc
+          env: dev
+  - job_name: 'admin-api'
+    static_configs:
+      - targets: [ 'admin-api:3015' ]
         labels:
           job: identity-rpc
           app: identity-rpc

@@ -1,5 +1,7 @@
 package config
 
+import "github.com/zeromicro/go-zero/core/service"
+
 type Server struct {
 	JWT     JWT     `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
 	Zap     Zap     `mapstructure:"zap" json:"zap" yaml:"zap"`
@@ -30,4 +32,7 @@ type Server struct {
 
 	//rpcConf
 	RpcConf RpcConf `mapstructure:"rpcConf" json:"rpcConf" yaml:"rpcConf"`
+
+	// 相关监控组件配置使用，prometheus、jaeger等 ， zero已经支持好了直接使用go-zero的即可
+	ServiceConf service.ServiceConf `mapstructure:"serviceConf" json:"serviceConf" yaml:"serviceConf"`
 }

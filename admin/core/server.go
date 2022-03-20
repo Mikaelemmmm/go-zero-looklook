@@ -16,6 +16,12 @@ type server interface {
 }
 
 func RunWindowsServer() {
+
+	// log、prometheus、trace、metricsUrl.
+	if err := global.GVA_CONFIG.ServiceConf.SetUp(); err != nil {
+		panic(err)
+	}
+
 	if global.GVA_CONFIG.System.UseMultipoint {
 		// 初始化redis服务
 		initialize.Redis()
