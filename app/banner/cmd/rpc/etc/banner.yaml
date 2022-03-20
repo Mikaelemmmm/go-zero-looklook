@@ -9,11 +9,11 @@ Prometheus:
 
 #链路追踪
 Telemetry:
-  Name: identity-rpc
+  Name: banner-rpc
   Endpoint: http://jaeger:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
 
 Log:
-  ServiceName: identity-rpc
+  ServiceName: banner-rpc
   Level: error

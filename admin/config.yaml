@@ -153,6 +153,27 @@ zap:
   stacktrace-key: stacktrace
   log-in-console: true
 
+
+# 当前服务信息
+serviceConf:
+  Log:
+    ServiceName: admin-api
+    Level: error
+    Mode: console
+
+  #监控
+  Prometheus:
+    Host: 0.0.0.0
+    Port: 3015
+    Path: /metrics
+
+  #链路追踪
+  Telemetry:
+    Name: admin-api
+    Endpoint:  http://jaeger:14268/api/traces
+    Sampler: 1.0
+    Batcher: jaeger
+
 rpcConf:
   bannerRpcConf:
     Endpoints:
