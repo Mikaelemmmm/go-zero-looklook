@@ -43,7 +43,16 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 
 
 
+## Tutorial video
+
+This is the go zero tutorial I'm recording ：https://www.bilibili.com/medialist/play/389552232?from=space&business=space_series&business_id=2122723&desc=1
+
+At the end of this tutorial, we will also share go-zero -looklook. Please look forward to it～
+
+
+
 ## Doc
+
  https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc   Under the doc directory of the project
 
 
