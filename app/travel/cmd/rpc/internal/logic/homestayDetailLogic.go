@@ -30,7 +30,7 @@ func NewHomestayDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ho
 // 民宿详情.
 func (l *HomestayDetailLogic) HomestayDetail(in *pb.HomestayDetailReq) (*pb.HomestayDetailResp, error) {
 
-	homestay, err := l.svcCtx.HomestayModel.FindOne(in.Id)
+	homestay, err := l.svcCtx.HomestayModel.FindOne(l.ctx,in.Id)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " id : %d ", in.Id)
 	}

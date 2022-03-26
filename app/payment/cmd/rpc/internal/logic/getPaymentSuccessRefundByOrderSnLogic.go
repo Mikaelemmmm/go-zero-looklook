@@ -33,7 +33,7 @@ func (l *GetPaymentSuccessRefundByOrderSnLogic) GetPaymentSuccessRefundByOrderSn
 		"order_sn = ? and (trade_state = ? or trade_state = ? )" ,
 		in.OrderSn, model.ThirdPaymentPayTradeStateSuccess, model.ThirdPaymentPayTradeStateRefund,
 	)
-	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneByQuery(whereBuilder)
+	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneByQuery(l.ctx,whereBuilder)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrMsg("获取支付流水信息失败"), "获取支付流水信息失败 err : %v , orderSn:%s", err, in.OrderSn)
 	}

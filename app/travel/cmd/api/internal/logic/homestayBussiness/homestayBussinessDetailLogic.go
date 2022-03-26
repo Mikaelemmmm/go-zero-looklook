@@ -30,7 +30,7 @@ func NewHomestayBussinessDetailLogic(ctx context.Context, svcCtx *svc.ServiceCon
 
 func (l *HomestayBussinessDetailLogic) HomestayBussinessDetail(req types.HomestayBussinessDetailReq) (*types.HomestayBussinessDetailResp, error) {
 
-	homestayBusiness, err := l.svcCtx.HomestayBusinessModel.FindOne(req.Id)
+	homestayBusiness, err := l.svcCtx.HomestayBusinessModel.FindOne(l.ctx,req.Id)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " id  : %d , err : %v", req.Id, err)
 	}

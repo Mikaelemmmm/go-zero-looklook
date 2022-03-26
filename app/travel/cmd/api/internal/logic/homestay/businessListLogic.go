@@ -31,7 +31,7 @@ func NewBusinessListLogic(ctx context.Context, svcCtx *svc.ServiceContext) Busin
 func (l *BusinessListLogic) BusinessList(req types.BusinessListReq) (*types.BusinessListResp, error) {
 
 	whereBuilder:= l.svcCtx.HomestayModel.RowBuilder().Where(squirrel.Eq{"homestay_business_id":req.HomestayBusinessId})
-	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(whereBuilder,req.LastId, req.PageSize)
+	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(l.ctx,whereBuilder,req.LastId, req.PageSize)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "HomestayBusinessId: %d ,err : %v", req.HomestayBusinessId, err)
 	}

@@ -37,7 +37,7 @@ func (l *UserHomestayOrderListLogic) UserHomestayOrderList(in *pb.UserHomestayOr
 		whereBuilder = whereBuilder.Where(squirrel.Eq{"trade_state":in.TraderState})
 	}
 
-	list, err := l.svcCtx.HomestayOrderModel.FindPageListByIdDESC(whereBuilder,in.LastId, in.PageSize)
+	list, err := l.svcCtx.HomestayOrderModel.FindPageListByIdDESC(l.ctx,whereBuilder,in.LastId, in.PageSize)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取用户民宿订单失败 err : %v , in :%+v", err, in)
 	}

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -31,39 +32,56 @@ var (
 type (
 	UserModel interface {
 		//新增数据
-		Insert(session sqlx.Session, data *User) (sql.Result, error)
+		Insert(ctx context.Context, session sqlx.Session, data *User) (sql.Result, error)
+
 		//根据主键查询一条数据，走缓存
-		FindOne(id int64) (*User, error)
+		FindOne(ctx context.Context, id int64) (*User, error)
+
 		//根据唯一索引查询一条数据，走缓存
-		FindOneByMobile(mobile string) (*User, error)
+		FindOneByMobile(ctx context.Context, mobile string) (*User, error)
+
 		//删除数据
-		Delete(session sqlx.Session, id int64) error
+		Delete(ctx context.Context, session sqlx.Session, id int64) error
+
 		//软删除数据
-		DeleteSoft(session sqlx.Session, data *User) error
+		DeleteSoft(ctx context.Context, session sqlx.Session, data *User) error
+
 		//更新数据
-		Update(session sqlx.Session, data *User) (sql.Result, error)
+		Update(ctx context.Context, session sqlx.Session, data *User) (sql.Result, error)
+
 		//更新数据，使用乐观锁
-		UpdateWithVersion(session sqlx.Session, data *User) error
+		UpdateWithVersion(ctx context.Context, session sqlx.Session, data *User) error
+
 		//根据条件查询一条数据，不走缓存
-		FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*User, error)
+		FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*User, error)
+
 		//sum某个字段
-		FindSum(sumBuilder squirrel.SelectBuilder) (float64, error)
+		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error)
+
 		//根据条件统计条数
-		FindCount(countBuilder squirrel.SelectBuilder) (int64, error)
+		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error)
+
 		//查询所有数据不分页
-		FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*User, error)
+		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*User, error)
+
 		//根据页码分页查询分页数据
-		FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*User, error)
+		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*User, error)
+
 		//根据id倒序分页查询分页数据
-		FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*User, error)
+		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*User, error)
+
 		//根据id升序分页查询分页数据
-		FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*User, error)
+		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*User, error)
+
 		//暴露给logic，开启事务
-		Trans(fn func(session sqlx.Session) error) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+
 		//暴露给logic，查询数据的builder
 		RowBuilder() squirrel.SelectBuilder
+
 		//暴露给logic，查询count的builder
 		CountBuilder(field string) squirrel.SelectBuilder
+
 		//暴露给logic，查询sum的builder
 		SumBuilder(field string) squirrel.SelectBuilder
 	}
@@ -96,36 +114,29 @@ func NewUserModel(conn sqlx.SqlConn, c cache.CacheConf) UserModel {
 	}
 }
 
-//新增数据
-func (m *defaultUserModel) Insert(session sqlx.Session, data *User) (sql.Result, error) {
-
+func (m *defaultUserModel) Insert(ctx context.Context, session sqlx.Session, data *User) (sql.Result, error) {
 	data.DeleteTime = time.Unix(0, 0)
-
-	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
 	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, data.Id)
-	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
+	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
 		if session != nil {
-			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
+			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
 		}
-		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
+		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
-
 }
 
 //根据主键查询一条数据，走缓存
-func (m *defaultUserModel) FindOne(id int64) (*User, error) {
+func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error) {
 	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, id)
 	var resp User
-	err := m.QueryRow(&resp, looklookUsercenterUserIdKey, func(conn sqlx.SqlConn, v interface{}) error {
+	err := m.QueryRowCtx(ctx, &resp, looklookUsercenterUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", userRows, m.table)
-		return conn.QueryRow(v, query, id, globalkey.DelStateNo)
+		return conn.QueryRowCtx(ctx, v, query, id, globalkey.DelStateNo)
 	})
 	switch err {
 	case nil:
-		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
-		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
@@ -135,21 +146,18 @@ func (m *defaultUserModel) FindOne(id int64) (*User, error) {
 }
 
 //根据唯一索引查询一条数据，走缓存
-func (m *defaultUserModel) FindOneByMobile(mobile string) (*User, error) {
+func (m *defaultUserModel) FindOneByMobile(ctx context.Context, mobile string) (*User, error) {
 	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, mobile)
 	var resp User
-	err := m.QueryRowIndex(&resp, looklookUsercenterUserMobileKey, m.formatPrimary, func(conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
-		query := fmt.Sprintf("select %s from %s where `mobile` = ? and del_state = ?  limit 1", userRows, m.table)
-		if err := conn.QueryRow(&resp, query, mobile, globalkey.DelStateNo); err != nil {
+	err := m.QueryRowIndexCtx(ctx, &resp, looklookUsercenterUserMobileKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+		query := fmt.Sprintf("select %s from %s where `mobile` = ? and del_state = ? limit 1", userRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, mobile, globalkey.DelStateNo); err != nil {
 			return nil, err
 		}
 		return resp.Id, nil
 	}, m.queryPrimary)
 	switch err {
 	case nil:
-		if resp.DelState == globalkey.DelStateYes {
-			return nil, ErrNotFound
-		}
 		return &resp, nil
 	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
@@ -158,21 +166,57 @@ func (m *defaultUserModel) FindOneByMobile(mobile string) (*User, error) {
 	}
 }
 
-//修改数据 ,推荐优先使用乐观锁更新
-func (m *defaultUserModel) Update(session sqlx.Session, data *User) (sql.Result, error) {
+func (m *defaultUserModel) Delete(ctx context.Context, session sqlx.Session, id int64) error {
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, id)
+	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		if session != nil {
+			return session.ExecCtx(ctx, query, id)
+		}
+		return conn.ExecCtx(ctx, query, id)
+	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
+	return err
+}
+
+//软删除数据
+func (m *defaultUserModel) DeleteSoft(ctx context.Context, session sqlx.Session, data *User) error {
+	data.DelState = globalkey.DelStateYes
+	data.DeleteTime = time.Now()
+	if err := m.UpdateWithVersion(ctx, session, data); err != nil {
+		return errors.Wrapf(xerr.NewErrMsg("删除数据失败"), "UserModel delete err : %+v", err)
+	}
+	return nil
+}
+
+//暴露给logic开启事务
+func (m *defaultUserModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
+}
+
+func (m *defaultUserModel) Update(ctx context.Context, session sqlx.Session, data *User) (sql.Result, error) {
 	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, data.Id)
 	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
-	return m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userRowsWithPlaceHolder)
 		if session != nil {
-			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id)
+			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id)
 		}
-		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id)
+		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
 }
 
 //乐观锁修改数据 ,推荐使用
-func (m *defaultUserModel) UpdateWithVersion(session sqlx.Session, data *User) error {
+func (m *defaultUserModel) UpdateWithVersion(ctx context.Context, session sqlx.Session, data *User) error {
 
 	oldVersion := data.Version
 	data.Version += 1
@@ -182,22 +226,20 @@ func (m *defaultUserModel) UpdateWithVersion(session sqlx.Session, data *User) e
 
 	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, data.Id)
 	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
-	sqlResult, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
+	sqlResult, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, userRowsWithPlaceHolder)
 		if session != nil {
-			return session.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id, oldVersion)
+			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id, oldVersion)
 		}
-		return conn.Exec(query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id, oldVersion)
+		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.Mobile, data.Password, data.Nickname, data.Sex, data.Avatar, data.Info, data.Id, oldVersion)
 	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
 	if err != nil {
 		return err
 	}
-
 	updateCount, err := sqlResult.RowsAffected()
 	if err != nil {
 		return err
 	}
-
 	if updateCount == 0 {
 		return xerr.NewErrCode(xerr.DB_UPDATE_AFFECTED_ZERO_ERROR)
 	}
@@ -207,7 +249,7 @@ func (m *defaultUserModel) UpdateWithVersion(session sqlx.Session, data *User) e
 }
 
 //根据条件查询一条数据
-func (m *defaultUserModel) FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*User, error) {
+func (m *defaultUserModel) FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*User, error) {
 
 	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
@@ -215,7 +257,7 @@ func (m *defaultUserModel) FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*U
 	}
 
 	var resp User
-	err = m.QueryRowNoCache(&resp, query, values...)
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -225,7 +267,7 @@ func (m *defaultUserModel) FindOneByQuery(rowBuilder squirrel.SelectBuilder) (*U
 }
 
 //统计某个字段总和
-func (m *defaultUserModel) FindSum(sumBuilder squirrel.SelectBuilder) (float64, error) {
+func (m *defaultUserModel) FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error) {
 
 	query, values, err := sumBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
@@ -233,7 +275,7 @@ func (m *defaultUserModel) FindSum(sumBuilder squirrel.SelectBuilder) (float64, 
 	}
 
 	var resp float64
-	err = m.QueryRowNoCache(&resp, query, values...)
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -243,7 +285,7 @@ func (m *defaultUserModel) FindSum(sumBuilder squirrel.SelectBuilder) (float64, 
 }
 
 //根据某个字段查询数据数量
-func (m *defaultUserModel) FindCount(countBuilder squirrel.SelectBuilder) (int64, error) {
+func (m *defaultUserModel) FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error) {
 
 	query, values, err := countBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
 	if err != nil {
@@ -251,7 +293,7 @@ func (m *defaultUserModel) FindCount(countBuilder squirrel.SelectBuilder) (int64
 	}
 
 	var resp int64
-	err = m.QueryRowNoCache(&resp, query, values...)
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -261,7 +303,7 @@ func (m *defaultUserModel) FindCount(countBuilder squirrel.SelectBuilder) (int64
 }
 
 //查询所有数据
-func (m *defaultUserModel) FindAll(rowBuilder squirrel.SelectBuilder, orderBy string) ([]*User, error) {
+func (m *defaultUserModel) FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*User, error) {
 
 	if orderBy == "" {
 		rowBuilder = rowBuilder.OrderBy("id DESC")
@@ -275,7 +317,7 @@ func (m *defaultUserModel) FindAll(rowBuilder squirrel.SelectBuilder, orderBy st
 	}
 
 	var resp []*User
-	err = m.QueryRowsNoCache(&resp, query, values...)
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -285,7 +327,7 @@ func (m *defaultUserModel) FindAll(rowBuilder squirrel.SelectBuilder, orderBy st
 }
 
 //按照页码分页查询数据
-func (m *defaultUserModel) FindPageListByPage(rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*User, error) {
+func (m *defaultUserModel) FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*User, error) {
 
 	if orderBy == "" {
 		rowBuilder = rowBuilder.OrderBy("id DESC")
@@ -304,7 +346,7 @@ func (m *defaultUserModel) FindPageListByPage(rowBuilder squirrel.SelectBuilder,
 	}
 
 	var resp []*User
-	err = m.QueryRowsNoCache(&resp, query, values...)
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -314,7 +356,7 @@ func (m *defaultUserModel) FindPageListByPage(rowBuilder squirrel.SelectBuilder,
 }
 
 //按照id倒序分页查询数据，不支持排序
-func (m *defaultUserModel) FindPageListByIdDESC(rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*User, error) {
+func (m *defaultUserModel) FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*User, error) {
 
 	if preMinId > 0 {
 		rowBuilder = rowBuilder.Where(" id < ? ", preMinId)
@@ -326,7 +368,7 @@ func (m *defaultUserModel) FindPageListByIdDESC(rowBuilder squirrel.SelectBuilde
 	}
 
 	var resp []*User
-	err = m.QueryRowsNoCache(&resp, query, values...)
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -336,7 +378,7 @@ func (m *defaultUserModel) FindPageListByIdDESC(rowBuilder squirrel.SelectBuilde
 }
 
 //按照id升序分页查询数据，不支持排序
-func (m *defaultUserModel) FindPageListByIdASC(rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*User, error) {
+func (m *defaultUserModel) FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*User, error) {
 
 	if preMaxId > 0 {
 		rowBuilder = rowBuilder.Where(" id > ? ", preMaxId)
@@ -348,7 +390,7 @@ func (m *defaultUserModel) FindPageListByIdASC(rowBuilder squirrel.SelectBuilder
 	}
 
 	var resp []*User
-	err = m.QueryRowsNoCache(&resp, query, values...)
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil
@@ -372,54 +414,15 @@ func (m *defaultUserModel) SumBuilder(field string) squirrel.SelectBuilder {
 	return squirrel.Select("IFNULL(SUM(" + field + "),0)").From(m.table)
 }
 
-//删除数据
-func (m *defaultUserModel) Delete(session sqlx.Session, id int64) error {
-	data, err := m.FindOne(id)
-	if err != nil {
-		return err
-	}
-
-	looklookUsercenterUserIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, id)
-	looklookUsercenterUserMobileKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserMobilePrefix, data.Mobile)
-	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		if session != nil {
-			return session.Exec(query, id)
-		}
-		return conn.Exec(query, id)
-	}, looklookUsercenterUserIdKey, looklookUsercenterUserMobileKey)
-	return err
-}
-
-//软删除数据
-func (m *defaultUserModel) DeleteSoft(session sqlx.Session, data *User) error {
-	data.DelState = globalkey.DelStateYes
-	data.DeleteTime = time.Now()
-	if err := m.UpdateWithVersion(session, data); err != nil {
-		return errors.Wrapf(xerr.NewErrMsg("删除数据失败"), "UserModel delete err : %+v", err)
-	}
-	return nil
-}
-
-//暴露给logic开启事务
-func (m *defaultUserModel) Trans(fn func(session sqlx.Session) error) error {
-
-	err := m.Transact(func(session sqlx.Session) error {
-		return fn(session)
-	})
-	return err
-
-}
-
 //格式化缓存key
 func (m *defaultUserModel) formatPrimary(primary interface{}) string {
 	return fmt.Sprintf("%s%v", cacheLooklookUsercenterUserIdPrefix, primary)
 }
 
 //根据主键去db查询一条数据
-func (m *defaultUserModel) queryPrimary(conn sqlx.SqlConn, v, primary interface{}) error {
+func (m *defaultUserModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary interface{}) error {
 	query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", userRows, m.table)
-	return conn.QueryRow(v, query, primary, globalkey.DelStateNo)
+	return conn.QueryRowCtx(ctx, v, query, primary, globalkey.DelStateNo)
 }
 
-//!!!!! 其他自定义方法，从此处开始写,此处上方不要写自定义方法!!!!!
+//----------------------------------------其他自定义方法，从此处开始写,此处上方不要写自定义方法----------------------------------------

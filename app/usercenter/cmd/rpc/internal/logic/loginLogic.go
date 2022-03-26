@@ -62,7 +62,7 @@ func (l *LoginLogic) Login(in *usercenter.LoginReq) (*usercenter.LoginResp, erro
 
 func (l *LoginLogic) loginByMobile(mobile, password string) (int64, error) {
 
-	user, err := l.svcCtx.UserModel.FindOneByMobile(mobile)
+	user, err := l.svcCtx.UserModel.FindOneByMobile(l.ctx,mobile)
 	if err != nil && err != model.ErrNotFound {
 		return 0, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "根据手机号查询用户信息失败，mobile:%s,err:%v", mobile, err)
 	}
