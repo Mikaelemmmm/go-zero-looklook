@@ -39,7 +39,7 @@ func (l *HomestayListLogic) HomestayList(req types.HomestayListReq) (*types.Home
 		"row_type": model.HomestayActivityPreferredType,
 		"row_status" : model.HomestayActivityUpStatus,
 	})
-	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(whereBuilder,req.Page, req.PageSize,"data_id desc")
+	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx,whereBuilder,req.Page, req.PageSize,"data_id desc")
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取活动民宿id集合出错 rowType: %s ,err : %v", model.HomestayActivityPreferredType, err)
 	}
@@ -53,7 +53,7 @@ func (l *HomestayListLogic) HomestayList(req types.HomestayListReq) (*types.Home
 		}, func(item interface{}, writer mr.Writer, cancel func(error)) {
 			id := item.(int64)
 
-			homestay, err := l.svcCtx.HomestayModel.FindOne(id)
+			homestay, err := l.svcCtx.HomestayModel.FindOne(l.ctx,id)
 			if err != nil && err != model.ErrNotFound {
 				// 列表数据不返回错误，记录日志即可.
 				logx.WithContext(l.ctx).Errorf("ActivityHomestayListLogic ActivityHomestayList 获取活动数据失败 id : %d ,err : %v", id, err)

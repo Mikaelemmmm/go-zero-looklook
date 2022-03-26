@@ -89,7 +89,7 @@ func (l *CreateHomestayOrderLogic) CreateHomestayOrder(in *pb.CreateHomestayOrde
 
 	order.OrderTotalPrice = order.HomestayTotalPrice + order.FoodTotalPrice //计算订单总价格.
 
-	_, err = l.svcCtx.HomestayOrderModel.Insert(nil, order)
+	_, err = l.svcCtx.HomestayOrderModel.Insert(l.ctx,nil, order)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "下单数据库异常 order : %+v , err: %v", order, err)
 	}

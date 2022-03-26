@@ -30,7 +30,7 @@ func NewUpdateHomestayOrderTradeStateLogic(ctx context.Context, svcCtx *svc.Serv
 func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *pb.UpdateHomestayOrderTradeStateReq) (*pb.UpdateHomestayOrderTradeStateResp, error) {
 
 	// 1、查询当前订单
-	homestayOrder, err := l.svcCtx.HomestayOrderModel.FindOneBySn(in.Sn)
+	homestayOrder, err := l.svcCtx.HomestayOrderModel.FindOneBySn(l.ctx,in.Sn)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err : %v , in:%+v", err, in)
 	}
@@ -49,7 +49,7 @@ func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *p
 
 	// 3、更新前状态判断.
 	homestayOrder.TradeState = in.TradeState
-	if err := l.svcCtx.HomestayOrderModel.UpdateWithVersion(nil, homestayOrder); err != nil {
+	if err := l.svcCtx.HomestayOrderModel.UpdateWithVersion(l.ctx,nil, homestayOrder); err != nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("更新民宿订单状态失败"), "更新民宿订单状态失败 err:%v , in : %v", err, in)
 	}
 

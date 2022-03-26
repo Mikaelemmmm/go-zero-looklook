@@ -32,7 +32,7 @@ func NewUpdateTradeStateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*pb.UpdateTradeStateResp, error) {
 
 	//1、流水记录确认.
-	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(in.Sn)
+	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(l.ctx,in.Sn)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "更新交易状态 ，根据流水单号查询流水db异常 sn : %s", in.Sn)
 	}
@@ -66,7 +66,7 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 	thirdPayment.TradeStateDesc = in.TradeStateDesc
 	thirdPayment.PayStatus = in.PayStatus
 	thirdPayment.PayTime = time.Unix(in.PayTime, 0)
-	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(nil, thirdPayment); err != nil {
+	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(l.ctx,nil, thirdPayment); err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " 更新流水状态失败 err:%v ", err)
 	}
 

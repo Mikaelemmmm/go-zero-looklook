@@ -33,7 +33,7 @@ func NewClearTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ClearT
 func (l *ClearTokenLogic) ClearToken(in *pb.ClearTokenReq) (*pb.ClearTokenResp, error) {
 
 	userTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, in.UserId)
-	if _, err := l.svcCtx.RedisClient.Del(userTokenKey); err != nil {
+	if _, err := l.svcCtx.RedisClient.DelCtx(l.ctx,userTokenKey); err != nil {
 		return nil, errors.Wrapf(ErrClearTokenError, "userId:%d,err:%v", in.UserId, err)
 	}
 

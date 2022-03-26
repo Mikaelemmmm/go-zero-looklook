@@ -33,7 +33,7 @@ func NewValidateTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Val
 func (l *ValidateTokenLogic) ValidateToken(in *pb.ValidateTokenReq) (*pb.ValidateTokenResp, error) {
 
 	userTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, in.UserId)
-	dbToken, err := l.svcCtx.RedisClient.Get(userTokenKey)
+	dbToken, err := l.svcCtx.RedisClient.GetCtx(l.ctx,userTokenKey)
 	if err != nil {
 		return nil, errors.Wrapf(ValidateTokenError, "ValidateToken RedisClient Get userId:%d ,err:%v", in.UserId, err)
 	}

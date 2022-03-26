@@ -44,7 +44,7 @@ func (l *GenerateTokenLogic) GenerateToken(in *pb.GenerateTokenReq) (*pb.Generat
 
 	// 存入redis.
 	userTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, in.UserId)
-	err = l.svcCtx.RedisClient.Setex(userTokenKey, accessToken, int(accessExpire))
+	err = l.svcCtx.RedisClient.SetexCtx(l.ctx,userTokenKey, accessToken, int(accessExpire))
 	if err != nil {
 		return nil, errors.Wrapf(ErrGenerateTokenError, "SetnxEx err userId:%d, err:%v", in.UserId, err)
 	}

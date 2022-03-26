@@ -33,7 +33,7 @@ func (l *GuessListLogic) GuessList(req types.GuessListReq) (*types.GuessListResp
 
 	var resp []types.Homestay
 
-	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(l.svcCtx.HomestayModel.RowBuilder(),0, 5)
+	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(l.ctx,l.svcCtx.HomestayModel.RowBuilder(),0, 5)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v", req, err)
 	}
