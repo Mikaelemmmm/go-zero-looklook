@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"looklook/admin/global"
 	"github.com/mojocn/base64Captcha"
 	"go.uber.org/zap"
+	"looklook/admin/global"
 )
 
 func NewDefaultRedisStore() *RedisStore {
@@ -27,11 +27,12 @@ func (rs *RedisStore) UseWithCtx(ctx context.Context) base64Captcha.Store {
 	return rs
 }
 
-func (rs *RedisStore) Set(id string, value string) {
+func (rs *RedisStore) Set(id string, value string)error {
 	err := global.GVA_REDIS.Set(rs.Context, rs.PreKey+id, value, rs.Expiration).Err()
 	if err != nil {
 		global.GVA_LOG.Error("RedisStoreSetError!", zap.Error(err))
 	}
+	return err
 }
 
 func (rs *RedisStore) Get(key string, clear bool) string {
