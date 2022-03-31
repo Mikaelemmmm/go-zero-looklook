@@ -59,7 +59,8 @@ func (l *ThirdPaymentWxPayCallbackLogic) ThirdPaymentWxPayCallback(rw http.Respo
 	}
 
 	returnCode := "SUCCESS"
-	if err := l.verifyAndUpdateState(transaction); err != nil {
+	err = l.verifyAndUpdateState(transaction)
+	if err != nil {
 		returnCode = "FAIL"
 	}
 
