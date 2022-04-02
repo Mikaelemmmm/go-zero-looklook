@@ -53,7 +53,7 @@ At the end of this tutorial, we will also share go-zero -looklook. Please look f
 
 ## Doc
 
- https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc   Under the doc directory of the project
+ https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/english   Under the doc directory of the project
 
 
 
