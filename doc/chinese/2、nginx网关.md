@@ -24,14 +24,14 @@ api被很多同学理解成了网关，实际意义上来说当你的项目在�
 server{
     listen 8081;
     access_log /var/log/nginx/looklook.com_access.log;
-    error_log /var/log/nginx//looklook.com_error.log;
+    error_log /var/log/nginx/looklook.com_error.log;
 
     location /auth {
 	    internal;
-      proxy_set_header X-Original-URI $request_uri;
+        proxy_set_header X-Original-URI $request_uri;
 	    proxy_pass_request_body off;
 	    proxy_set_header Content-Length "";
-	    proxy_pass http://identity-api:8001/identity/v1/verify/token;
+	    proxy_pass http://looklook:8001/identity/v1/verify/token;
     }
 
     location ~ /usercenter/ {
@@ -43,7 +43,7 @@ server{
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header REMOTE-HOST $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://usercenter-api:8002;
+       proxy_pass http://looklook:8002;
    }
 
    location ~ /travel/ {
@@ -55,7 +55,7 @@ server{
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header REMOTE-HOST $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://travel-api:8003;
+       proxy_pass http://looklook:8003;
    }
 
 
@@ -68,7 +68,7 @@ server{
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header REMOTE-HOST $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://order-api:8004;
+       proxy_pass http://looklook:8004;
    }
 
     location ~ /payment/ {
@@ -80,9 +80,11 @@ server{
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header REMOTE-HOST $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://payment-api:8005;
+       proxy_pass http://looklook:8005;
    }
+
 }
+
 ```
 
 容器内部nginx端口是8081，使用docker暴露出去8888映射端口8081，这样外部通过8888来访问网关，使用location来匹配每个服务，当然会有人说，没加一个api服务都要来nignx配置太麻烦，你也可以使用confd统一配置，自行百度。
