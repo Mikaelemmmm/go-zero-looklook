@@ -89,11 +89,12 @@ The project directory structure is as follows：
 
 - harbor
 
-### 三、Project Architecture Diagram
+## 三、Project Architecture Diagram
 
 ![gozerolooklook](../chinese/images/1/gozerolooklook.png)
 
-### 四、Business Architecture Diagram
+## 四、Business Architecture Diagram
+
 ![gozerolooklook](../chinese/images/1/go-zero-looklook-service.png)
 
 ## 五、Project Environment Setup
@@ -149,7 +150,6 @@ looklook-log ： The log collection uses the
 payment-update-paystatus-topic ： Payment success notification
 
 send-wx-mini-tpl-message：Send WeChat applet notifications
-
 
 #### 3.2 Importing mysql data
 
@@ -291,7 +291,7 @@ Note] If the access to nginx fails and the access success can be ignored, it may
 $ docker-compose restart nginx
 ```
 
-### 六、Log Collection
+## 六、Log Collection
 
 Collect project logs to es (filebeat collects logs -> kafka -> go-stash consumes kafka logs -> output to es, kibana views es data)
 
@@ -347,7 +347,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
   2) In the kafka container internal command line using consumer.sh consumption looklook-log, another terminal command line with producer.sh to looklook-log send messages, if the consumer can not receive, indicating that the kafka problem, docker logs -f kafka to see what the problem
 
-### 七、Introduction of this project mirror
+## 七、Introduction of this project mirror
 
 - nginx : gateway （nginx->api->rpc）
 - cosmtrek/air、modd : Our business code development depends on the environment image, the reason why we use this is because air hot-loading, writing code compiled in real time is too convenient, this image is air + golang, in fact, after we start our own business services, our business services are running in this image
@@ -364,7 +364,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 - jaegertracing/all-in-one：Link Tracking
 - go-stash : After filebeat collects the logs to kafka, go-stash goes to consume kafka to desensitize the data, filter the content in the logs, and finally output to es
 
-### 八、Project Development Proposal
+## 八、Project Development Proposal
 
 - app： decentralizes all business service codes
 
@@ -412,7 +412,7 @@ Note] It is recommended that when generating the rpc file, execute the following
 
 - Generate mod, error handling when using the template redefinition, the project used a custom goctl template in the project deploy/goctl under
 
-### 九、Common mistakes in building environments
+## 九、Common mistakes in building environments
 
 ```dock
 1、Create stage, start docker-compose-env.yml container
