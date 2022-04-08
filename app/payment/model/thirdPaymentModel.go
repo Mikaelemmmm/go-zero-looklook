@@ -2,9 +2,6 @@ package model
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"strings"
 	"time"
 
 	"looklook/common/globalkey"
@@ -12,185 +9,43 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"github.com/zeromicro/go-zero/core/stringx"
 )
 
-var (
-	thirdPaymentFieldNames          = builder.RawFieldNames(&ThirdPayment{})
-	thirdPaymentRows                = strings.Join(thirdPaymentFieldNames, ",")
-	thirdPaymentRowsExpectAutoSet   = strings.Join(stringx.Remove(thirdPaymentFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
-	thirdPaymentRowsWithPlaceHolder = strings.Join(stringx.Remove(thirdPaymentFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
-
-	cacheLooklookPaymentThirdPaymentIdPrefix = "cache:looklookPayment:thirdPayment:id:"
-	cacheLooklookPaymentThirdPaymentSnPrefix = "cache:looklookPayment:thirdPayment:sn:"
-)
+var _ ThirdPaymentModel = (*customThirdPaymentModel)(nil)
 
 type (
+	// ThirdPaymentModel is an interface to be customized, add more methods here,
+	// and implement the added methods in customThirdPaymentModel.
 	ThirdPaymentModel interface {
-		//新增数据
-		Insert(ctx context.Context, session sqlx.Session, data *ThirdPayment) (sql.Result, error)
-
-		//根据主键查询一条数据，走缓存
-		FindOne(ctx context.Context, id int64) (*ThirdPayment, error)
-
-		//根据唯一索引查询一条数据，走缓存
-		FindOneBySn(ctx context.Context, sn string) (*ThirdPayment, error)
-
-		//删除数据
-		Delete(ctx context.Context, session sqlx.Session, id int64) error
-
-		//软删除数据
-		DeleteSoft(ctx context.Context, session sqlx.Session, data *ThirdPayment) error
-
-		//更新数据
-		Update(ctx context.Context, session sqlx.Session, data *ThirdPayment) (sql.Result, error)
-
-		//更新数据，使用乐观锁
-		UpdateWithVersion(ctx context.Context, session sqlx.Session, data *ThirdPayment) error
-
-		//根据条件查询一条数据，不走缓存
-		FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*ThirdPayment, error)
-
-		//sum某个字段
-		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error)
-
-		//根据条件统计条数
-		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error)
-
-		//查询所有数据不分页
-		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*ThirdPayment, error)
-
-		//根据页码分页查询分页数据
-		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*ThirdPayment, error)
-
-		//根据id倒序分页查询分页数据
-		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*ThirdPayment, error)
-
-		//根据id升序分页查询分页数据
-		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*ThirdPayment, error)
-
-		//暴露给logic，开启事务
+		thirdPaymentModel
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
-
-		//暴露给logic，查询数据的builder
 		RowBuilder() squirrel.SelectBuilder
-
-		//暴露给logic，查询count的builder
 		CountBuilder(field string) squirrel.SelectBuilder
-
-		//暴露给logic，查询sum的builder
 		SumBuilder(field string) squirrel.SelectBuilder
+		DeleteSoft(ctx context.Context, session sqlx.Session, data *ThirdPayment) error
+		FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*ThirdPayment, error)
+		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error)
+		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error)
+		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*ThirdPayment, error)
+		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*ThirdPayment, error)
+		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*ThirdPayment, error)
+		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*ThirdPayment, error)
 	}
 
-	defaultThirdPaymentModel struct {
-		sqlc.CachedConn
-		table string
-	}
-
-	ThirdPayment struct {
-		Id             int64     `db:"id"`
-		Sn             string    `db:"sn"` // 流水单号
-		CreateTime     time.Time `db:"create_time"`
-		UpdateTime     time.Time `db:"update_time"`
-		DeleteTime     time.Time `db:"delete_time"`
-		DelState       int64     `db:"del_state"`
-		Version        int64     `db:"version"`          // 乐观锁版本号
-		UserId         int64     `db:"user_id"`          // 用户id
-		PayMode        string    `db:"pay_mode"`         // 支付方式 1:微信支付
-		TradeType      string    `db:"trade_type"`       // 第三方支付类型
-		TradeState     string    `db:"trade_state"`      // 第三方交易状态
-		PayTotal       int64     `db:"pay_total"`        // 支付总金额(分)
-		TransactionId  string    `db:"transaction_id"`   // 第三方支付单号
-		TradeStateDesc string    `db:"trade_state_desc"` // 支付状态描述
-		OrderSn        string    `db:"order_sn"`         // 业务单号
-		ServiceType    string    `db:"service_type"`     // 业务类型
-		PayStatus      int64     `db:"pay_status"`       // 平台内交易状态   -1:支付失败 0:未支付 1:支付成功 2:已退款
-		PayTime        time.Time `db:"pay_time"`         // 支付成功时间
+	customThirdPaymentModel struct {
+		*defaultThirdPaymentModel
 	}
 )
 
+// NewThirdPaymentModel returns a model for the database table.
 func NewThirdPaymentModel(conn sqlx.SqlConn, c cache.CacheConf) ThirdPaymentModel {
-	return &defaultThirdPaymentModel{
-		CachedConn: sqlc.NewConn(conn, c),
-		table:      "`third_payment`",
+	return &customThirdPaymentModel{
+		defaultThirdPaymentModel: newThirdPaymentModel(conn, c),
 	}
 }
 
-func (m *defaultThirdPaymentModel) Insert(ctx context.Context, session sqlx.Session, data *ThirdPayment) (sql.Result, error) {
-	data.DeleteTime = time.Unix(0, 0)
-	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)
-	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, data.Id)
-	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, thirdPaymentRowsExpectAutoSet)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime)
-		}
-		return conn.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime)
-	}, looklookPaymentThirdPaymentSnKey, looklookPaymentThirdPaymentIdKey)
-}
-
-//根据主键查询一条数据，走缓存
-func (m *defaultThirdPaymentModel) FindOne(ctx context.Context, id int64) (*ThirdPayment, error) {
-	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, id)
-	var resp ThirdPayment
-	err := m.QueryRowCtx(ctx, &resp, looklookPaymentThirdPaymentIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", thirdPaymentRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id, globalkey.DelStateNo)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-//根据唯一索引查询一条数据，走缓存
-func (m *defaultThirdPaymentModel) FindOneBySn(ctx context.Context, sn string) (*ThirdPayment, error) {
-	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, sn)
-	var resp ThirdPayment
-	err := m.QueryRowIndexCtx(ctx, &resp, looklookPaymentThirdPaymentSnKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
-		query := fmt.Sprintf("select %s from %s where `sn` = ? and del_state = ? limit 1", thirdPaymentRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, sn, globalkey.DelStateNo); err != nil {
-			return nil, err
-		}
-		return resp.Id, nil
-	}, m.queryPrimary)
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultThirdPaymentModel) Delete(ctx context.Context, session sqlx.Session, id int64) error {
-	data, err := m.FindOne(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, id)
-	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)
-	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		if session != nil {
-			return session.ExecCtx(ctx, query, id)
-		}
-		return conn.ExecCtx(ctx, query, id)
-	}, looklookPaymentThirdPaymentIdKey, looklookPaymentThirdPaymentSnKey)
-	return err
-}
-
-//软删除数据
 func (m *defaultThirdPaymentModel) DeleteSoft(ctx context.Context, session sqlx.Session, data *ThirdPayment) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
@@ -200,61 +55,6 @@ func (m *defaultThirdPaymentModel) DeleteSoft(ctx context.Context, session sqlx.
 	return nil
 }
 
-//暴露给logic开启事务
-func (m *defaultThirdPaymentModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
-
-	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
-		return fn(ctx, session)
-	})
-
-}
-
-func (m *defaultThirdPaymentModel) Update(ctx context.Context, session sqlx.Session, data *ThirdPayment) (sql.Result, error) {
-	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, data.Id)
-	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)
-	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, thirdPaymentRowsWithPlaceHolder)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime, data.Id)
-		}
-		return conn.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime, data.Id)
-	}, looklookPaymentThirdPaymentSnKey, looklookPaymentThirdPaymentIdKey)
-}
-
-//乐观锁修改数据 ,推荐使用
-func (m *defaultThirdPaymentModel) UpdateWithVersion(ctx context.Context, session sqlx.Session, data *ThirdPayment) error {
-
-	oldVersion := data.Version
-	data.Version += 1
-
-	var sqlResult sql.Result
-	var err error
-
-	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, data.Id)
-	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)
-	sqlResult, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, thirdPaymentRowsWithPlaceHolder)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime, data.Id, oldVersion)
-		}
-		return conn.ExecCtx(ctx, query, data.Sn, data.DeleteTime, data.DelState, data.Version, data.UserId, data.PayMode, data.TradeType, data.TradeState, data.PayTotal, data.TransactionId, data.TradeStateDesc, data.OrderSn, data.ServiceType, data.PayStatus, data.PayTime, data.Id, oldVersion)
-	}, looklookPaymentThirdPaymentSnKey, looklookPaymentThirdPaymentIdKey)
-	if err != nil {
-		return err
-	}
-	updateCount, err := sqlResult.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if updateCount == 0 {
-		return xerr.NewErrCode(xerr.DB_UPDATE_AFFECTED_ZERO_ERROR)
-	}
-
-	return nil
-
-}
-
-//根据条件查询一条数据
 func (m *defaultThirdPaymentModel) FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*ThirdPayment, error) {
 
 	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -272,7 +72,6 @@ func (m *defaultThirdPaymentModel) FindOneByQuery(ctx context.Context, rowBuilde
 	}
 }
 
-//统计某个字段总和
 func (m *defaultThirdPaymentModel) FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error) {
 
 	query, values, err := sumBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -290,7 +89,6 @@ func (m *defaultThirdPaymentModel) FindSum(ctx context.Context, sumBuilder squir
 	}
 }
 
-//根据某个字段查询数据数量
 func (m *defaultThirdPaymentModel) FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error) {
 
 	query, values, err := countBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -308,7 +106,6 @@ func (m *defaultThirdPaymentModel) FindCount(ctx context.Context, countBuilder s
 	}
 }
 
-//查询所有数据
 func (m *defaultThirdPaymentModel) FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*ThirdPayment, error) {
 
 	if orderBy == "" {
@@ -332,7 +129,6 @@ func (m *defaultThirdPaymentModel) FindAll(ctx context.Context, rowBuilder squir
 	}
 }
 
-//按照页码分页查询数据
 func (m *defaultThirdPaymentModel) FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*ThirdPayment, error) {
 
 	if orderBy == "" {
@@ -361,7 +157,6 @@ func (m *defaultThirdPaymentModel) FindPageListByPage(ctx context.Context, rowBu
 	}
 }
 
-//按照id倒序分页查询数据，不支持排序
 func (m *defaultThirdPaymentModel) FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*ThirdPayment, error) {
 
 	if preMinId > 0 {
@@ -405,30 +200,26 @@ func (m *defaultThirdPaymentModel) FindPageListByIdASC(ctx context.Context, rowB
 	}
 }
 
-//暴露给logic查询数据构建条件使用的builder
+// export logic
+func (m *defaultThirdPaymentModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
+}
+
+// export logic
 func (m *defaultThirdPaymentModel) RowBuilder() squirrel.SelectBuilder {
 	return squirrel.Select(thirdPaymentRows).From(m.table)
 }
 
-//暴露给logic查询count构建条件使用的builder
+// export logic
 func (m *defaultThirdPaymentModel) CountBuilder(field string) squirrel.SelectBuilder {
 	return squirrel.Select("COUNT(" + field + ")").From(m.table)
 }
 
-//暴露给logic查询构建条件使用的builder
+// export logic
 func (m *defaultThirdPaymentModel) SumBuilder(field string) squirrel.SelectBuilder {
 	return squirrel.Select("IFNULL(SUM(" + field + "),0)").From(m.table)
 }
-
-//格式化缓存key
-func (m *defaultThirdPaymentModel) formatPrimary(primary interface{}) string {
-	return fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, primary)
-}
-
-//根据主键去db查询一条数据
-func (m *defaultThirdPaymentModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary interface{}) error {
-	query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", thirdPaymentRows, m.table)
-	return conn.QueryRowCtx(ctx, v, query, primary, globalkey.DelStateNo)
-}
-
-//----------------------------------------其他自定义方法，从此处开始写,此处上方不要写自定义方法----------------------------------------
