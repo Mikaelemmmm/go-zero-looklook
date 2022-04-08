@@ -2,9 +2,6 @@ package model
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"strings"
 	"time"
 
 	"looklook/common/globalkey"
@@ -12,144 +9,43 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"github.com/zeromicro/go-zero/core/stringx"
 )
 
-var (
-	homestayActivityFieldNames          = builder.RawFieldNames(&HomestayActivity{})
-	homestayActivityRows                = strings.Join(homestayActivityFieldNames, ",")
-	homestayActivityRowsExpectAutoSet   = strings.Join(stringx.Remove(homestayActivityFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
-	homestayActivityRowsWithPlaceHolder = strings.Join(stringx.Remove(homestayActivityFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
-
-	cacheLooklookTravelHomestayActivityIdPrefix = "cache:looklookTravel:homestayActivity:id:"
-)
+var _ HomestayActivityModel = (*customHomestayActivityModel)(nil)
 
 type (
+	// HomestayActivityModel is an interface to be customized, add more methods here,
+	// and implement the added methods in customHomestayActivityModel.
 	HomestayActivityModel interface {
-		//新增数据
-		Insert(ctx context.Context, session sqlx.Session, data *HomestayActivity) (sql.Result, error)
-
-		//根据主键查询一条数据，走缓存
-		FindOne(ctx context.Context, id int64) (*HomestayActivity, error)
-
-		//删除数据
-		Delete(ctx context.Context, session sqlx.Session, id int64) error
-
-		//软删除数据
-		DeleteSoft(ctx context.Context, session sqlx.Session, data *HomestayActivity) error
-
-		//更新数据
-		Update(ctx context.Context, session sqlx.Session, data *HomestayActivity) (sql.Result, error)
-
-		//更新数据，使用乐观锁
-		UpdateWithVersion(ctx context.Context, session sqlx.Session, data *HomestayActivity) error
-
-		//根据条件查询一条数据，不走缓存
-		FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*HomestayActivity, error)
-
-		//sum某个字段
-		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error)
-
-		//根据条件统计条数
-		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error)
-
-		//查询所有数据不分页
-		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayActivity, error)
-
-		//根据页码分页查询分页数据
-		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayActivity, error)
-
-		//根据id倒序分页查询分页数据
-		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayActivity, error)
-
-		//根据id升序分页查询分页数据
-		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayActivity, error)
-
-		//暴露给logic，开启事务
+		homestayActivityModel
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
-
-		//暴露给logic，查询数据的builder
 		RowBuilder() squirrel.SelectBuilder
-
-		//暴露给logic，查询count的builder
 		CountBuilder(field string) squirrel.SelectBuilder
-
-		//暴露给logic，查询sum的builder
 		SumBuilder(field string) squirrel.SelectBuilder
+		DeleteSoft(ctx context.Context, session sqlx.Session, data *HomestayActivity) error
+		FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*HomestayActivity, error)
+		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error)
+		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error)
+		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayActivity, error)
+		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayActivity, error)
+		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayActivity, error)
+		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*HomestayActivity, error)
 	}
 
-	defaultHomestayActivityModel struct {
-		sqlc.CachedConn
-		table string
-	}
-
-	HomestayActivity struct {
-		Id         int64     `db:"id"`
-		CreateTime time.Time `db:"create_time"`
-		UpdateTime time.Time `db:"update_time"`
-		DeleteTime time.Time `db:"delete_time"`
-		DelState   int64     `db:"del_state"`
-		RowType    string    `db:"row_type"`   // 活动类型
-		DataId     int64     `db:"data_id"`    // 业务表id（id跟随活动类型走）
-		RowStatus  int64     `db:"row_status"` // 0:下架 1:上架
-		Version    int64     `db:"version"`    // 版本号
+	customHomestayActivityModel struct {
+		*defaultHomestayActivityModel
 	}
 )
 
+// NewHomestayActivityModel returns a model for the database table.
 func NewHomestayActivityModel(conn sqlx.SqlConn, c cache.CacheConf) HomestayActivityModel {
-	return &defaultHomestayActivityModel{
-		CachedConn: sqlc.NewConn(conn, c),
-		table:      "`homestay_activity`",
+	return &customHomestayActivityModel{
+		defaultHomestayActivityModel: newHomestayActivityModel(conn, c),
 	}
 }
 
-func (m *defaultHomestayActivityModel) Insert(ctx context.Context, session sqlx.Session, data *HomestayActivity) (sql.Result, error) {
-	data.DeleteTime = time.Unix(0, 0)
-	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, data.Id)
-	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, homestayActivityRowsExpectAutoSet)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version)
-		}
-		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version)
-	}, looklookTravelHomestayActivityIdKey)
-}
-
-//根据主键查询一条数据，走缓存
-func (m *defaultHomestayActivityModel) FindOne(ctx context.Context, id int64) (*HomestayActivity, error) {
-	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, id)
-	var resp HomestayActivity
-	err := m.QueryRowCtx(ctx, &resp, looklookTravelHomestayActivityIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", homestayActivityRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id, globalkey.DelStateNo)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultHomestayActivityModel) Delete(ctx context.Context, session sqlx.Session, id int64) error {
-	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		if session != nil {
-			return session.ExecCtx(ctx, query, id)
-		}
-		return conn.ExecCtx(ctx, query, id)
-	}, looklookTravelHomestayActivityIdKey)
-	return err
-}
-
-//软删除数据
 func (m *defaultHomestayActivityModel) DeleteSoft(ctx context.Context, session sqlx.Session, data *HomestayActivity) error {
 	data.DelState = globalkey.DelStateYes
 	data.DeleteTime = time.Now()
@@ -159,59 +55,6 @@ func (m *defaultHomestayActivityModel) DeleteSoft(ctx context.Context, session s
 	return nil
 }
 
-//暴露给logic开启事务
-func (m *defaultHomestayActivityModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
-
-	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
-		return fn(ctx, session)
-	})
-
-}
-
-func (m *defaultHomestayActivityModel) Update(ctx context.Context, session sqlx.Session, data *HomestayActivity) (sql.Result, error) {
-	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, data.Id)
-	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, homestayActivityRowsWithPlaceHolder)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version, data.Id)
-		}
-		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version, data.Id)
-	}, looklookTravelHomestayActivityIdKey)
-}
-
-//乐观锁修改数据 ,推荐使用
-func (m *defaultHomestayActivityModel) UpdateWithVersion(ctx context.Context, session sqlx.Session, data *HomestayActivity) error {
-
-	oldVersion := data.Version
-	data.Version += 1
-
-	var sqlResult sql.Result
-	var err error
-
-	looklookTravelHomestayActivityIdKey := fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, data.Id)
-	sqlResult, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, homestayActivityRowsWithPlaceHolder)
-		if session != nil {
-			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version, data.Id, oldVersion)
-		}
-		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.RowType, data.DataId, data.RowStatus, data.Version, data.Id, oldVersion)
-	}, looklookTravelHomestayActivityIdKey)
-	if err != nil {
-		return err
-	}
-	updateCount, err := sqlResult.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if updateCount == 0 {
-		return xerr.NewErrCode(xerr.DB_UPDATE_AFFECTED_ZERO_ERROR)
-	}
-
-	return nil
-
-}
-
-//根据条件查询一条数据
 func (m *defaultHomestayActivityModel) FindOneByQuery(ctx context.Context, rowBuilder squirrel.SelectBuilder) (*HomestayActivity, error) {
 
 	query, values, err := rowBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -229,7 +72,6 @@ func (m *defaultHomestayActivityModel) FindOneByQuery(ctx context.Context, rowBu
 	}
 }
 
-//统计某个字段总和
 func (m *defaultHomestayActivityModel) FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder) (float64, error) {
 
 	query, values, err := sumBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -247,7 +89,6 @@ func (m *defaultHomestayActivityModel) FindSum(ctx context.Context, sumBuilder s
 	}
 }
 
-//根据某个字段查询数据数量
 func (m *defaultHomestayActivityModel) FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder) (int64, error) {
 
 	query, values, err := countBuilder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
@@ -265,7 +106,6 @@ func (m *defaultHomestayActivityModel) FindCount(ctx context.Context, countBuild
 	}
 }
 
-//查询所有数据
 func (m *defaultHomestayActivityModel) FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*HomestayActivity, error) {
 
 	if orderBy == "" {
@@ -289,7 +129,6 @@ func (m *defaultHomestayActivityModel) FindAll(ctx context.Context, rowBuilder s
 	}
 }
 
-//按照页码分页查询数据
 func (m *defaultHomestayActivityModel) FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*HomestayActivity, error) {
 
 	if orderBy == "" {
@@ -318,7 +157,6 @@ func (m *defaultHomestayActivityModel) FindPageListByPage(ctx context.Context, r
 	}
 }
 
-//按照id倒序分页查询数据，不支持排序
 func (m *defaultHomestayActivityModel) FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*HomestayActivity, error) {
 
 	if preMinId > 0 {
@@ -362,30 +200,26 @@ func (m *defaultHomestayActivityModel) FindPageListByIdASC(ctx context.Context, 
 	}
 }
 
-//暴露给logic查询数据构建条件使用的builder
+// export logic
+func (m *defaultHomestayActivityModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
+}
+
+// export logic
 func (m *defaultHomestayActivityModel) RowBuilder() squirrel.SelectBuilder {
 	return squirrel.Select(homestayActivityRows).From(m.table)
 }
 
-//暴露给logic查询count构建条件使用的builder
+// export logic
 func (m *defaultHomestayActivityModel) CountBuilder(field string) squirrel.SelectBuilder {
 	return squirrel.Select("COUNT(" + field + ")").From(m.table)
 }
 
-//暴露给logic查询构建条件使用的builder
+// export logic
 func (m *defaultHomestayActivityModel) SumBuilder(field string) squirrel.SelectBuilder {
 	return squirrel.Select("IFNULL(SUM(" + field + "),0)").From(m.table)
 }
-
-//格式化缓存key
-func (m *defaultHomestayActivityModel) formatPrimary(primary interface{}) string {
-	return fmt.Sprintf("%s%v", cacheLooklookTravelHomestayActivityIdPrefix, primary)
-}
-
-//根据主键去db查询一条数据
-func (m *defaultHomestayActivityModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary interface{}) error {
-	query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", homestayActivityRows, m.table)
-	return conn.QueryRowCtx(ctx, v, query, primary, globalkey.DelStateNo)
-}
-
-//----------------------------------------其他自定义方法，从此处开始写,此处上方不要写自定义方法----------------------------------------
