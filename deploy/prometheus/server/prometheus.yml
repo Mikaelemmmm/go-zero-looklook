@@ -86,17 +86,4 @@ scrape_configs:
           job: mqueue-scheduler
           app: mqueue-scheduler
           env: dev
-  - job_name: 'banner-rpc'
-    static_configs:
-      - targets: [ 'looklook:4012' ]
-        labels:
-          job: banner-rpc
-          app: banner-rpc
-          env: dev
-  - job_name: 'admin-api'
-    static_configs:
-      - targets: [ 'admin-api:4013' ]
-        labels:
-          job: admin-api
-          app: admin-api
-          env: dev
+

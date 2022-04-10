@@ -16,9 +16,6 @@ Testing, online deployment using k8s (also do not need etc.) have a detailed tut
 
 The project directory structure is as follows：
 
--  admin：Background code (integrated gin-vue-admin, acting as a large gateway to the background), the use of grpc and app under the rpc business interaction, background gin-vue-admin and go-zero code interaction in the banner function has an example to view, if you do not want the background, directly delete the entire folder admin, in the execution of a go mod tidy can
-- admin/web :  Backend web-side code, gin-vue-admin
-
 
 - app：All business code contains api, rpc and mq (message queue, delay queue, timed tasks)
 
@@ -84,10 +81,6 @@ The project directory structure is as follows：
 - mysql
 
 - redis
-
-- gin-vue-admin
-
-- air
 
 - modd
 
@@ -242,13 +235,10 @@ Because this project is using docker + hot-loading, that is, the change is effec
 
 All api + rpc services under frontend app use modd + golang
 
-The backend admin-api uses cosmtrek/air:v1.28.0
-
 Direct docker-compose to start can, but consider the dependencies may be relatively large, will affect the start of the project, so it is best to pull down this image before starting the project
 
 ```shell
 $ docker pull lyumikael/gomodd:v1.0.0 #This is used by all api+rpc startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
-$ docker pull cosmtrek/air:v1.28.0 #This is the backend admin-api use , if you do not need the backend (note that docker-compose.yaml in the admin-api comments) this can not be used
 ```
 
 Note: If you add new services under the app, remember to add a copy of modd.conf in the root directory of the project.
@@ -273,7 +263,7 @@ $ docker-compose up -d
 
 Visit http://127.0.0.1:9090/, click on the menu above "Status", click on Targets, the blue one is started, the red one is not started successfully
 
-![image-20220120103641110](../chinese/images/1/image-20220120103641110.png)
+
 
 Note] If it is the first time to pull the project, each project container for the first time to build pull dependencies, this depends on the network situation, may be slightly slower to have the service, this is normal, if you encounter the project does not start up, such as order-api , manually in order-api code to write something randomly to save a trigger to recompile to see the log on it
 
@@ -283,7 +273,7 @@ $ docker-compose logs -f
 
 You can see that the prometheus also shows success, and similarly the other also row once, start successfully on it
 
-<img src="../chinese/images/1/image-20220120105313819.png" alt="image-20220120105313819" style="zoom:33%;" />
+<img src="../chinese/images/1/image-20220120103641110.png" alt="image-20220120103641110.png" style="zoom:33%;" />
 
 #### 7、Access Program
 
@@ -469,72 +459,7 @@ The reason for the error is that es does not have permission to operate the moun
 
 
 
-### 十、Backend Launch
-
-Considering that in the development if you re-write a background to do rbac and so on is still relatively troublesome, directly gin-vue-admin low code platform integration in directly with it, but the architecture is to consider the above, the
-
-We put the whole background gin-vue-admin api interface as a whole big gateway can be used, which does not write any business-related operations, all business through the grpc to go with the app under the business of the rpc to data, the foreground according to the business split different api, the background only need a large api on it.
-
-
-
-Q: Why not separate the back office to make a separate system?
-
-A: Because in the project we use the db layer cache, the cache key is defined in the model, if a separate system of this cache key we have to copy a separate copy of the past, during which there may be problems such as omissions, so directly use the grpc to call on it.
-
-
-
-##### 1、start project
-
-Create database looklook_admin && import deploy/sql/looklook_admin.sql data
-
-docker-compose -f docker-compose-admin.yml up -d
-
-You can view the logs
-
-```sh
-$ docker logs -f admin-api
-```
-
-If the following problem occurs when viewing the backend logs.
-
-2022/03/10 17:20:46 rpc dial: direct:///looklook:8008, error: context deadline exceeded, make sure rpc service "looklook:8008" is already started
-
-
-
-This is because admin-api started first, it depends on the back end of the banner due to the slow download since a little did not start up, then wait for looklook in the banner to start up, restart the admin-api will be good
-
-```sh
-$ docker-compose restart admin-api
-```
-
-Now we just need to start the back-end front-end web, go to admin/web and execute the following command
-
-```shell
-$ npm install 
-$ npm run serve
-```
-
-http://localhost:7082/#/init will be opened by default
-
-Note】Do not click "Go to initialization", otherwise the configuration file will be overwritten
-
-account：admin
-
-password：123456
-
-
-
-The whole project is gin-vue-admin, if you do not know directly to see the official gin-vue-admin can, they also have a video tutorial
-
-just in the gin-vue-admin added a how to interact with go-zero call, login to enter the background, click on the menu at the bottom of the advertising management, this function can be seen in the admin-api call app/banner-rpc example, will not be detailed
-
-
-
-
-
-
-
-### 十一、Follow-up
+### 十、Follow-up
 
 Due to the project as it relates to the technology stack is slightly more, will gradually add a little bit by chapter
 
