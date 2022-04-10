@@ -1,12 +1,12 @@
 Name: payment-rpc
-ListenOn: 0.0.0.0:9005
+ListenOn: 0.0.0.0:2002
 Mode: dev
 
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3010
+  Port: 4005
   Path: /metrics
 
 #链路追踪
@@ -30,11 +30,12 @@ Cache:
   - Host: redis:6379
     Pass: G62m50oigInC30sf
 
-#rpc
-MqueueRpcConf:
-  Endpoints:
-    - 127.0.0.1:9006
-  NonBlock: true
+#pay success notify order-mq for kq(kafka pub sub)
+KqPaymentUpdatePayStatusConf:
+  Brokers:
+    - kafka:9092
+  Topic: payment-update-paystatus-topic
+
 
 
 

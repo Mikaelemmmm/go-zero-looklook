@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/service"
+	"google.golang.org/grpc/reflection"
 
 	"looklook/app/usercenter/cmd/rpc/internal/config"
 	"looklook/app/usercenter/cmd/rpc/internal/server"
@@ -11,10 +13,8 @@ import (
 	"looklook/common/interceptor/rpcserver"
 
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 var configFile = flag.String("f", "etc/usercenter.yaml", "the config file")
@@ -28,11 +28,10 @@ func main() {
 	srv := server.NewUsercenterServer(ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		if c.Mode == service.DevMode {
-			//grpc ui调试
+		pb.RegisterUsercenterServer(grpcServer, srv)
+		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
 		}
-		pb.RegisterUsercenterServer(grpcServer, srv)
 	})
 
 	//rpc log

@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 
-	"looklook/app/identity/cmd/rpc/identity"
 	"looklook/app/usercenter/cmd/rpc/internal/svc"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 	"looklook/app/usercenter/model"
@@ -45,18 +44,20 @@ func (l *LoginLogic) Login(in *usercenter.LoginReq) (*usercenter.LoginResp, erro
 		return nil, err
 	}
 
-	//2、生成token
-	resp, err := l.svcCtx.IdentityRpc.GenerateToken(l.ctx, &identity.GenerateTokenReq{
+	//2、Generate the token, so that the service doesn't call rpc internally
+	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
+	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
 		UserId: userId,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(ErrGenerateTokenError, "IdentityRpc.GenerateToken userId : %d", userId)
+		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", userId)
 	}
 
+
 	return &usercenter.LoginResp{
-		AccessToken:  resp.AccessToken,
-		AccessExpire: resp.AccessExpire,
-		RefreshAfter: resp.RefreshAfter,
+		AccessToken:  tokenResp.AccessToken,
+		AccessExpire: tokenResp.AccessExpire,
+		RefreshAfter: tokenResp.RefreshAfter,
 	}, nil
 }
 

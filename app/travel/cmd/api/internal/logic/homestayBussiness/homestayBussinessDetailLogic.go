@@ -32,7 +32,7 @@ func (l *HomestayBussinessDetailLogic) HomestayBussinessDetail(req types.Homesta
 
 	homestayBusiness, err := l.svcCtx.HomestayBusinessModel.FindOne(l.ctx,req.Id)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " id  : %d , err : %v", req.Id, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " HomestayBussinessDetail  FindOne db fail ,id  : %d , err : %v", req.Id, err)
 	}
 
 	var typeHomestayBusinessBoss types.HomestayBusinessBoss
@@ -42,13 +42,11 @@ func (l *HomestayBussinessDetailLogic) HomestayBussinessDetail(req types.Homesta
 			Id: homestayBusiness.UserId,
 		})
 		if err != nil {
-			return nil, errors.Wrapf(xerr.NewErrMsg("获取房东信息失败"), "获取房东信息失败 userId : %d ,err:%v", homestayBusiness.UserId, err)
+			return nil, errors.Wrapf(xerr.NewErrMsg("get boss info fail"), "get boss info fail ,  userId : %d ,err:%v", homestayBusiness.UserId, err)
 		}
 		if userResp.User != nil && userResp.User.Id > 0 {
 			_ = copier.Copy(&typeHomestayBusinessBoss, userResp.User)
 		}
-
-		//todo 排名 rank.
 	}
 
 	return &types.HomestayBussinessDetailResp{

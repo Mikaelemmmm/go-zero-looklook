@@ -1,12 +1,16 @@
 Name: usercenter-api
 Host: 0.0.0.0
-Port: 8002
+Port: 1004
 Mode: dev
+
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3005
+  Port: 4008
   Path: /metrics
 
 #链路追踪
@@ -20,10 +24,6 @@ Log:
   ServiceName: usercenter-api
   Level: error
 
-#jwtAuth
-JwtAuth:
-  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505ea0
-
 #WxMiniConf
 WxMiniConf:
   AppId: wx2add729fadddddd
@@ -32,11 +32,6 @@ WxMiniConf:
 #rpc service
 UsercenterRpcConf:
   Endpoints:
-    - 127.0.0.1:9002
-  NonBlock: true
-
-IdentityRpcConf:
-  Endpoints:
-    - 127.0.0.1:9001
+    - 127.0.0.1:2004
   NonBlock: true
 

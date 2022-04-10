@@ -22,68 +22,42 @@ The actual project also uses nginx as a gateway, using the auth_request module o
 
 ```conf
 server{
-    listen 8081;
-    access_log /var/log/nginx/looklook.com_access.log;
-    error_log /var/log/nginx/looklook.com_error.log;
-
-    location /auth {
-	    internal;
-        proxy_set_header X-Original-URI $request_uri;
-	    proxy_pass_request_body off;
-	    proxy_set_header Content-Length "";
-	    proxy_pass http://looklook:8001/identity/v1/verify/token;
-    }
-
-    location ~ /usercenter/ {
-       auth_request /auth;
-       auth_request_set $user $upstream_http_x_user;
-       proxy_set_header x-user $user;
-
-       proxy_set_header Host $http_host;
-       proxy_set_header X-Real-IP $remote_addr;
-       proxy_set_header REMOTE-HOST $remote_addr;
-       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://looklook:8002;
-   }
-
-   location ~ /travel/ {
-       auth_request /auth;
-       auth_request_set $user $upstream_http_x_user;
-       proxy_set_header x-user $user;
-
-       proxy_set_header Host $http_host;
-       proxy_set_header X-Real-IP $remote_addr;
-       proxy_set_header REMOTE-HOST $remote_addr;
-       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://looklook:8003;
-   }
+      listen 8081;
+      access_log /var/log/nginx/looklook.com_access.log;
+      error_log /var/log/nginx/looklook.com_error.log;
 
 
-    location ~ /order/ {
-       auth_request /auth;
-       auth_request_set $user $upstream_http_x_user;
-       proxy_set_header x-user $user;
-
-       proxy_set_header Host $http_host;
-       proxy_set_header X-Real-IP $remote_addr;
-       proxy_set_header REMOTE-HOST $remote_addr;
-       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://looklook:8004;
-   }
-
-    location ~ /payment/ {
-       auth_request /auth;
-       auth_request_set $user $upstream_http_x_user;
-       proxy_set_header x-user $user;
-
-       proxy_set_header Host $http_host;
-       proxy_set_header X-Real-IP $remote_addr;
-       proxy_set_header REMOTE-HOST $remote_addr;
-       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       proxy_pass http://looklook:8005;
-   }
+      location ~ /order/ {
+           proxy_set_header Host $http_host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header REMOTE-HOST $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_pass http://looklook:1001;
+      }
+      location ~ /payment/ {
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header REMOTE-HOST $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_pass http://looklook:1002;
+      }
+      location ~ /travel/ {
+         proxy_set_header Host $http_host;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header REMOTE-HOST $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_pass http://looklook:1003;
+      }
+      location ~ /usercenter/ {
+         proxy_set_header Host $http_host;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header REMOTE-HOST $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_pass http://looklook:1004;
+      }
 
 }
+
 ```
 
 Container internal nginx port is 8081, use docker to expose out 8888 mapping port 8081, so that the external through 8888 to access the gateway, use location to match each service, of course, there will be people say, did not add an api service are to nignx configuration is too much trouble, you can also use confd unified configuration, self Baidu.
@@ -92,33 +66,37 @@ Container internal nginx port is 8081, use docker to expose out 8888 mapping por
 
 #### 3、Examples
 
-When we access the user service, http://127.0.0.1:8888/usercenter/v1/user/detail , we access the external port 8888, which is then mapped to the nginx internal lookup gateway 8081, and then the location matches to /usercenter/ , where the module starts with a line auth_request /auth, so nginx will not request http://usercenter-api:8002 directly, but will first jump to the location /auth module, which will access http://identity-api:8001/ identity/v1/verify/token; ,identity-api is also our internal service, which is an authentication service written by ourselves, and actually uses go-zero's jwt
+When we access the user service, http://127.0.0.1:8888/usercenter/v1/user/detail , we access the external port 8888, then map to nginx internal looklook gateway 8081, then the location matches to /usercenter/ then We have defined 2 groups of routes in the desc/api file, one group needs jwt authentication and one group does not need jwt authentication, /usercenter/v1/user/detail needs authentication so we will use go-zero's own jwt function to authentication, desc/usercenter.api file content as follows.
 
-into the identity-api only do 2 things (see the identity-api code in the looklook project)
+```doc
+.........
+//need login
+@server(
+	prefix: usercenter/v1
+	group: user
+	jwt: JwtAuth
+)
+service usercenter {
+	
+	@doc "get user info"
+	@handler detail
+	post /user/detail (UserInfoReq) returns (UserInfoResp)
+	
+	......
+}
+```
 
-1, determine whether the currently accessed route (usercenter/v1/user/detail) needs to be logged in
-
-Whether the route here needs to be logged in, can be configured in identity-api, the code has been implemented
-
-​	![image-20220117162935341](../chinese/images/2/image-20220117162935341.png)
 
 
+Since the jwt token we generate in usercenter-rpc when the user registers and logs in, we are putting the userId in, so here in /usercenter/v1/user/detail, we can get the userId in ctx after the jwt authentication that comes with go-zero, with the following code.
 
-2、Parsing the passed token into the header
+```go
+func (l *DetailLogic) Detail(req types.UserInfoReq) (*types.UserInfoResp, error) {
+	userId := ctxdata.GetUidFromCtx(l.ctx)
 
-- If the currently accessed route requires login.
-
-  - token parsing failure: it returns an http401 error code to the front-end.
-
-  - The token is parsed successfully: the parsed userId will be put into the x-user of the header and returned to the auth module, which will pass the header to the corresponding service (usercenter), so that we can get the login user's id directly in usercenter
-
-- If the currently accessed route does not require login：
-
-  - The token is passed in the front-end header
-    - If the token checksum fails: return http401.
-    - If the token verification is successful: the parsed userId will be put into the x-user of the header and returned to the auth module, which will pass the header to the corresponding service (usercenter), so that we can get the login user's id directly in usercenter
-
-  - No token passed in the front-end header: userid will pass 0 to the back-end service
+	......
+}
+```
 
 
 
@@ -126,7 +104,7 @@ Whether the route here needs to be logged in, can be configured in identity-api,
 
 #### 4、Summary
 
-So that we can unify the entrance, unified authentication, but also unified collection of logs reported, used as error analysis, or access to the user's behavior analysis. Because our daily use of nginx more, and more familiar, if you students are more familiar with kong, apisix, in understanding the above go-zero use of the concept of gateway can be directly replaced is also the same.
+So that we can unify the entrance, but also unified collection of logs reported, used as error analysis, or access to the user's behavior analysis. Because our daily use of nginx more, and more familiar, if you students are more familiar with kong, apisix, in understanding the above go-zero use of the concept of gateway can be directly replaced is also the same.
 
 
 

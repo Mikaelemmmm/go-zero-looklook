@@ -23,14 +23,14 @@ func NewBannerInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Banner
 	}
 }
 
-// 广告详情
+// banner info.
 func (l *BannerInfoLogic) BannerInfo(in *pb.BannerInfoReq) (*pb.BannerInfoResp, error) {
 
 
 	return &pb.BannerInfoResp{
 		Banner: &pb.Banner{
 			Id: 1,
-			Title: "与admin（gin-view-admin）模块测试使用数据",
+			Title: "admin（gin-view-admin）test data",
 			Forward: "https://github.com/Mikaelemmmm/go-zero-looklook",
 			Img: "https://github.com/Mikaelemmmm/go-zero-looklook",
 		},

@@ -13,6 +13,7 @@ import (
 
 type UsercenterServer struct {
 	svcCtx *svc.ServiceContext
+	pb.UnimplementedUsercenterServer
 }
 
 func NewUsercenterServer(svcCtx *svc.ServiceContext) *UsercenterServer {
@@ -44,4 +45,9 @@ func (s *UsercenterServer) GetUserAuthByAuthKey(ctx context.Context, in *pb.GetU
 func (s *UsercenterServer) GetUserAuthByUserId(ctx context.Context, in *pb.GetUserAuthByUserIdReq) (*pb.GetUserAuthyUserIdResp, error) {
 	l := logic.NewGetUserAuthByUserIdLogic(ctx, s.svcCtx)
 	return l.GetUserAuthByUserId(in)
+}
+
+func (s *UsercenterServer) GenerateToken(ctx context.Context, in *pb.GenerateTokenReq) (*pb.GenerateTokenResp, error) {
+	l := logic.NewGenerateTokenLogic(ctx, s.svcCtx)
+	return l.GenerateToken(in)
 }

@@ -1,10 +1,10 @@
 Name: banner-rpc
-ListenOn: 0.0.0.0:8008
+ListenOn: 0.0.0.0:2005
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3001
+  Port: 4012
   Path: /metrics
 
 #链路追踪

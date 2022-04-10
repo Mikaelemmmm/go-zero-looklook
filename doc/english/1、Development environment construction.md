@@ -158,7 +158,6 @@ Create 3 topics
 ```shell
 $ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
 $ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic payment-update-paystatus-topic
-$ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic send-wx-mini-tpl-message
 ```
 
 looklook-log ： The log collection uses the
@@ -199,9 +198,9 @@ Elastic search: http://127.0.0.1:9200/ （⚠️：This startup time is a bit lo
 
 jaeger: http://127.0.0.1:16686/search  (⚠️：If it fails, rely on es, because es start time is long this may timeout, wait for es start play restart a)
 
-go-stash :  look log  (⚠️：If you are mac m1 or linux arm, please change the go-stash image in docker-compose-env.yml kevinwan/go-stash:1.0-arm64, the default is for linux amd)
+go-stash : If you find that the logs are not collected when kibana clicks next and your kafka gets the data, please restart go-stash and wait for a minute.  (⚠️：If you are mac m1 or linux arm, please change the go-stash image in docker-compose-env.yml kevinwan/go-stash:1.0-arm64, the default is for linux amd)
 
-asynq （Time-delayed, timed message queues）: http://127.0.0.1:8980/
+asynq （Delayed tasks, sheduler tasks, message queues）: http://127.0.0.1:8980/
 
 kibana  : http://127.0.0.1:5601/
 
@@ -227,7 +226,7 @@ Redis :   View by tool (redisManager)
 
 - pwd : G62m50oigInC30sf
 
-Kafka:  Self-client tool view
+Kafka:  (pub、sub)Self-client tool view
 
 - host : 127.0.0.1
 

@@ -8,7 +8,7 @@ import (
 	"github.com/zeromicro/go-zero/core/service"
 )
 
-//返回所有消费者
+// back to all consumers
 func Mqs(c config.Config) []service.Service {
 
 	svcContext := svc.NewServiceContext(c)
@@ -16,11 +16,8 @@ func Mqs(c config.Config) []service.Service {
 
 	var services []service.Service
 
-	//kq ：消息队列.
+	//kq ：pub sub
 	services = append(services, KqMqs(c, ctx, svcContext)...)
-	//asynq ： 延迟队列、定时任务
-	services = append(services, AsynqMqs(c, ctx, svcContext)...)
-	//other mq ....
 
 	return services
 }

@@ -10,8 +10,6 @@ type Config struct {
 	JwtAuth struct {
 		AccessSecret string
 	}
-	//
 	WxMiniConf        WxMiniConf
 	UsercenterRpcConf zrpc.RpcClientConf
-	IdentityRpcConf   zrpc.RpcClientConf
 }

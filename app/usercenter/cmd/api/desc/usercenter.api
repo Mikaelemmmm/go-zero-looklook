@@ -12,26 +12,36 @@ import (
 	"user/user.api"
 )
 
-//用户模块v1版本的接口
+//============================> usercenter v1 <============================
+//no need login
 @server(
 	prefix: usercenter/v1
 	group: user
 )
 service usercenter {
 	
-	@doc "注册"
+	@doc "register"
 	@handler register
 	post /user/register (RegisterReq) returns (RegisterResp)
 	
-	@doc "登陆"
+	@doc "login"
 	@handler login
 	post /user/login (LoginReq) returns (LoginResp)
+}
+
+//need login
+@server(
+	prefix: usercenter/v1
+	group: user
+	jwt: JwtAuth
+)
+service usercenter {
 	
-	@doc "获取用户信息"
+	@doc "get user info"
 	@handler detail
 	post /user/detail (UserInfoReq) returns (UserInfoResp)
 	
-	@doc "微信小程序授权"
+	@doc "wechat mini auth"
 	@handler wxMiniAuth
 	post /user/wxMiniAuth (WXMiniAuthReq) returns (WXMiniAuthResp)
 }

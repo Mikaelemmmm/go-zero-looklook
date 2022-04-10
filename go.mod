@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/golang-jwt/jwt/v4 v4.2.0
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jinzhu/copier v0.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/sony/sonyflake v1.0.0
@@ -15,6 +15,7 @@ require (
 require (
 	github.com/Masterminds/squirrel v1.5.2
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/golang-module/carbon/v2 v2.0.1
 	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/zap v1.21.0
 )

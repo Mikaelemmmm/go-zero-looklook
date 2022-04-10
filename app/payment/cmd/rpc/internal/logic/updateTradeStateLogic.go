@@ -2,9 +2,10 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
+	"looklook/common/kqueue"
 	"time"
 
-	"looklook/app/mqueue/cmd/rpc/mqueue"
 	"looklook/app/payment/cmd/rpc/internal/svc"
 	"looklook/app/payment/cmd/rpc/pb"
 	"looklook/app/payment/model"
@@ -28,38 +29,36 @@ func NewUpdateTradeStateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-// 更新交易状态
 func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*pb.UpdateTradeStateResp, error) {
 
-	//1、流水记录确认.
+	//1、payment record confirm
 	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(l.ctx,in.Sn)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "更新交易状态 ，根据流水单号查询流水db异常 sn : %s", in.Sn)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "UpdateTradeState FindOneBySn db err , sn : %s , err : %+v", in.Sn,err)
 	}
 
 	if thirdPayment == nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("该流水记录不存在"), " sn : %s", in.Sn)
+		return nil, errors.Wrapf(xerr.NewErrMsg("third payment record no exists"), " sn : %s", in.Sn)
 	}
 
-	//2、判断状态
+	//2、Judgment Status
 	if in.PayStatus == model.ThirdPaymentPayTradeStateSuccess || in.PayStatus == model.ThirdPaymentPayTradeStateFAIL {
-		//想要修改为支付成功、失败场景
-
+		//Want to modify as payment success, failure scenarios
 		if thirdPayment.PayStatus != model.ThirdPaymentPayTradeStateWait {
 			return &pb.UpdateTradeStateResp{}, nil
 		}
 
 	} else if in.PayStatus == model.ThirdPaymentPayTradeStateRefund {
-		//想要修改为退款成功场景
+		//Want to change to refund success scenario
 
 		if thirdPayment.PayStatus != model.ThirdPaymentPayTradeStateSuccess {
-			return nil, errors.Wrapf(xerr.NewErrMsg("只有支付成功的订单才能退款"), "修改支付流水记录为退款失败，当前支付流水未支付成功无法退款 in : %+v", in)
+			return nil, errors.Wrapf(xerr.NewErrMsg("Only orders with successful payment can be refunded"), "Only orders with successful payment can be refunded in : %+v", in)
 		}
 	} else {
-		return nil, errors.Wrapf(xerr.NewErrMsg("当前不支持此状态"), "修改支付流水状态不支持  in : %+v", in)
+		return nil, errors.Wrapf(xerr.NewErrMsg("This status is not currently supported"), "Modify payment flow status is not supported  in : %+v", in)
 	}
 
-	//3、更新.
+	//3、update .
 	thirdPayment.TradeState = in.TradeState
 	thirdPayment.TransactionId = in.TransactionId
 	thirdPayment.TradeType = in.TradeType
@@ -67,14 +66,28 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 	thirdPayment.PayStatus = in.PayStatus
 	thirdPayment.PayTime = time.Unix(in.PayTime, 0)
 	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(l.ctx,nil, thirdPayment); err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " 更新流水状态失败 err:%v ", err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err,thirdPayment,in)
 	}
 
-	//4、通知其他服务
-	_, _ = l.svcCtx.MqueueRpc.KqPaymenStatusUpdate(l.ctx, &mqueue.KqPaymenStatusUpdateReq{
-		OrderSn:   thirdPayment.OrderSn,
-		PayStatus: in.PayStatus,
-	})
+	//4、notify sub "payment-update-paystatus-topic" , pub、sub use kq
+	if err:=l.pubKqPaySuccess(in.Sn,in.PayStatus);err != nil{
+		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v",err)
+	}
 
 	return &pb.UpdateTradeStateResp{}, nil
+}
+
+func (l *UpdateTradeStateLogic) pubKqPaySuccess(orderSn string,payStatus int64) error{
+
+	m := kqueue.ThirdPaymentUpdatePayStatusNotifyMessage{
+		OrderSn:  orderSn ,
+		PayStatus: payStatus,
+	}
+
+	body, err := json.Marshal(m)
+	if err != nil {
+		return errors.Wrapf(xerr.NewErrMsg("kq UpdateTradeStateLogic pushKqPaySuccess task marshal error "), "kq UpdateTradeStateLogic pushKqPaySuccess task marshal error  , v : %+v", m)
+	}
+
+	return  l.svcCtx.KqueuePaymentUpdatePayStatusClient.Push(string(body))
 }

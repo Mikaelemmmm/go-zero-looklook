@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"looklook/app/identity/cmd/rpc/identity"
 	"looklook/app/usercenter/cmd/api/internal/svc"
 	"looklook/app/usercenter/cmd/api/internal/types"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
@@ -18,8 +17,8 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-//error信息.
-var ErrWxMiniAuthFailError = xerr.NewErrMsg("微信授权失败")
+// ErrWxMiniAuthFailError error
+var ErrWxMiniAuthFailError = xerr.NewErrMsg("wechat mini auth fail")
 
 type WxMiniAuthLogic struct {
 	logx.Logger
@@ -35,10 +34,10 @@ func NewWxMiniAuthLogic(ctx context.Context, svcCtx *svc.ServiceContext) WxMiniA
 	}
 }
 
-// 微信小程序授权
+// Wechat-Mini auth
 func (l *WxMiniAuthLogic) WxMiniAuth(req types.WXMiniAuthReq) (*types.WXMiniAuthResp, error) {
 
-	//1、授权
+	//1、Wechat-Mini
 	miniprogram := wechat.NewWechat().GetMiniProgram(&miniConfig.Config{
 		AppID:     l.svcCtx.Config.WxMiniConf.AppId,
 		AppSecret: l.svcCtx.Config.WxMiniConf.Secret,
@@ -48,13 +47,13 @@ func (l *WxMiniAuthLogic) WxMiniAuth(req types.WXMiniAuthReq) (*types.WXMiniAuth
 	if err != nil || authResult.ErrCode != 0 || authResult.OpenID == "" {
 		return nil, errors.Wrapf(ErrWxMiniAuthFailError, "发起授权请求失败 err : %v , code : %s  , authResult : %+v", err, req.Code, authResult)
 	}
-	//2、解析小程序返回数据
+	//2、Parsing WeChat-Mini return data
 	userData, err := miniprogram.GetEncryptor().Decrypt(authResult.SessionKey, req.EncryptedData, req.IV)
 	if err != nil {
 		return nil, errors.Wrapf(ErrWxMiniAuthFailError, "解析数据失败 req : %+v , err: %v , authResult:%+v ", req, err, authResult)
 	}
 
-	//3、绑定用户 or 登陆.
+	//3、bind user or login.
 	var userId int64
 	rpcRsp, err := l.svcCtx.UsercenterRpc.GetUserAuthByAuthKey(l.ctx, &usercenter.GetUserAuthByAuthKeyReq{
 		AuthType: usercenterModel.UserAuthTypeSmallWX,
@@ -64,10 +63,9 @@ func (l *WxMiniAuthLogic) WxMiniAuth(req types.WXMiniAuthReq) (*types.WXMiniAuth
 		return nil, errors.Wrapf(ErrWxMiniAuthFailError, "rpc call userAuthByAuthKey err : %v , authResult : %+v", err, authResult)
 	}
 	if rpcRsp.UserAuth == nil || rpcRsp.UserAuth.Id == 0 {
+		//bind user.
 
-		//绑定用户.
-
-		//小程序解密返回的数据都如下
+		//Wechat-Mini Decrypted data
 		mobile := userData.PhoneNumber
 		nickName := fmt.Sprintf("LookLook%s", mobile[7:])
 		registerRsp, err := l.svcCtx.UsercenterRpc.Register(l.ctx, &usercenter.RegisterReq{
@@ -87,15 +85,12 @@ func (l *WxMiniAuthLogic) WxMiniAuth(req types.WXMiniAuthReq) (*types.WXMiniAuth
 		}, nil
 
 	} else {
-		//登陆 直接授权返回token
-
 		userId = rpcRsp.UserAuth.UserId
-
-		tokenResp, err := l.svcCtx.IdentityRpc.GenerateToken(l.ctx, &identity.GenerateTokenReq{
+		tokenResp, err := l.svcCtx.UsercenterRpc.GenerateToken(l.ctx, &usercenter.GenerateTokenReq{
 			UserId: userId,
 		})
 		if err != nil {
-			return nil, errors.Wrapf(ErrWxMiniAuthFailError, "IdentityRpc.GenerateToken err :%v, userId : %d", err, userId)
+			return nil, errors.Wrapf(ErrWxMiniAuthFailError, "usercenterRpc.GenerateToken err :%v, userId : %d", err, userId)
 		}
 		return &types.WXMiniAuthResp{
 			AccessToken:  tokenResp.AccessToken,

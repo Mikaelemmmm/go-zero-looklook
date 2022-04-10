@@ -12,10 +12,12 @@ import (
 	"order/order.api"
 )
 
-//订单模块v1版本的接口
+//========================> order v1 <========================
+//need login
 @server(
 	prefix: order/v1
 	group: homestayOrder
+	jwt: JwtAuth
 )
 service order {
 	

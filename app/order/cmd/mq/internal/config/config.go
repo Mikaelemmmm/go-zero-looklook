@@ -12,11 +12,10 @@ type Config struct {
 
 	Redis redis.RedisConf
 
-	// kq
+	// kq : pub sub
 	PaymentUpdateStatusConf kq.KqConf
 
 	// rpc
 	OrderRpcConf      zrpc.RpcClientConf
-	MqueueRpcConf     zrpc.RpcClientConf
 	UsercenterRpcConf zrpc.RpcClientConf
 }

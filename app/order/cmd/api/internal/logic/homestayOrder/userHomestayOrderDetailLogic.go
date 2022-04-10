@@ -39,7 +39,7 @@ func (l *UserHomestayOrderDetailLogic) UserHomestayOrderDetail(req types.UserHom
 		Sn: req.Sn,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("获取订单明细失败"), " rpc get HomestayOrderDetail err:%v , sn : %s", err, req.Sn)
+		return nil, errors.Wrapf(xerr.NewErrMsg("get homestay order detail fail"), " rpc get HomestayOrderDetail err:%v , sn : %s", err, req.Sn)
 	}
 
 	var typesOrderDetail types.UserHomestayOrderDetailResp
@@ -61,7 +61,7 @@ func (l *UserHomestayOrderDetailLogic) UserHomestayOrderDetail(req types.UserHom
 				OrderSn: resp.HomestayOrder.Sn,
 			})
 			if err != nil {
-				logx.WithContext(l.ctx).Errorf("获取订单支付信息失败 err : %v , orderSn:%s", err, resp.HomestayOrder.Sn)
+				logx.WithContext(l.ctx).Errorf("Failed to get order payment information err : %v , orderSn:%s", err, resp.HomestayOrder.Sn)
 			}
 
 			if paymentResp.PaymentDetail != nil {

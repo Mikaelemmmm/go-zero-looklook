@@ -7,6 +7,9 @@ import (
 
 type Config struct {
 	rest.RestConf
+	JwtAuth struct {
+		AccessSecret string
+	}
 	WxMiniConf WxMiniConf
 	WxPayConf  WxPayConf
 

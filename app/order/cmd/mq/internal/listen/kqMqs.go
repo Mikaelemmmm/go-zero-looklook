@@ -10,12 +10,11 @@ import (
 	"github.com/zeromicro/go-zero/core/service"
 )
 
-//kq
-//消息队列
+//pub sub use kq (kafka)
 func KqMqs(c config.Config, ctx context.Context, svcContext *svc.ServiceContext) []service.Service {
 
 	return []service.Service{
-		//监听消费流水状态变更
+		//Listening for changes in consumption flow status
 		kq.MustNewQueue(c.PaymentUpdateStatusConf, kqMq.NewPaymentUpdateStatusMq(ctx, svcContext)),
 		//.....
 	}

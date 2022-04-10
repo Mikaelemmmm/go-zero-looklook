@@ -37,6 +37,6 @@ message HomestayDetailResp {
 
 //service
 service travel {
-    //民宿详情
+    //homestayDetail
     rpc homestayDetail(HomestayDetailReq) returns(HomestayDetailResp);
 }

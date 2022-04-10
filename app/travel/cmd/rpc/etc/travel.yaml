@@ -1,11 +1,11 @@
 Name: travel-rpc
-ListenOn: 0.0.0.0:9003
+ListenOn: 0.0.0.0:2003
 Mode: dev
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3008
+  Port: 4007
   Path: /metrics
 
 #链路追踪

@@ -14,5 +14,4 @@ type Config struct {
 	Cache cache.CacheConf
 
 	TravelRpcConf zrpc.RpcClientConf
-	MqueueRpcConf zrpc.RpcClientConf
 }

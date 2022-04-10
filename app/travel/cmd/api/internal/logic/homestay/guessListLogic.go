@@ -28,14 +28,11 @@ func NewGuessListLogic(ctx context.Context, svcCtx *svc.ServiceContext) GuessLis
 }
 
 func (l *GuessListLogic) GuessList(req types.GuessListReq) (*types.GuessListResp, error) {
-
-	// 猜你喜欢，这里只随便返回前5个
-
 	var resp []types.Homestay
 
 	list, err := l.svcCtx.HomestayModel.FindPageListByIdDESC(l.ctx,l.svcCtx.HomestayModel.RowBuilder(),0, 5)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err : %v", req, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "GuessList db err req : %+v , err : %v", req, err)
 	}
 
 	if len(list) > 0 {

@@ -31,7 +31,7 @@ func NewUserHomestayOrderListLogic(ctx context.Context, svcCtx *svc.ServiceConte
 
 func (l *UserHomestayOrderListLogic) UserHomestayOrderList(req types.UserHomestayOrderListReq) (*types.UserHomestayOrderListResp, error) {
 
-	userId := ctxdata.GetUidFromCtx(l.ctx) //当前登陆用户id
+	userId := ctxdata.GetUidFromCtx(l.ctx) //get login user id
 
 	resp, err := l.svcCtx.OrderRpc.UserHomestayOrderList(l.ctx, &order.UserHomestayOrderListReq{
 		UserId:      userId,
@@ -40,7 +40,7 @@ func (l *UserHomestayOrderListLogic) UserHomestayOrderList(req types.UserHomesta
 		LastId:      req.LastId,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("获取用户订单列表失败"), "err : %v ,req:%+v", err, req)
+		return nil, errors.Wrapf(xerr.NewErrMsg("Failed to get user homestay order list"), "Failed to get user homestay order list err : %v ,req:%+v", err, req)
 	}
 
 	var typesUserHomestayOrderList []types.UserHomestayOrderListView

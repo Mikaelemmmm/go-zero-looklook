@@ -1,0 +1,26 @@
+Name: mqueue-scheduler
+Host: 0.0.0.0
+Port: 3003
+Mode: dev
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4011
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+ Name: mqueue-scheduler
+ Endpoint: http://jaeger:14268/api/traces
+ Sampler: 1.0
+ Batcher: jaeger
+
+Log:
+  ServiceName: mqueue-scheduler
+  Level: error
+
+Redis:
+  Host: redis:6379
+  Type: node
+  Pass: G62m50oigInC30sf
