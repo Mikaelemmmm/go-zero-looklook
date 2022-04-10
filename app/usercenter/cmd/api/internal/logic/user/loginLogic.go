@@ -36,7 +36,6 @@ func (l *LoginLogic) Login(req types.LoginReq) (*types.LoginResp, error) {
 		return nil, err
 	}
 
-	//
 	var resp types.LoginResp
 	_ = copier.Copy(&resp, loginResp)
 

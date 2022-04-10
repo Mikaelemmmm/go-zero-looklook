@@ -33,13 +33,12 @@ func (l *HomestayDetailLogic) HomestayDetail(req types.HomestayDetailReq) (*type
 		Id: req.Id,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("获取民宿详情信息失败"), " id : %d , err : %v ", req.Id, err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("get homestay detail fail"), " get homestay detail db err , id : %d , err : %v ", req.Id, err)
 	}
 
 	var typeHomestay types.Homestay
 	if homestayResp.Homestay != nil {
 
-		// 整合民宿详情
 		_ = copier.Copy(&typeHomestay, homestayResp.Homestay)
 
 		typeHomestay.FoodPrice = tool.Fen2Yuan(homestayResp.Homestay.FoodPrice)

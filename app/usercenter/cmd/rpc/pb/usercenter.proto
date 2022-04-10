@@ -71,6 +71,14 @@ message GetUserAuthyUserIdResp {
    UserAuth userAuth = 1;
 }
 
+message GenerateTokenReq {
+  int64 userId = 1;
+}
+message GenerateTokenResp {
+  string accessToken = 1;
+  int64  accessExpire = 2;
+  int64  refreshAfter = 3;
+}
 
 //service
 service usercenter {
@@ -79,4 +87,5 @@ service usercenter {
   rpc getUserInfo(GetUserInfoReq) returns(GetUserInfoResp);
   rpc getUserAuthByAuthKey(GetUserAuthByAuthKeyReq) returns(GetUserAuthByAuthKeyResp);
   rpc getUserAuthByUserId(GetUserAuthByUserIdReq) returns(GetUserAuthyUserIdResp);
+  rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
 }

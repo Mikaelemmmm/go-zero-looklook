@@ -2,10 +2,12 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/hibiken/asynq"
+	"looklook/app/mqueue/cmd/job/jobtype"
 	"strings"
 	"time"
 
-	"looklook/app/mqueue/cmd/rpc/mqueue"
 	"looklook/app/order/cmd/rpc/internal/svc"
 	"looklook/app/order/cmd/rpc/pb"
 	"looklook/app/order/model"
@@ -17,6 +19,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
+
+const CloseOrderTimeMinutes = 30  //defer close order time
 
 type CreateHomestayOrderLogic struct {
 	ctx    context.Context
@@ -32,25 +36,25 @@ func NewCreateHomestayOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	}
 }
 
-// 民宿下订单.
+// CreateHomestayOrder.
 func (l *CreateHomestayOrderLogic) CreateHomestayOrder(in *pb.CreateHomestayOrderReq) (*pb.CreateHomestayOrderResp, error) {
 
-	//1、创建订单
+	//1、Create Order
 	if in.LiveEndTime <= in.LiveStartTime {
-		return nil, errors.Wrapf(xerr.NewErrMsg("至少要住一晚"), "民宿下订单 入住结束时间一定要大于开始时间 in : %+v", in)
+		return nil, errors.Wrapf(xerr.NewErrMsg("Stay at least one night"), "Place an order at a B&B. The end time of your stay must be greater than the start time. in : %+v", in)
 	}
 
 	resp, err := l.svcCtx.TravelRpc.HomestayDetail(l.ctx, &travel.HomestayDetailReq{
 		Id: in.HomestayId,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("查询该记录失败"), "homestayId : %d , err : %v", in.HomestayId, err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("Failed to query the record"), "Failed to query the record  rpc HomestayDetail fail , homestayId : %d , err : %v", in.HomestayId, err)
 	}
 	if resp.Homestay == nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("该记录不存在"), "homestayId : %d ", in.HomestayId)
+		return nil, errors.Wrapf(xerr.NewErrMsg("This record does not exist"), "This record does not exist , homestayId : %d ", in.HomestayId)
 	}
 
-	var cover string //获取封面..
+	var cover string //Get the cover...
 	if len(resp.Homestay.Banner) > 0 {
 		cover = strings.Split(resp.Homestay.Banner, ",")[0]
 	}
@@ -78,26 +82,33 @@ func (l *CreateHomestayOrderLogic) CreateHomestayOrder(in *pb.CreateHomestayOrde
 	order.LiveStartDate = time.Unix(in.LiveStartTime, 0)
 	order.LiveEndDate = time.Unix(in.LiveEndTime, 0)
 
-	liveDays := int64(order.LiveEndDate.Sub(order.LiveStartDate).Seconds() / 86400) //共住了几天
+	liveDays := int64(order.LiveEndDate.Sub(order.LiveStartDate).Seconds() / 86400) //Stayed a few days in total
 
-	order.HomestayTotalPrice = int64(resp.Homestay.HomestayPrice * liveDays) //计算民宿总价格
+	order.HomestayTotalPrice = int64(resp.Homestay.HomestayPrice * liveDays) //Calculate the total price of the B&B
 	if in.IsFood {
 		order.NeedFood = model.HomestayOrderNeedFoodYes
-		//计算餐食总价格.
+		//Calculate the total price of the meal.
 		order.FoodTotalPrice = int64(resp.Homestay.FoodPrice * in.LivePeopleNum * liveDays)
 	}
 
-	order.OrderTotalPrice = order.HomestayTotalPrice + order.FoodTotalPrice //计算订单总价格.
+	order.OrderTotalPrice = order.HomestayTotalPrice + order.FoodTotalPrice //Calculate total order price.
 
 	_, err = l.svcCtx.HomestayOrderModel.Insert(l.ctx,nil, order)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "下单数据库异常 order : %+v , err: %v", order, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Order Database Exception order : %+v , err: %v", order, err)
 	}
 
-	//2、延迟关闭订单任务.
-	_, _ = l.svcCtx.MqueueRpc.AqDeferHomestayOrderClose(l.ctx, &mqueue.AqDeferHomestayOrderCloseReq{
-		Sn: order.Sn,
-	})
+
+	//2、Delayed closing of order tasks.
+	payload, err := json.Marshal(jobtype.DeferCloseHomestayOrderPayload{Sn: order.Sn})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("create defer close order task json Marshal fail err :%+v , sn : %s",err,order.Sn)
+	}else{
+		_, err = l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.DeferCloseHomestayOrder, payload), asynq.ProcessIn(CloseOrderTimeMinutes * time.Minute))
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("create defer close order task insert queue fail err :%+v , sn : %s",err,order.Sn)
+		}
+	}
 
 	return &pb.CreateHomestayOrderResp{
 		Sn: order.Sn,

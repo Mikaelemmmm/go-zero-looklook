@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"looklook/app/mqueue/cmd/rpc/mqueue"
+	"github.com/hibiken/asynq"
 	"looklook/app/order/cmd/rpc/internal/config"
 	"looklook/app/order/model"
 	"looklook/app/travel/cmd/rpc/travel"
@@ -12,9 +12,9 @@ import (
 
 type ServiceContext struct {
 	Config config.Config
+	AsynqClient *asynq.Client
 
 	TravelRpc travel.Travel
-	MqueueRpc mqueue.Mqueue
 
 	HomestayOrderModel model.HomestayOrderModel
 }
@@ -22,9 +22,9 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config: c,
+		AsynqClient:newAsynqClient(c),
 
 		TravelRpc: travel.NewTravel(zrpc.MustNewClient(c.TravelRpcConf)),
-		MqueueRpc: mqueue.NewMqueue(zrpc.MustNewClient(c.MqueueRpcConf)),
 
 		HomestayOrderModel: model.NewHomestayOrderModel(sqlx.NewMysql(c.DB.DataSource), c.Cache),
 	}

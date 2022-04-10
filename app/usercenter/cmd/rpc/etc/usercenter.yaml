@@ -1,15 +1,19 @@
 Name: usercenter-rpc
-ListenOn: 0.0.0.0:9002
+ListenOn: 0.0.0.0:2004
 Mode: dev
 
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 31536000
 
-#监控
+#Monitoring
 Prometheus:
   Host: 0.0.0.0
-  Port: 3006
+  Port: 4009
   Path: /metrics
 
-#链路追踪
+#Link Tracking
 Telemetry:
   Name: usercenter-rpc
   Endpoint: http://jaeger:14268/api/traces
@@ -30,8 +34,3 @@ Cache:
   - Host: redis:6379
     Pass: G62m50oigInC30sf
 
-#rpc service
-IdentityRpcConf:
-  Endpoints:
-    - 127.0.0.1:9001
-  NonBlock: true

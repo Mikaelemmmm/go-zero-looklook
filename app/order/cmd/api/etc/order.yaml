@@ -1,12 +1,20 @@
 Name: order-api
 Host: 0.0.0.0
-Port: 8004
+Port: 1001
 Mode: dev
+
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+
+Log:
+  ServiceName: order-api
+  Level: error
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3002
+  Port: 4001
   Path: /metrics
 
 #链路追踪
@@ -19,20 +27,18 @@ Telemetry:
 #rpc
 OrderRpcConf:
   Endpoints:
-    - 127.0.0.1:9004
+    - 127.0.0.1:2001
   NonBlock: true
 
 PaymentRpcConf:
   Endpoints:
-    - 127.0.0.1:9005
+    - 127.0.0.1:2002
   NonBlock: true
 
 TravelRpcConf:
   Endpoints:
-    - 127.0.0.1:9003
+    - 127.0.0.1:2003
   NonBlock: true
 
-Log:
-  ServiceName: order-api
-  Level: error
+
 

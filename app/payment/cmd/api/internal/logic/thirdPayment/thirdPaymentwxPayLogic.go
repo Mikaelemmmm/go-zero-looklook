@@ -19,7 +19,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-var ErrWxPayError = xerr.NewErrMsg("微信支付失败")
+var ErrWxPayError = xerr.NewErrMsg("wechat pay fail")
 
 type ThirdPaymentwxPayLogic struct {
 	logx.Logger
@@ -37,8 +37,8 @@ func NewThirdPaymentwxPayLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 
 func (l *ThirdPaymentwxPayLogic) ThirdPaymentwxPay(req types.ThirdPaymentWxPayReq) (*types.ThirdPaymentWxPayResp, error) {
 
-	var totalPrice int64   // 当前订单支付总金额(分)
-	var description string // 当前支付描述.
+	var totalPrice int64   // Total amount paid for current order(cent)
+	var description string // Current Payment Description.
 
 	switch req.ServiceType {
 	case model.ThirdPaymentServiceTypeHomestayOrder:
@@ -51,10 +51,10 @@ func (l *ThirdPaymentwxPayLogic) ThirdPaymentwxPay(req types.ThirdPaymentWxPayRe
 		description = homestayDescription
 
 	default:
-		return nil, errors.Wrapf(xerr.NewErrMsg("不支持此业务类型支付"), "不支持此业务类型支付 req: %+v", req)
+		return nil, errors.Wrapf(xerr.NewErrMsg("Payment for this business type is not supported"), "Payment for this business type is not supported req: %+v", req)
 	}
 
-	// 创建微信预处理订单
+	// Create microsoft pre-processing orders
 	wechatPrepayRsp, err := l.createWxPrePayOrder(req.ServiceType, req.OrderSn, totalPrice, description)
 	if err != nil {
 		return nil, err
@@ -70,24 +70,24 @@ func (l *ThirdPaymentwxPayLogic) ThirdPaymentwxPay(req types.ThirdPaymentWxPayRe
 	}, nil
 }
 
-// 获取支付民宿当前订单的价格以及描述信息
+// Get the price and description information of the current order of the paid B&B
 func (l *ThirdPaymentwxPayLogic) createWxPrePayOrder(serviceType, orderSn string, totalPrice int64, description string) (*jsapi.PrepayWithRequestPaymentResponse, error) {
 
-	// 1、获取用户openId
+	// 1、get user openId
 	userId := ctxdata.GetUidFromCtx(l.ctx)
 	userResp, err := l.svcCtx.UsercenterRpc.GetUserAuthByUserId(l.ctx, &usercenter.GetUserAuthByUserIdReq{
 		UserId:   userId,
 		AuthType: usercenterModel.UserAuthTypeSmallWX,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(ErrWxPayError, "获取用户微信openid err : %v , userId: %d , orderSn:%s", err, userId, orderSn)
+		return nil, errors.Wrapf(ErrWxPayError, "Get user wechat openid err : %v , userId: %d , orderSn:%s", err, userId, orderSn)
 	}
 	if userResp.UserAuth == nil || userResp.UserAuth.Id == 0 {
-		return nil, errors.Wrapf(xerr.NewErrMsg("获取openid失败，请先微信授权在支付"), "获取用户微信openid不存在  userId: %d , orderSn:%s", userId, orderSn)
+		return nil, errors.Wrapf(xerr.NewErrMsg("Get user wechat openid fail，Please pay before authorization by weChat"), "Get user WeChat openid does not exist  userId: %d , orderSn:%s", userId, orderSn)
 	}
 	openId := userResp.UserAuth.AuthKey
 
-	// 2、创建本地流水记录
+	// 2、create local third payment record
 	createPaymentResp, err := l.svcCtx.PaymentRpc.CreatePayment(l.ctx, &payment.CreatePaymentReq{
 		UserId:      userId,
 		PayModel:    model.ThirdPaymentPayModelWechatPay,
@@ -97,11 +97,11 @@ func (l *ThirdPaymentwxPayLogic) createWxPrePayOrder(serviceType, orderSn string
 	})
 	if err != nil || createPaymentResp.Sn == "" {
 		return nil, errors.Wrapf(ErrWxPayError,
-			"创建本地流水失败: err: %v , userId: %d,totalPrice: %d , orderSn: %s",
+			"create local third payment record fail : err: %v , userId: %d,totalPrice: %d , orderSn: %s",
 			err, userId, totalPrice, orderSn)
 	}
 
-	// 3、创建微信预处订单.
+	// 3、create wechat pay pre pay order
 
 	wxPayClient, err := svc.NewWxPayClientV3(l.svcCtx.Config)
 	if err != nil {
@@ -109,7 +109,7 @@ func (l *ThirdPaymentwxPayLogic) createWxPrePayOrder(serviceType, orderSn string
 	}
 	jsApiSvc := jsapi.JsapiApiService{Client: wxPayClient}
 
-	// 得到prepay_id，以及调起支付所需的参数和签名
+	// Get the prepay_id, as well as the parameters and signatures needed to invoke the payment
 	resp, _, err := jsApiSvc.PrepayWithRequestPayment(l.ctx,
 		jsapi.PrepayRequest{
 			Appid:       core.String(l.svcCtx.Config.WxMiniConf.AppId),
@@ -127,19 +127,19 @@ func (l *ThirdPaymentwxPayLogic) createWxPrePayOrder(serviceType, orderSn string
 		},
 	)
 	if err != nil {
-		return nil, errors.Wrapf(ErrWxPayError, "发起微信支付预订单失败 err : %v , userId: %d , orderSn:%s", err, userId, orderSn)
+		return nil, errors.Wrapf(ErrWxPayError, "Failed to initiate WeChat payment pre-order err : %v , userId: %d , orderSn:%s", err, userId, orderSn)
 	}
 
 	return resp, nil
 
 }
 
-// 获取支付民宿当前订单的价格以及描述信息
+// Get the price and description information of the current order of the paid B&B
 func (l *ThirdPaymentwxPayLogic) getPayHomestayPriceDescription(orderSn string) (int64, string, error) {
 
-	description := "民宿支付"
+	description := "homestay pay"
 
-	// 获取用户openid
+	// get user openid
 	resp, err := l.svcCtx.OrderRpc.HomestayOrderDetail(l.ctx, &order.HomestayOrderDetailReq{
 		Sn: orderSn,
 	})
@@ -148,7 +148,7 @@ func (l *ThirdPaymentwxPayLogic) getPayHomestayPriceDescription(orderSn string) 
 			"OrderRpc.HomestayOrderDetail err: %v, orderSn: %s", err, orderSn)
 	}
 	if resp.HomestayOrder == nil || resp.HomestayOrder.Id == 0 {
-		return 0, description, errors.Wrapf(xerr.NewErrMsg("订单不存在"), "微信支付订单不存在 orderSn : %s", orderSn)
+		return 0, description, errors.Wrapf(xerr.NewErrMsg("order no exists"), "WeChat payment order does not exist orderSn : %s", orderSn)
 	}
 
 	return resp.HomestayOrder.OrderTotalPrice, description, nil

@@ -5,7 +5,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"looklook/app/identity/cmd/rpc/identity"
 	"looklook/app/usercenter/cmd/rpc/internal/svc"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 	"looklook/app/usercenter/model"
@@ -13,7 +12,7 @@ import (
 	"looklook/common/xerr"
 )
 
-var ErrUserAlreadyRegisterError = xerr.NewErrMsg("该用户已被注册")
+var ErrUserAlreadyRegisterError = xerr.NewErrMsg("user has been registered")
 
 type RegisterLogic struct {
 	ctx    context.Context
@@ -36,7 +35,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "mobile:%s,err:%v", in.Mobile, err)
 	}
 	if user != nil {
-		return nil, errors.Wrapf(ErrUserAlreadyRegisterError, "用户已经存在 mobile:%s,err:%v", in.Mobile, err)
+		return nil, errors.Wrapf(ErrUserAlreadyRegisterError, "Register user exists mobile:%s,err:%v", in.Mobile, err)
 	}
 
 	var userId int64
@@ -51,11 +50,11 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		}
 		insertResult, err := l.svcCtx.UserModel.Insert(ctx,session, user)
 		if err != nil {
-			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err:%v,user:%+v", err, user)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
 		}
 		lastId, err := insertResult.LastInsertId()
 		if err != nil {
-			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "insertResult.LastInsertId err:%v,user:%+v", err, user)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user insertResult.LastInsertId err:%v,user:%+v", err, user)
 		}
 		userId = lastId
 
@@ -64,24 +63,25 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		userAuth.AuthKey = in.AuthKey
 		userAuth.AuthType = in.AuthType
 		if _, err := l.svcCtx.UserAuthModel.Insert(ctx,session, userAuth); err != nil {
-			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "err:%v,userAuth:%v", err, userAuth)
+			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user_auth Insert err:%v,userAuth:%v", err, userAuth)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
 
-	//2、生成token.
-	resp, err := l.svcCtx.IdentityRpc.GenerateToken(l.ctx, &identity.GenerateTokenReq{
+	//2、Generate the token, so that the service doesn't call rpc internally
+	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
+	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
 		UserId: userId,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(ErrGenerateTokenError, "IdentityRpc.GenerateToken userId : %d , err:%+v", userId, err)
+		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", userId)
 	}
 
 	return &usercenter.RegisterResp{
-		AccessToken:  resp.AccessToken,
-		AccessExpire: resp.AccessExpire,
-		RefreshAfter: resp.RefreshAfter,
+		AccessToken:  tokenResp.AccessToken,
+		AccessExpire: tokenResp.AccessExpire,
+		RefreshAfter: tokenResp.RefreshAfter,
 	}, nil
 }

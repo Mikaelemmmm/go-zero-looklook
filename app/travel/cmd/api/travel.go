@@ -4,13 +4,11 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/rest"
 	"looklook/app/travel/cmd/api/internal/config"
 	"looklook/app/travel/cmd/api/internal/handler"
 	"looklook/app/travel/cmd/api/internal/svc"
-	"looklook/common/middleware"
-
-	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/rest"
 )
 
 var configFile = flag.String("f", "etc/travel.yaml", "the config file")
@@ -24,10 +22,6 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
-
-	// 全局中间件
-	//将nginx网关验证后的userId设置到ctx中
-	server.Use(middleware.NewSetUidToCtxMiddleware().Handle)
 
 	handler.RegisterHandlers(server, ctx)
 

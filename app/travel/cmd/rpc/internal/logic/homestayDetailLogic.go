@@ -27,17 +27,16 @@ func NewHomestayDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ho
 	}
 }
 
-// 民宿详情.
+// HomestayDetail homestay detail .
 func (l *HomestayDetailLogic) HomestayDetail(in *pb.HomestayDetailReq) (*pb.HomestayDetailResp, error) {
 
 	homestay, err := l.svcCtx.HomestayModel.FindOne(l.ctx,in.Id)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " id : %d ", in.Id)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " HomestayDetail db err , id : %d ", in.Id)
 	}
 
 	var pbHomestay pb.Homestay
 	if homestay != nil {
-		//整合民宿详情
 		_ = copier.Copy(&pbHomestay, homestay)
 	}
 

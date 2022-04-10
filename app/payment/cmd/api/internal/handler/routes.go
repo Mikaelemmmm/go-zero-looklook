@@ -15,15 +15,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/thirdPayment/thirdPaymentWxPay",
-				Handler: thirdPayment.ThirdPaymentwxPayHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/thirdPayment/thirdPaymentWxPayCallback",
 				Handler: thirdPayment.ThirdPaymentWxPayCallbackHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/payment/v1"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/thirdPayment/thirdPaymentWxPay",
+				Handler: thirdPayment.ThirdPaymentwxPayHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
 		rest.WithPrefix("/payment/v1"),
 	)
 }

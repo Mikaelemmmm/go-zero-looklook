@@ -32,15 +32,13 @@ func NewGoodBossLogic(ctx context.Context, svcCtx *svc.ServiceContext) GoodBossL
 
 func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, error) {
 
-	// 获取10个最佳房东.
-
 	whereBuilder := l.svcCtx.HomestayActivityModel.RowBuilder().Where(squirrel.Eq{
 		"row_type":  model.HomestayActivityGoodBusiType,
 		"row_status" : model.HomestayActivityUpStatus,
 	})
 	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx,whereBuilder,0, 10,"data_id desc")
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "获取10个最佳房东. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "get GoodBoss db err. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
 	}
 
 	var resp []types.HomestayBusinessBoss
@@ -57,7 +55,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 				Id: id,
 			})
 			if err != nil {
-				logx.WithContext(l.ctx).Errorf("GoodListLogic GoodList最佳房东获取房东信息失败 userId : %d ,err:%v", id, err)
+				logx.WithContext(l.ctx).Errorf("GoodListLogic GoodList fail userId : %d ,err:%v", id, err)
 				return
 			}
 			if userResp.User != nil && userResp.User.Id > 0 {
@@ -69,7 +67,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 				var typesHomestayBusiness types.HomestayBusinessBoss
 				_ = copier.Copy(&typesHomestayBusiness, item)
 
-				// 计算star todo
+				// compute star todo
 				resp = append(resp, typesHomestayBusiness)
 			}
 		})

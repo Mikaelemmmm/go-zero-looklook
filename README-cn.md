@@ -60,7 +60,7 @@
 
 【注】go-zero的相关资料、知识点在这都能找到
 
-![go-zero-public-qcode](./doc/images/1/go-zero-public-qcode.jpeg)
+![go-zero-public-qcode](./doc/chinese/images/1/go-zero-public-qcode.jpeg)
 
 
 
@@ -105,11 +105,11 @@
 
 ## 系统架构图
 
-![jiagou](./doc/images/1/gozerolooklook.png)
+![jiagou](./doc/chinese/images/1/gozerolooklook.png)
 
 ## 业务架构图
 
-![jiagou](./doc/images/1/go-zero-looklook-service.png)
+![jiagou](./doc/chinese/images/1/go-zero-looklook-service.png)
 
 
 ## 网关
@@ -200,5 +200,5 @@ gin-vue-admin后台：https://github.com/flipped-aurora/gin-vue-admin
 
 ## 赞赏
 
-![image-20220124142937169](./doc/images/1/info.jpg)
+![image-20220124142937169](./doc/chinese/images/1/info.jpg)
 

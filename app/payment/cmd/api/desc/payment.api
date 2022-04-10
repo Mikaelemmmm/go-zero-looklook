@@ -12,18 +12,27 @@ import(
 	"thirdPayment/thirdPayment.api"
 )
 
-//支付服务v1版本的接口
+//==============================> payment v1 <========================================
+//no need login
 @server(
 	prefix: payment/v1
 	group: thirdPayment
 )
 service payment {
 	
-	@doc "第三方支付：微信支付"
-	@handler thirdPaymentwxPay
-	post /thirdPayment/thirdPaymentWxPay (ThirdPaymentWxPayReq) returns (ThirdPaymentWxPayResp)
-	
-	@doc "第三方：微信支付回调"
+	@doc "third payment：wechat pay callback"
 	@handler thirdPaymentWxPayCallback
 	post /thirdPayment/thirdPaymentWxPayCallback (ThirdPaymentWxPayCallbackReq) returns (ThirdPaymentWxPayCallbackResp)
+}
+
+//need login
+@server(
+	prefix: payment/v1
+	group: thirdPayment
+	jwt: JwtAuth
+)
+service payment {
+	@doc "third payment：wechat pay"
+	@handler thirdPaymentwxPay
+	post /thirdPayment/thirdPaymentWxPay (ThirdPaymentWxPayReq) returns (ThirdPaymentWxPayResp)
 }

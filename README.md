@@ -97,11 +97,11 @@ The project directory structure is as follows：
 
 ## System architecture diagram
 
-![jiagou](./doc/images/1/gozerolooklook.png)
+![jiagou](./doc/chinese/images/1/gozerolooklook.png)
 
 ## Business architecture diagram
 
-![jiagou](./doc/images/1/go-zero-looklook-service.png)
+![jiagou](./doc/chinese/images/1/go-zero-looklook-service.png)
 
 
 ## Gateway

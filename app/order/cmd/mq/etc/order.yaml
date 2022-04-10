@@ -1,12 +1,12 @@
 Name: order-mq
 Host: 0.0.0.0
-Port: 7004
+Port: 3001
 Mode: dev
 
 #监控
 Prometheus:
   Host: 0.0.0.0
-  Port: 3004
+  Port: 4003
   Path: /metrics
 
 #链路追踪
@@ -39,15 +39,10 @@ PaymentUpdateStatusConf:
 #rpc
 OrderRpcConf:
   Endpoints:
-    - 127.0.0.1:9004
-  NonBlock: true
-
-MqueueRpcConf:
-  Endpoints:
-    - 127.0.0.1:9006
+    - 127.0.0.1:2001
   NonBlock: true
 
 UsercenterRpcConf:
   Endpoints:
-    - 127.0.0.1:9002
+    - 127.0.0.1:2004
   NonBlock: true

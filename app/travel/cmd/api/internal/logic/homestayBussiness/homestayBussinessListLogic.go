@@ -31,7 +31,7 @@ func (l *HomestayBussinessListLogic) HomestayBussinessList(req types.HomestayBus
 	whereBuilder := l.svcCtx.HomestayBusinessModel.RowBuilder()
 	list, err := l.svcCtx.HomestayBusinessModel.FindPageListByIdDESC(l.ctx,whereBuilder,req.LastId, req.PageSize)
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "req : %+v , err:%v", req, err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "HomestayBussinessList FindPageListByIdDESC db fail ,  req : %+v , err:%v", req, err)
 	}
 
 	var resp []types.HomestayBusinessListInfo

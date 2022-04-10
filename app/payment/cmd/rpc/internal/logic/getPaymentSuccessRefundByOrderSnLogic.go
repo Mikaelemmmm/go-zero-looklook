@@ -26,7 +26,6 @@ func NewGetPaymentSuccessRefundByOrderSnLogic(ctx context.Context, svcCtx *svc.S
 	}
 }
 
-// 根据订单sn查询流水记..
 func (l *GetPaymentSuccessRefundByOrderSnLogic) GetPaymentSuccessRefundByOrderSn(in *pb.GetPaymentSuccessRefundByOrderSnReq) (*pb.GetPaymentSuccessRefundByOrderSnResp, error) {
 
 	whereBuilder:=l.svcCtx.ThirdPaymentModel.RowBuilder().Where(
@@ -35,7 +34,7 @@ func (l *GetPaymentSuccessRefundByOrderSnLogic) GetPaymentSuccessRefundByOrderSn
 	)
 	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneByQuery(l.ctx,whereBuilder)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.NewErrMsg("获取支付流水信息失败"), "获取支付流水信息失败 err : %v , orderSn:%s", err, in.OrderSn)
+		return nil, errors.Wrapf(xerr.NewErrMsg("get payment record fail"), "get payment record fail FindOneByQuery  err : %v , orderSn:%s", err, in.OrderSn)
 	}
 
 	var resp pb.PaymentDetail

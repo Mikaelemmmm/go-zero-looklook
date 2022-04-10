@@ -1,7 +1,7 @@
 package config
 
-//微信小程序配置...
+// wechat mini config.
 type KqServerConfig struct {
-	Address string `json:"AppId"`  //微信appId
-	Secret  string `json:"Secret"` //微信secret
+	Address string `json:"AppId"`  //wechat mini appId
+	Secret  string `json:"Secret"` //wechat mini secret
 }

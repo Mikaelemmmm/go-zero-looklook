@@ -14,57 +14,61 @@ import (
 	"homestayComment/homestayComment.api"
 )
 
-//民宿模块v1版本的接口
+//=====================================> travel-homestay v1 <=================================
+
+//no need login
 @server(
 	prefix: travel/v1
 	group: homestay
 )
 service travel {
 	
-	@doc "民宿列表（为你优选）"
+	@doc "homestay room list"
 	@handler homestayList
 	post /homestay/homestayList (HomestayListReq) returns (HomestayListResp)
 	
-	@doc "房东所有民宿列表"
+	@doc "boss all homestay room"
 	@handler businessList
 	post /homestay/businessList (BusinessListReq) returns (BusinessListResp)
 	
-	@doc "猜你喜欢民宿列表"
+	@doc "guess homestay room"
 	@handler guessList
 	post /homestay/guessList (GuessListReq) returns (GuessListResp)
 	
-	@doc "民宿详情"
+	@doc "homestay room detail"
 	@handler homestayDetail
 	post /homestay/homestayDetail (HomestayDetailReq) returns (HomestayDetailResp)
 	
 }
 
-//店铺模块v1版本的接口
+//====================================> travel-homestayBusiness v1 <====================================
+//no need login
 @server(
 	prefix: travel/v1
 	group: homestayBussiness
 )
 service travel {
-	@doc "最佳房东"
+	@doc "good boss"
 	@handler goodBoss
 	post /homestayBussiness/goodBoss (GoodBossReq) returns (GoodBossResp)
 	
-	@doc "店铺列表"
+	@doc "business list"
 	@handler homestayBussinessList
 	post /homestayBussiness/homestayBussinessList (HomestayBussinessListReq) returns (HomestayBussinessListResp)
 	
-	@doc "房东信息"
+	@doc "boss detail"
 	@handler homestayBussinessDetail
 	post /homestayBussiness/homestayBussinessDetail (HomestayBussinessDetailReq) returns (HomestayBussinessDetailResp)
 }
 
-//民宿评论模块v1版本的接口
+//========================> homestay-homestayComment v1 <===================================
+//no need login
 @server(
 	prefix: travel/v1
 	group: homestayComment
 )
 service travel {
-	@doc "民宿评论列表"
+	@doc "homestay comment list"
 	@handler commentList
 	post /homestayComment/commentList (CommentListReq) returns (CommentListResp)
 }
