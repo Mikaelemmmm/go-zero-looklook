@@ -69,7 +69,7 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err,thirdPayment,in)
 	}
 
-	//4、notify sub "payment-update-paystatus-topic" , pub、sub use kq
+	//4、notify  sub "payment-update-paystatus-topic"  services(order-mq ..), pub、sub use kq
 	if err:=l.pubKqPaySuccess(in.Sn,in.PayStatus);err != nil{
 		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v",err)
 	}

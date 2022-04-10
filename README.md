@@ -34,8 +34,6 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 - docker-compose
 - mysql
 - redis
-- gin-vue-admin
-- air
 - modd
 - jenkins
 - gitlab
@@ -106,9 +104,7 @@ The project directory structure is as follows：
 
 ## Gateway
 
-Nginx acts as a gateway and uses the auth module of nginx to call the identity service of the back-end for unified authentication. There is no authentication within the business. If there are a lot of business funds involved, you can also carry out secondary authentication in the business for security.
-
-In addition, many students think nginx is not very good as a gateway. The principle is basically the same. They can replace it with apisik, Kong .. 
+nginx do external gateway, gateway in front of the slb, in addition, many students feel that nginx do not do gateway is not very good, this piece of principle is basically the same, you can replace it with apisix, kong, etc. 
 
 
 
@@ -138,23 +134,21 @@ Go zero supports Jaeger and Zipkin by default. You only need to configure it. Yo
 
 
 
-## Message queue
+## Pub\Sub
 
-The message queue uses the go queue developed by the go zero development team. The link is: https://github.com/zeromicro/go-queue
+kafka ，Publish subscription using go-zero development team developed by go-queue, link: https://github.com/zeromicro/go-queue
 
-KQ can be used here. KQ is a high-performance message queue based on Kafka
-
-DQ queue is used in the current project, but there is no delay in DQ queue
+Here we use kq, kq is based on kafka to do high-performance publish subscriptions
 
 
 
-## Delay queue, Scheduled task
+## Message queues, delayed queues, timed tasks
 
-Delay queue and scheduled tasks this project uses asynq, a simple middleware developed based on redis,
+Message queues, delay queues, timed tasks This project uses asynq, a simple middleware developed based on redis.
 
-Of course, asynq also supports message queues. You can also replace KQ message queues with this one. After all, it's good to only need redis without maintaining a Kafka
+Of course, the message queue you can also use go-queue
 
-Link：https://github.com/hibiken/asynq
+Link: https://github.com/hibiken/asynq
 
 
 
@@ -176,7 +170,7 @@ project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 gitlab + jenkins + harbor + k8s
 
-Click deploy the corresponding service in Jenkins, and you will go to gitlab to pull the code -- > and then pull the online configuration (a separate git library is configured online, why not use the configuration center, which is described in the deployment document) - -- > automatically build the image -- > push it to the harbor image warehouse -- > automatically publish it to k8s using kubectl -- > a nignx should be hung in front as the gateway for unified entry, authentication, current restriction ....
+Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nignx do gateway unified portal
 
 
 
@@ -185,8 +179,6 @@ Click deploy the corresponding service in Jenkins, and you will go to gitlab to 
 go-zero : https://github.com/zeromicro/go-zero
 
 dtm：https://github.com/dtm-labs/dtm
-
-gin-vue-admin：https://github.com/flipped-aurora/gin-vue-admin
 
 
 
