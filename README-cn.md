@@ -143,7 +143,7 @@ go-zero默认jaeger、zipkin支持，只需要配置就可以了，可以看配�
 
 kafka ， 发布订阅使用的是go-zero开发团队开发的go-queue，链接：https://github.com/zeromicro/go-queue
 
-这里使用可kq，kq是基于kafka做的高性能发布订阅
+这里使用kq，kq是基于kafka做的高性能发布订阅
 
 
 
