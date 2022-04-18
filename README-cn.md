@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-[English](https://github.com/Mikaelemmmm/go-zero-looklook/blob/master/README.md) | 简体中文
+[English](https://github.com/Mikaelemmmm/go-zero-looklook/blob/main/README.md) | 简体中文
 
 
 
