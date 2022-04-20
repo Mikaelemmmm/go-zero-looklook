@@ -59,7 +59,7 @@ server{
 }
 ```
 
-容器内部nginx端口是8081，使用docker暴露出去8888映射端口8081，这样外部通过8888来访问网关，使用location来匹配每个服务，当然会有人说，没加一个api服务都要来nignx配置太麻烦，你也可以使用confd统一配置，自行百度。
+容器内部nginx端口是8081，使用docker暴露出去8888映射端口8081，这样外部通过8888来访问网关，使用location来匹配每个服务，当然会有人说，每加一个api服务都要来nignx配置太麻烦，你也可以使用confd统一配置，自行百度。
 
 
 
@@ -76,11 +76,11 @@ server{
 	jwt: JwtAuth
 )
 service usercenter {
-	
+
 	@doc "get user info"
 	@handler detail
 	post /user/detail (UserInfoReq) returns (UserInfoResp)
-	
+
 	......
 }
 ```
@@ -102,10 +102,3 @@ func (l *DetailLogic) Detail(req types.UserInfoReq) (*types.UserInfoResp, error)
 #### 4、总结
 
 这样我们就可以统一入口，也可以统一收集日志上报，用作错误分析，或者访问用户的行为分析。因为我们日常对nginx用的比较多，也比较熟悉，如果各位同学对kong、apisix比较熟悉，在了解了上方go-zero使用网关的概念就可以直接替换也是一样的。
-
-
-
-
-
-
-
