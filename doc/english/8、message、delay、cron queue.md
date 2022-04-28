@@ -305,9 +305,13 @@ About timed tasks, currently go-zero-looklook is not used, here I also explain
 - Use xxl-job, gocron distributed timing task system access
 - asynq's shedule
 
-Here because the project uses asynq, I will demonstrate the asynq shedule it
+⚠️ Project specific look at app/mqueue/cmd/scheduler and app/mqueue/cmd/job
 
-divided into client and server, client is used to define the scheduling time, server is the time to accept the client's message trigger to execute the business we write, the actual business we should write in the server, client is used to define the business scheduling time
+
+
+Here I'll demonstrate the asynq schedule 
+
+The client is used to define the scheduling time, the server is to accept the client's message trigger to execute the business we write, the actual business we should write in the server, the client is used to define the business scheduling time
 
 asynqtest/docker-compose.yml
 

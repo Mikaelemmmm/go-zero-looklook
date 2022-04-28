@@ -8,15 +8,13 @@ Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 #### 1、business structure diagram
 
-<img src="../chinese/images/5/image-20220210185836212.png" alt="image-20220210185836212" style="zoom:50%;" />
+<img src="../chinese/images/5/image-20220428110630664.png" alt="image-20220210185836212" style="zoom:50%;" />
 
 
 
 #### 2、Dependencies
 
  travel-api (B&B api) depends on travel-rpc (B&B rpc), usercenter-rpc (user-center rpc)
-
- usercenter-rpc (user-center rpc) depends on identity-rpc (authorization-center rpc)
 
 
 

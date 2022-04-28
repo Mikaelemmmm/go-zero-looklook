@@ -8,15 +8,13 @@ Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 #### 1、User Business Architecture Diagram
 
-<img src="../chinese/images/4/image-20220210090345135.png" alt="image-20220210090345135" style="zoom:50%;" />
+<img src="../chinese/images/4/image-20220428105545020.png" alt="image-20220210090345135" style="zoom:50%;" />
 
 
 
 #### 2、Dependencies
 
- usercenter-api (user-center api) relies on identity-rpc (authorization authentication rpc), usercenter-rpc (user-center rpc)
-
- usercenter-rpc (user-center rpc) depends on identity-rpc (authorization-center rpc)
+ usercenter-api (user-center api) relies on usercenter-rpc (user-center rpc)
 
 
 
@@ -132,70 +130,109 @@ Here is a tip, many students feel that the fields returned by the rpc service an
 
 - Open app/usercenter/cmd/rpc/internal/logic/registerLogic.go to write the logic code
 
-  ![image-20220118122326126](../chinese/images/4/image-20220118122326126.png)
-
+  ```go
   
-
-  The registration is designed to 2 tables, a user table, a user_auth table, user is to store the basic information of the user, user_auth is to authorize the login information according to different platforms, so here designed to local transactions, as go-zero transactions to be used in the model, but I did a processing in the model, put it in the model, so that it can be used in the logic
-
-  The Trans method is defined in the model to expose the transaction to the logic
-
-  ![image-20220118122703035](../chinese/images/4/image-20220118122703035.png)
-
-  Use directly in logic
-
-  ![image-20220118122802624](../chinese/images/4/image-20220118122802624.png)
-
-  As the project supports small programs, cell phone number, small program registration does not require a password, so in the processing of the password to do a processing, cell phone number registration to pass the password, small program registration does not need to pass the password, as for the cell phone number registration password can not be empty to the api service when the cell phone number registration to determine their own
-
-  ![image-20220118122951910](../chinese/images/4/image-20220118122951910.png)
-
-  ​	
+  func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.RegisterResp, error) {
   
-  After the successful registration of usercenter-rpc, you need to request a token for the front-end login, and directly request identity-rpc to issue the token of the user
+  	user, err := l.svcCtx.UserModel.FindOneByMobile(l.ctx,in.Mobile)
+  	if err != nil && err != model.ErrNotFound {
+  		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "mobile:%s,err:%v", in.Mobile, err)
+  	}
+  	if user != nil {
+  		return nil, errors.Wrapf(ErrUserAlreadyRegisterError, "Register user exists mobile:%s,err:%v", in.Mobile, err)
+  	}
   
-  ![image-20220120112656522](../chinese/images/4/image-20220120112656522.png)
+  	var userId int64
+  	if err := l.svcCtx.UserModel.Trans(l.ctx,func(ctx context.Context,session sqlx.Session) error {
+  		user := new(model.User)
+  		user.Mobile = in.Mobile
+  		if len(user.Nickname) == 0 {
+  			user.Nickname = tool.Krand( 8, tool.KC_RAND_KIND_ALL)
+  		}
+  		if len(in.Password) > 0 {
+  			user.Password = tool.Md5ByString(in.Password)
+  		}
+  		insertResult, err := l.svcCtx.UserModel.Insert(ctx,session, user)
+  		if err != nil {
+  			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
+  		}
+  		lastId, err := insertResult.LastInsertId()
+  		if err != nil {
+  			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user insertResult.LastInsertId err:%v,user:%+v", err, user)
+  		}
+  		userId = lastId
   
+  		userAuth := new(model.UserAuth)
+  		userAuth.UserId = lastId
+  		userAuth.AuthKey = in.AuthKey
+  		userAuth.AuthType = in.AuthType
+  		if _, err := l.svcCtx.UserAuthModel.Insert(ctx,session, userAuth); err != nil {
+  			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user_auth Insert err:%v,userAuth:%v", err, userAuth)
+  		}
+  		return nil
+  	}); err != nil {
+  		return nil, err
+  	}
   
+  	//2、Generate the token, so that the service doesn't call rpc internally
+  	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
+  	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
+  		UserId: userId,
+  	})
+  	if err != nil {
+  		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", userId)
+  	}
   
-  in identity-rpc as follows
-  
-  ```protobuf
-  message GenerateTokenReq {
-    int64 userId = 1;
-  }
-  message GenerateTokenResp {
-    string accessToken = 1;
-    int64  accessExpire = 2;
-    int64  refreshAfter = 3;
-  }
-  
-  
-  service identity{
-     // Generate token, open access only for user services
-    rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
-    .....
+  	return &usercenter.RegisterResp{
+  		AccessToken:  tokenResp.AccessToken,
+  		AccessExpire: tokenResp.AccessExpire,
+  		RefreshAfter: tokenResp.RefreshAfter,
+  	}, nil
   }
   ```
   
-  generatetokenlogic.go
+  
+  
+  The registration is designed to 2 tables, a user table, a user_auth table, user is to store the basic information of the user, user_auth is to authorize the login information according to different platforms, so here designed to local transactions, as go-zero transactions to be used in the model, but I did a processing in the model, put it in the model, so that it can be used in the logic
+  
+  The Trans method is defined in the model to expose the transaction to the logic
+  
+  ![image-20220118122703035](../chinese/images/4/image-20220118122703035.png)
+  
+  Use directly in logic
+  
+  ![image-20220118122802624](../chinese/images/4/image-20220118122802624.png)
+  
+  As the project supports small programs, cell phone number, small program registration does not require a password, so in the processing of the password to do a processing, cell phone number registration to pass the password, small program registration does not need to pass the password, as for the cell phone number registration password can not be empty to the api service when the cell phone number registration to determine their own
+  
+  ![image-20220118122951910](../chinese/images/4/image-20220118122951910.png)
+  
+  ​	
+  
+  After the successful registration of usercenter-rpc, you need to request a token for the front-end login
   
   ```go
-  // GenerateToken Generate a token and open access to the user service only.
-  func (l *GenerateTokenLogic) GenerateToken(in *pb.GenerateTokenReq) (*pb.GenerateTokenResp, error) {
+  	//2、Generate the token, so that the service doesn't call rpc internally
+  	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
+  	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
+  		UserId: userId,
+  	})
+  	if err != nil {
+  		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", userId)
+  	}
+  ```
   
+  
+  
+  in GenerateToken as follows
+  
+  ```protobuf
+  func (l *GenerateTokenLogic) GenerateToken(in *pb.GenerateTokenReq) (*pb.GenerateTokenResp, error) {
   	now := time.Now().Unix()
   	accessExpire := l.svcCtx.Config.JwtAuth.AccessExpire
   	accessToken, err := l.getJwtToken(l.svcCtx.Config.JwtAuth.AccessSecret, now, accessExpire, in.UserId)
   	if err != nil {
   		return nil, errors.Wrapf(ErrGenerateTokenError, "getJwtToken err userId:%d , err:%v", in.UserId, err)
-  	}
-  
-  	//store redis
-  	userTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, in.UserId)
-  	err = l.svcCtx.RedisClient.Setex(userTokenKey, accessToken, int(accessExpire))
-  	if err != nil {
-  		return nil, errors.Wrapf(ErrGenerateTokenError, "SetnxEx err userId:%d, err:%v", in.UserId, err)
   	}
   
   	return &pb.GenerateTokenResp{
@@ -204,55 +241,46 @@ Here is a tip, many students feel that the fields returned by the rpc service an
   		RefreshAfter: now + accessExpire/2,
   	}, nil
   }
+  
+  func (l *GenerateTokenLogic) getJwtToken(secretKey string, iat, seconds, userId int64) (string, error) {
+  
+  	claims := make(jwt.MapClaims)
+  	claims["exp"] = iat + seconds
+  	claims["iat"] = iat
+  	claims[ctxdata.CtxKeyJwtUserId] = userId
+  	token := jwt.New(jwt.SigningMethodHS256)
+  	token.Claims = claims
+  	return token.SignedString([]byte(secretKey))
+  }
   ```
   
-  Register successfully and go to identity-rpc to get token, token expiration time, replacement token time to api service
+  
+  
+  Register successfully and get token, token expiration time, replacement token time to api service
 
 
 
 #### 4、Business to get the login user id
 
-When we get user information, or order and other scenarios always need to get the login user id, the previous article we talked about, we in the authorization identity service after verification token, parsed out userId will be put into the header returned to the authReuest nginx
+In the file go-zero-looklook/common/ctxdata/ctxData.go
 
-In the file app/identity/cmd/api/internal/handler/verify/tokenHandler.go
-
-![image-20220120133403297](../chinese/images/4/image-20220120133403297.png)
-
-When nginx passes authRequest and then accesses the back-end service, it will pass the header content to the back-end service, because we have configured the following in nginx
-
-![image-20220120133609942](../chinese/images/4/image-20220120133609942.png)
-
-In that case, we can get the userId in the backend service, for example, we now visit usercenter/v1/user/detail to get the current login user information
-
-![image-20220120133723896](../chinese/images/4/image-20220120133723896.png)
-
-GetUidFromCtx(l.ctx), why is it so amazing? Let's click on this method
-
-![image-20220120133819380](../chinese/images/4/image-20220120133819380.png)
-
-In fact, it is the userId from the ctx, is not very strange, we clearly in the nignx on the header, you in the go business code why can get through the ctx?
-
-##### 1、【Tips】middleware
-
-When nginx carries the x-user is userId in the header to access the backend service, the main function of our backend service will load a global middleware when it starts, such as the main in usercenter-api
-
-app/usercenter/cmd/api/usercenter.go
-
-![image-20220120134141868](../chinese/images/4/image-20220120134141868.png)
-
-The global middleware is defined here, so whenever a request comes to usercenter-ap before a certain method, it will go to the global middleware first, and the middleware details are as follows
-
-![image-20220120134304455](../chinese/images/4/image-20220120134304455.png)
-
-So is it clear at once, when requesting our usercenter/v1/user/detail, will first enter this middleware, in this middleware, we through the nginx header in the X-User to get the parsed userId into the ctx, that continue to enter the usercenter/v1/user/detail, we can not be directly removed through the ctx to use in the business la, all the truth is clear.
+```go
+func GetUidFromCtx(ctx context.Context) int64 {
+	var uid int64
+	if jsonUid, ok := ctx.Value(CtxKeyJwtUserId).(json.Number); ok {
+		if int64Uid, err := jsonUid.Int64(); err == nil {
+			uid = int64Uid
+		} else {
+			logx.WithContext(ctx).Errorf("GetUidFromCtx err : %+v", err)
+		}
+	}
+	return uid
+}
 
 
+```
 
-
-
-The same other user center service login, get login user information, small program authorization login are a reason, here will not be verbose, see the code on their own can
-
-Note] small program authorized login, remember to modify the configuration file, here the configuration file is false, change to their own
+GetUidFromCtx(l.ctx), we can see that we can get the
 
 
 

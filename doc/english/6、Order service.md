@@ -8,17 +8,15 @@ This project address : https://github.com/Mikaelemmmm/go-zero-looklook
 
 #### 1. Order service business architecture diagram
 
-<img src="../chinese/images/6/image-20220213133955478.png" alt="image-20220213133955478" style="zoom:50%;" />
+<img src="../chinese/images/6/image-20220428110910672.png" alt="image-20220213133955478" style="zoom:50%;" />
 
 
 
 #### 2. Dependencies
 
-order-api (order-api) Dependencies order-rpc (order-rpc), payment-rpc (payment-rpc)
+order-api (order-api) Dependencies order-rpc (order-rpc), payment-rpc (payment-rpc), travel-rpc (B&B rpc)
 
-payment-rpc (payment-rpc) depends on mqueue-rpc (message queue)
-
-order-rpc (order-rpc) depend on mqueue-rpc (message queue), travel-rpc (B&B rpc)
+order-rpc (order-rpc) depend on travel-rpc (B&B rpc)
 
 
 
@@ -56,67 +54,75 @@ service order {
 
 
 
-3, after the creation of orders in rpc check conditions,   will call mqueue-rpc to create a message queue for delayed order closure
+3. After creating an order by checking the conditions in rpc, ** Asynq will be called to create a message queue for delayed order closure**
 
-![image-20220120130440907](../chinese/images/6/image-20220120130440907.png)
-
-4, mqueue-rpc delayed queue in the code , delayed queue is used asynq, asynq is based on redis high-performance queue, while supporting message queues, timing queues, fixed-cycle queues, but our project in order to demonstrate go-zero official message queue go-queue (go-queue is based on kafka), so the message queue with go-queue, delayed queue, timing tasks with asynq. Here note that this is only to add delayed tasks to the delayed queue, the specific implementation is no longer here, then we go to see the specific implementation of the code after 20 minutes, in app/order/cmd/mq
-
-![image-20220120130440907](../chinese/images/6/Snipaste_2022-01-20_13-08-02.jpg)
-
-5, let's look at the specific implementation of 20 minutes after the delayed pair of columns, in app/order/cmd/mq, here I want to explain, go-zero official goctl support for the generation of services is currently api, rpc, at the moment there is no support for console, mq, etc., but go-zero provides serviceGroup, convenient We manage any of our own services, so I used serviceGroup to manage the services in mq, which is also the official recommended way to use, the code is as follows:
-
-
-
-1) app/order/cmd/mq/order.go First we look at main.go
+go-zero-looklook/app/order/cmd/rpc/internal/logic/createHomestayOrderLogic.go
 
 ```go
-func main() {
-	flag.Parse()
-	var c config.
+// CreateHomestayOrder.
+func (l *CreateHomestayOrderLogic) CreateHomestayOrder(in *pb.CreateHomestayOrderReq) (*pb.CreateHomestayOrderResp, error) {
 
-	conf.MustLoad(*configFile, &c)
-  
-	// log, prometheus, trace, metricsUrl.
-	if err := c.SetUp(); err ! = nil {
-		panic(err)
+	.....
+
+	//2、Delayed closing of order tasks.
+	payload, err := json.Marshal(jobtype.DeferCloseHomestayOrderPayload{Sn: order.Sn})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("create defer close order task json Marshal fail err :%+v , sn : %s",err,order.Sn)
+	}else{
+		_, err = l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.DeferCloseHomestayOrder, payload), asynq.ProcessIn(CloseOrderTimeMinutes * time.Minute))
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("create defer close order task insert queue fail err :%+v , sn : %s",err,order.Sn)
+		}
 	}
 
-	serviceGroup := service.NewServiceGroup()
-	defer serviceGroup.Stop()
-
-	for _, mq := range listen.Mqs(c) {
-		serviceGroup.Add(mq)
-	}
-	serviceGroup.Start()
+	return &pb.CreateHomestayOrderResp{
+		Sn: order.Sn,
+	}, nil
 }
+
+
 ```
 
-The serviceGroup can add any service to it, but how does it become a service? Then you have to implement two methods a Starter, a Stoper
 
-![image-20220120131553180](../chinese/images/6/image-20220120131553180.png)
 
-2) We can see the loop listen.Mqs(c) in main, so let's see what listen.Mqs(c) has
+4. go-zero-looklook/app/mqueue/cmd/job/internal/logic/closeOrder.go has a delayed close order task that defines asynq
 
-![image-20220120131812793](../chinese/images/6/image-20220120131812793.png)
+```go
 
-We not only want to listen to asynq's delayed queue, timing queue, later we also want to listen to go-queue's kafka message queue, in the code we consider not want to put go-queue's kafka message queue and asynq's delayed queue, timing queue together, so here is a classification
+// defer  close no pay homestayOrder  : if return err != nil , asynq will retry
+func (l *CloseHomestayOrderHandler) ProcessTask(ctx context.Context, t *asynq.Task) error {
 
-3) asyny's delayed message queue
+	var p jobtype.DeferCloseHomestayOrderPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return errors.Wrapf(ErrCloseOrderFal, "closeHomestayOrderStateMqHandler payload err:%v, payLoad:%+v", err, t.Payload())
+	}
 
-Define asynq
+	resp, err := l.svcCtx.OrderRpc.HomestayOrderDetail(ctx, &order.HomestayOrderDetailReq{
+		Sn: p.Sn,
+	})
+	if err != nil || resp.HomestayOrder == nil {
+		return errors.Wrapf(ErrCloseOrderFal, "closeHomestayOrderStateMqHandler  get order fail or order no exists err:%v, sn:%s ,HomestayOrder : %+v", err, p.Sn, resp.HomestayOrder)
+	}
 
-![image-20220120132200275](../chinese/images/6/image-20220120132200275.png)
+	if resp.HomestayOrder.TradeState == model.HomestayOrderTradeStateWaitPay {
+		_, err := l.svcCtx.OrderRpc.UpdateHomestayOrderTradeState(ctx, &order.UpdateHomestayOrderTradeStateReq{
+			Sn:         p.Sn,
+			TradeState: model.HomestayOrderTradeStateCancel,
+		})
+		if err != nil {
+			return errors.Wrapf(ErrCloseOrderFal, "CloseHomestayOrderHandler close order fail  err:%v, sn:%s ", err, p.Sn)
+		}
+	}
 
-Define Routing
+	return nil
+}
 
-![image-20220120132300748](../chinese/images/6/image-20220120132300748.png)
 
-Specific implementation logic (closing order logic)
+```
 
-![image-20220120132351529](../chinese/images/6/image-20220120132351529.png)
 
-So we start this order-mq, asynq will be loaded, define the route, when we previously added the delayed queue to 20 minutes, will automatically execute the order closure logic, if the order is not paid, here will close the order, paid ignored, so that you can close the order without using the timed task rotation, ha ha
+
+So we start this mqueue-job, asynq will be loaded, define the route, when we previously added the delay queue to 20 minutes, it will automatically perform the order closure logic, if the order is not paid, here will close the order, paid ignored, so that you can close the order without using the timed task rotation training, ha ha
 
 
 

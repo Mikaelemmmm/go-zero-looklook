@@ -324,6 +324,14 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
 ⚠️Common reasons for collection failure
 
+- There is no topic in kafka to create a log: looklook-log
+
+  Solution: Go to kafka and create looklook-log, restart filebeat, go-stash
+
+- started after go-stash
+
+  Solution: restart go-stash once
+
 - The go-stash image is being used incorrectly  
 
     Look at the go-stash log, if there is a core dumped, it means that the mirror is being used incorrectly.
