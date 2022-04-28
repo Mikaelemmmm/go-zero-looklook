@@ -6,19 +6,15 @@ This project address : https://github.com/Mikaelemmmm/go-zero-looklook
 
 #### 1. Payment service business architecture diagram
 
-<img src="../chinese/images/7/image-20220210190626098.png" alt="image-20220210190626098" style="zoom:50%;" />
+<img src="../chinese/images/7/image-20220428111821382.png" alt="image-20220210190626098" style="zoom:50%;" />
 
 
 
 #### 2. Dependencies
 
-payment-api (payment api) Dependencies order-rpc (order-rpc), payment-rpc (payment-rpc), usercenter (user-rpc)
+payment-api Dependencies order-rpc, payment-rpc, usercenter
 
-payment-rpc (payment-rpc) dependency mqueue-rpc (message queue)
-
-order-rpc (order-rpc) depend on mqueue-rpc (message queue), travel-rpc
-
-usercenter (user rpc) relies on identity-rpc (authorization authentication rpc)
+order-rpc (order-rpc) depend on travel-rpc
 
 
 
@@ -92,83 +88,190 @@ Let's take a look at verifyAndUpdateState method, we want to query whether the s
 
 
 
-Here you also have to write a rotation interface to the front-end, the front-end user payment success after the front-end can not be based on the results returned by the front-end WeChat, to be provided by the back-end interface rotation, to determine whether this flowing list is really the back-end to return a successful state of payment, if the interface returns success to be considered successful, WeChat front-end return can not be used as a basis, because WeChat front-end return is not safe, the general development are understood not to know Baidu yourself.
+Here you have to write a training interface to the front-end, the front-end user payment success after the front-end can not be the front-end WeChat return results shall prevail, to be provided by the back-end interface training, to determine whether the flow list is really the back-end return to pay the successful state, if the interface returns success to be considered successful, WeChat front-end return can not be used as the basis, because WeChat front-end return is not safe, the general development are understood not to know their own google.
 
 
 
-##### 3.3 payment success send small program template message
+##### 3.3 Payment success send small program template message
 
-We pay callback success, will send the user an entry code, go to the merchant to show this code, the merchant through the background verification code, in fact, is the same as the American group, we go to the American group to place an order, the American group will give you a code, the user takes this code to check in or consumption, etc..
+We pay callback success, will send the user an entry code, go to the merchant to show this code, the merchant through the background verification code, in fact, is the United States Mission look, we go to the United States Mission to place an order, the United States Mission will give you a code, the user take this code to check in or consumption, etc..
 
 ok, callback success, we will call pyamentRpc to modify the current flow single state success
 
 ![image-20220120142149012](../chinese/images/7/image-20220120142149012.png)
 
-Let's see what is done in paymentRpc.
+Let's see what's done in paymentRpc,go-zero-looklook/app/payment/cmd/rpc/internal/logic/updateTradeStateLogic.go
 
-![image-20220120142318604](../chinese/images/7/image-20220120142318604.png)
+```go
 
-The first is a check, the core does two things, the first is to update the status, the second sends a message to the message queue, we look at the corresponding code in the message queue
+func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*pb.UpdateTradeStateResp, error) {
 
-![image-20220120142503192](../chinese/images/7/image-20220120142503192.png)
+	.....
+
+	//3、update .
+	thirdPayment.TradeState = in.TradeState
+	thirdPayment.TransactionId = in.TransactionId
+	thirdPayment.TradeType = in.TradeType
+	thirdPayment.TradeStateDesc = in.TradeStateDesc
+	thirdPayment.PayStatus = in.PayStatus
+	thirdPayment.PayTime = time.Unix(in.PayTime, 0)
+	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(l.ctx,nil, thirdPayment); err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err,thirdPayment,in)
+	}
+
+	//4、notify  sub "payment-update-paystatus-topic"  services(order-mq ..), pub、sub use kq
+	if err:=l.pubKqPaySuccess(in.Sn,in.PayStatus);err != nil{
+		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v",err)
+	}
+
+	return &pb.UpdateTradeStateResp{}, nil
+}
 
 
-
-You can see that we used go-queue to send a kq message to kafka, not asynq delayed message, because we want all subscribed to the payment status of the business can receive this message to do the corresponding processing, although at present we only have a place to listen to do processing (send a small program template message to notify users of successful payment), so here is to send a payment flow related information to kafka, here with the previous order there is the same just add the message to the queue, no processing, then we look at the order-mq in how to handle.
-
-![image-20220120142544731](../chinese/images/7/image-20220120142544731.png)
-
-
-
-The previous section of order has introduced the whole order-mq operation mechanism, so we won't say more here, we will only talk about kq here
-
-When order-mq is started, go-queue will listen for messages in kafka
-
-![image-20220120143018482](../chinese/images/7/image-20220120143018482.png)
-
-
-
-Consume will receive the message from kafka and then deserialize the data and pass it to the execService to perform specific operations. What is executed in the execService?
-
-As you can see in the red box below, one is to modify the order status (non-payment status, the order also has its own status), one is to send a message (SMS, WeChat applet template message) to the user
-
-app/order/cmd/mq/internal/mqs/kq/paymentUpdateStatus.go
-
-![image-20220120143229908](../chinese/images/7/image-20220120143229908.png)
+```
 
 
 
-Modify the order state we do not see, we can look at sending small program template message, below LiveStateDate \ LiveEndDate before debugging write dead, this directly into the method passed over the time is good, convert it
+The core does two things, the first is to update the payment status, the second sends a message to the message queue (kafka), we look at the corresponding code in the message queue
 
-Note] users want to receive the small program template message, you must let the user authorization in the front end to do, this is a small program must not we can control
+```go
+func (l *UpdateTradeStateLogic) pubKqPaySuccess(orderSn string,payStatus int64) error{
 
-![image-20220120143530798](../chinese/images/7/image-20220120143530798.png)
+	m := kqueue.ThirdPaymentUpdatePayStatusNotifyMessage{
+		OrderSn:  orderSn ,
+		PayStatus: payStatus,
+	}
 
+	body, err := json.Marshal(m)
+	if err != nil {
+		return errors.Wrapf(xerr.NewErrMsg("kq UpdateTradeStateLogic pushKqPaySuccess task marshal error "), "kq UpdateTradeStateLogic pushKqPaySuccess task marshal error  , v : %+v", m)
+	}
 
-
-Here to send messages we also do not really call the WeChat sdk to send messages, but also to the message queue MqueueRpc insert template messages (in fact, here can also send directly), and then by the message message service from the kafka to really send, is to want all the SMS, email, WeChat and other messages from this service to send out, this own according to The company's own business or architecture to design it flexibly, it does not have to be so.
-
-So, let's go straight to the message service code
-
-![image-20220120144218195](../chinese/images/7/image-20220120144218195.png)
-
-
-
-There is only one mq in the message business, because he does not need rpc, api, only need to send messages from the queue regularly, so it runs the same logic as order-mq, the same applies to serviceGroup management
-
-![image-20220120144325943](../chinese/images/7/image-20220120144325943.png)
-
-We do not go into detail, run the logic to see the order service section of the order-mq has a detailed description, we only look at the specific implementation of the logic, go-queue from the kafka queue to send each WeChat small program template message data, and then deserialized to the execService to handle, let's look at the execService
-
-![image-20220120144525145](../chinese/images/7/image-20220120144525145.png)
+	return  l.svcCtx.KqueuePaymentUpdatePayStatusClient.Push(string(body))
+}
 
 
+```
 
-execService is mainly the integration of data, sent to the applet through the client of the applet sdk, there is a point of attention here, the applet can distinguish between the environment, is sent to the online applet or experience version of the applet, in the red box below to make a distinction, the actual so is not safe Through this way, it is best to get to the configuration file, in case the development environment someone messed up to change into the formal, randomly sent to others openid on the accident, this can change themselves ha
+You can see that we used go-queue to send a kq message to kafka, not asynq delayed message (although asynq also supports message queue I just want to demonstrate how to use go-queue on this feature), because we want to let all subscribed to the payment status of the business can receive this message and do the corresponding processing, although at present we only have a local listener to do the processing (send the applet template message to notify users of successful payment), so here is to send a payment flow related information to the kafka, here with the previous order there is the same just add the message to the queue, no processing, then we look at how to handle in order-mq.
 
-![image-20220120144720309](../chinese/images/7/image-20220120144720309.png)
+go-zero-looklook/app/order/cmd/mq/internal/mqs/kq/paymentUpdateStatus.go
+
+```go
+package kq
+
+....
+
+func (l *PaymentUpdateStatusMq) Consume(_, val string) error {
+
+	var message kqueue.ThirdPaymentUpdatePayStatusNotifyMessage
+	if err := json.Unmarshal([]byte(val), &message); err != nil {
+		logx.WithContext(l.ctx).Error("PaymentUpdateStatusMq->Consume Unmarshal err : %v , val : %s", err, val)
+		return err
+	}
+
+	if err := l.execService(message); err != nil {
+		logx.WithContext(l.ctx).Error("PaymentUpdateStatusMq->execService  err : %v , val : %s , message:%+v", err, val, message)
+		return err
+	}
+
+	return nil
+}
+
+func (l *PaymentUpdateStatusMq) execService(message kqueue.ThirdPaymentUpdatePayStatusNotifyMessage) error {
+
+	orderTradeState := l.getOrderTradeStateByPaymentTradeState(message.PayStatus)
+	if orderTradeState != -99 {
+		//update homestay order state
+		_, err := l.svcCtx.OrderRpc.UpdateHomestayOrderTradeState(l.ctx, &order.UpdateHomestayOrderTradeStateReq{
+			Sn:         message.OrderSn,
+			TradeState: orderTradeState,
+		})
+		if err != nil {
+			return errors.Wrapf(xerr.NewErrMsg("update homestay order state fail"), "update homestay order state fail err : %v ,message:%+v", err, message)
+		}
+	}
+
+	return nil
+}
+....
 
 
+```
+
+
+
+Let's look at order-rpc's UpdateHomestayOrderTradeState
+
+```go
+
+// Update homestay order status
+func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *pb.UpdateHomestayOrderTradeStateReq) (*pb.UpdateHomestayOrderTradeStateResp, error) {
+
+	......
+
+	// 3、Pre-update status judgment.
+	homestayOrder.TradeState = in.TradeState
+	if err := l.svcCtx.HomestayOrderModel.UpdateWithVersion(l.ctx,nil, homestayOrder); err != nil {
+		return nil, errors.Wrapf(xerr.NewErrMsg("Failed to update homestay order status"), "Failed to update homestay order status db UpdateWithVersion err:%v , in : %v", err, in)
+	}
+
+	//4、notify user
+	if in.TradeState == model.HomestayOrderTradeStateWaitUse {
+		payload, err := json.Marshal(jobtype.PaySuccessNotifyUserPayload{Order: homestayOrder})
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("pay success notify user task json Marshal fail, err :%+v , sn : %s",err,homestayOrder.Sn)
+		}else{
+			_, err := l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.MsgPaySuccessNotifyUser, payload))
+			if err != nil {
+				logx.WithContext(l.ctx).Errorf("pay success notify user  insert queue fail err :%+v , sn : %s",err,homestayOrder.Sn)
+			}
+		}
+	}
+
+
+......
+}
+
+
+```
+
+The main thing is to change the order status and send an asynq to the mqueue-job queue, so that mqueue-job sends a WeChat applet template message to the user
+
+go-zero-looklook/app/mqueue/cmd/job/internal/logic/paySuccessNotifyUser.go
+
+```go
+
+func (l *PaySuccessNotifyUserHandler) ProcessTask(ctx context.Context, t *asynq.Task) error {
+
+	var p jobtype.PaySuccessNotifyUserPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return errors.Wrapf(ErrPaySuccessNotifyFail, "PaySuccessNotifyUserHandler payload err:%v, payLoad:%+v", err, t.Payload())
+	}
+
+	// 1、get user openid
+	usercenterResp, err := l.svcCtx.UsercenterRpc.GetUserAuthByUserId(ctx, &usercenter.GetUserAuthByUserIdReq{
+		UserId:   p.Order.UserId,
+		AuthType: usercenterModel.UserAuthTypeSmallWX,
+	})
+	if err != nil {
+		return errors.Wrapf(ErrPaySuccessNotifyFail,"pay success notify user fail, rpc get user err:%v , orderSn:%s , userId:%d",err,p.Order.Sn,p.Order.UserId)
+	}
+	if usercenterResp.UserAuth == nil || len(usercenterResp.UserAuth.AuthKey) == 0 {
+		return errors.Wrapf(ErrPaySuccessNotifyFail,"pay success notify user , user no exists err:%v , orderSn:%s , userId:%d",err,p.Order.Sn,p.Order.UserId)
+	}
+	openId := usercenterResp.UserAuth.AuthKey
+
+
+	// 2、send notify
+	msgs := l.getData(ctx,p.Order,openId)
+	for _, msg := range msgs  {
+		l.SendWxMini(ctx,msg)
+	}
+
+	return nil
+}
+```
 
 
 
