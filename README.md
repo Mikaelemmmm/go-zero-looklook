@@ -69,9 +69,6 @@ The whole project uses the micro services developed by go zero, which basically 
 
 The project directory structure is as follows：
 
--  admin：Background code (integrated with gin Vue admin, acting as a large background gateway) uses grpc to interact with RPC business under app. There is an example of code interaction between background gin Vue admin and go zero. If you don't want the background, you can directly delete the whole folder of admin and execute go mod tidy once
-- admin/web : Background web side code, gin-Vue-admin(https://github.com/flipped-aurora/gin-vue-admin)
-
 
 - app：All business codes include API, RPC and MQ (message queue, delay queue, scheduled task)
 - common：General components ( error、middleware、interceptor、tool、ctxdata ...)
