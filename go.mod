@@ -98,7 +98,7 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/silenceper/wechat/v2 v2.0.9
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.9
-	github.com/zeromicro/go-queue v1.1.2
+	github.com/zeromicro/go-queue v1.1.5
 	github.com/zeromicro/go-zero v1.3.3
 	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect
 )
