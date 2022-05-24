@@ -57,7 +57,7 @@ func (l *UserHomestayOrderDetailLogic) UserHomestayOrderDetail(req types.UserHom
 
 		//支付信息.
 		if typesOrderDetail.TradeState != model.HomestayOrderTradeStateCancel && typesOrderDetail.TradeState != model.HomestayOrderTradeStateWaitPay {
-			paymentResp, err := l.svcCtx.PaymentrPC.GetPaymentSuccessRefundByOrderSn(l.ctx, &payment.GetPaymentSuccessRefundByOrderSnReq{
+			paymentResp, err := l.svcCtx.PaymentRpc.GetPaymentSuccessRefundByOrderSn(l.ctx, &payment.GetPaymentSuccessRefundByOrderSnReq{
 				OrderSn: resp.HomestayOrder.Sn,
 			})
 			if err != nil {
