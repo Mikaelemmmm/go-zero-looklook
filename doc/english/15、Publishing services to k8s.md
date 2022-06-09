@@ -343,7 +343,7 @@ By the same token, before going to build identity-api, then go to configure the 
 
 #### 6、Add gateway
 
-Because our api services published in k8s through goctl will expose the nodeport port, index we look at the nodeport port service of the service under the go-zero-looklook namespace in k8s, and then nodeport can be configured in nignx.
+Because our api services published in k8s through goctl will expose the nodeport port, index we look at the nodeport port service of the service under the go-zero-looklook namespace in k8s, and then nodeport can be configured in nginx.
 
 
 
@@ -418,7 +418,7 @@ server{
 }
 ```
 
-If it is online, you should configure multiple nignx to maintain high availability, in front of the nignx there will also be a slb, your domain name including https configuration should resolve channel slb, in front of the slb in a firewall and so on these.
+If it is online, you should configure multiple nginx to maintain high availability, in front of the nginx there will also be a slb, your domain name including https configuration should resolve channel slb, in front of the slb in a firewall and so on these.
 
 
 

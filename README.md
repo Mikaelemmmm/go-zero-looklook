@@ -167,7 +167,7 @@ project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
 
 gitlab + jenkins + harbor + k8s
 
-Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nignx do gateway unified portal
+Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nginx do gateway unified portal
 
 
 
