@@ -16,9 +16,9 @@ api is understood by many students as a gateway, in a practical sense when your 
 
 [Note]: When looking here, it is recommended to look at the business architecture diagram in the previous section first
 
-![nignx-svc](../chinese/images/2/nginx-gateway.jpg)
+![nginx-svc](../chinese/images/2/nginx-gateway.jpg)
 
-The actual project also uses nginx as a gateway, using the auth_request module of nginx as a unified authentication, business internal authentication is not done (designed to the assets of the best business internal authentication, the main extra layer of security), nignx gateway configuration in the project's deploy/nginx/conf.d/looklook- gateway.conf
+The actual project also uses nginx as a gateway, using the auth_request module of nginx as a unified authentication, business internal authentication is not done (designed to the assets of the best business internal authentication, the main extra layer of security), nginx gateway configuration in the project's deploy/nginx/conf.d/looklook- gateway.conf
 
 ```conf
 server{
@@ -60,7 +60,7 @@ server{
 
 ```
 
-Container internal nginx port is 8081, use docker to expose out 8888 mapping port 8081, so that the external through 8888 to access the gateway, use location to match each service, of course, there will be people say, did not add an api service are to nignx configuration is too much trouble, you can also use confd unified configuration, self Baidu.
+Container internal nginx port is 8081, use docker to expose out 8888 mapping port 8081, so that the external through 8888 to access the gateway, use location to match each service, of course, there will be people say, did not add an api service are to nginx configuration is too much trouble, you can also use confd unified configuration, self Baidu.
 
 
 

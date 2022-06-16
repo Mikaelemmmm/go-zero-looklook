@@ -277,7 +277,7 @@ You can see that the prometheus also shows success, and similarly the other also
 
 #### 7、Access Program
 
-Since we use nginx as the gateway, the nginx gateway is configured in docker-compose, which is also configured in docker-compose, nignx exposes port 8888 to the public, so we access through port 8888
+Since we use nginx as the gateway, the nginx gateway is configured in docker-compose, which is also configured in docker-compose, nginx exposes port 8888 to the public, so we access through port 8888
 
 ```shell
 $ curl  -X POST "http://127.0.0.1:8888/usercenter/v1/user/register" -H "Content-Type: application/json" -d "{\"mobile\":\"18888888888\",\"password\":\"123456\"}" 
