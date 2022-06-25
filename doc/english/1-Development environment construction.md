@@ -1,21 +1,40 @@
-### 1.Project Profile
+- [I. Development environment](#i-development-environment)
+  - [1.Project Profile](#1project-profile)
+  - [2.Use to technology stack](#2use-to-technology-stack)
+  - [3.Project Architecture Diagram](#3project-architecture-diagram)
+  - [4.Business Architecture Diagram](#4business-architecture-diagram)
+  - [5.Project Environment Setup](#5project-environment-setup)
+      - [⚠️ If you encounter problems during the build process, you can see "9. Common Errors"](#️-if-you-encounter-problems-during-the-build-process-you-can-see-9-common-errors)
+    - [1.clone code & update dependencies](#1clone-code--update-dependencies)
+    - [2.The environment on which the project is launched](#2the-environment-on-which-the-project-is-launched)
+    - [3.Importing Data](#3importing-data)
+        - [3.1. Creating a kafka topic](#31-creating-a-kafka-topic)
+        - [3.2Importing mysql data](#32importing-mysql-data)
+    - [4.View Service Environment](#4view-service-environment)
+    - [5.Start Service](#5start-service)
+      - [5.1. Pull the runtime environment image](#51-pull-the-runtime-environment-image)
+      - [5.2. Start Project](#52-start-project)
+    - [6.View project operation](#6view-project-operation)
+    - [7.Access Program](#7access-program)
+  - [6.Log Collection](#6log-collection)
+  - [7.Introduction of this project mirror](#7introduction-of-this-project-mirror)
+  - [8.Project Development Proposal](#8project-development-proposal)
+  - [9.Common mistakes in building environments](#9common-mistakes-in-building-environments)
+  - [10.Follow-up](#10follow-up)
 
-Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
+# I. Development environment
 
+## 1.Project Profile
 
+Address of this project :  <https://github.com/Mikaelemmmm/go-zero-looklook>
 
 The whole project uses go-zero developed microservices, which basically includes go-zero and some middleware developed by related go-zero authors, and the technology stack used is basically the self-developed components of go-zero project team, which is basically go-zero family bucket.
-
-
 
 The development environment of this project recommends docker-compose, using the direct chain method, giving up the trouble brought by service registration discovery middleware (etcd, nacos, consul, etc.)
 
 Testing, online deployment using k8s (also do not need etc.) have a detailed tutorial (build + deployment), you can enter the go-zero community group communication, very easy
 
-
-
 The project directory structure is as follows:
-
 
 - app:All business code contains api, rpc and mq (message queue, delay queue, timed tasks)
 
@@ -25,25 +44,23 @@ The project directory structure is as follows:
 
 - deploy:
 
-    - filebeat: docker deployment filebeat configuration
-    - go-stash:go-stash configuration
-    - nginx: nginx gateway
-    - prometheus : prometheus configuration
-    - script:
-        - gencode:Generate api, rpc, and create kafka statements, copy and paste to use
-        - mysql:Generate sh tools for mods
-    - goctl: The project goctl template, goctl generate custom code template, tempalte usage can refer to go-zero documentation, copy to the home directory .goctl can
+  - filebeat: docker deployment filebeat configuration
+  - go-stash:go-stash configuration
+  - nginx: nginx gateway
+  - prometheus : prometheus configuration
+  - script:
+    - gencode:Generate api, rpc, and create kafka statements, copy and paste to use
+    - mysql:Generate sh tools for mods
+  - goctl: The project goctl template, goctl generate custom code template, tempalte usage can refer to go-zero documentation, copy to the home directory .goctl can
 
 - doc : The project series documentation
 
-- modd.conf :  modd hot-loading configuration file, do not be afraid ~ it is very simple to use, about modd more usage can go here to understand: https://github.com/cortesi/modd, the project mirror will only golang-1.17.7-alpine as the base image installed modd in the internal, if you want to put goctl, protoc, golint, etc. protoc, golint, etc., do not use my mirror directly to create a mirror is also the same ha
+- modd.conf :  modd hot-loading configuration file, do not be afraid ~ it is very simple to use, about modd more usage can go here to understand: <https://github.com/cortesi/modd>, the project mirror will only golang-1.17.7-alpine as the base image installed modd in the internal, if you want to put goctl, protoc, golint, etc. protoc, golint, etc., do not use my mirror directly to create a mirror is also the same ha
 
     Translated with www.DeepL.com/Translator (free version)
 
+## 2.Use to technology stack
 
-
-
-### 2.Use to technology stack
 - k8s
 
 - go-zero
@@ -90,67 +107,55 @@ The project directory structure is as follows:
 
 - harbor
 
-
-
-
-### 3.Project Architecture Diagram
+## 3.Project Architecture Diagram
 
 ![gozerolooklook](../chinese/images/1/gozerolooklook.png)
 
-### 4.Business Architecture Diagram
+## 4.Business Architecture Diagram
+
 ![gozerolooklook](../chinese/images/1/go-zero-looklook-service.png)
 
-### 5.Project Environment Setup
+## 5.Project Environment Setup
 
-##### ⚠️ If you encounter problems during the build process, you can see "9. Common Errors"
-
-
+#### ⚠️ If you encounter problems during the build process, you can see "9. Common Errors"
 
 The project uses modd hot-loading function instantly modify the code in time to take effect, and do not need to restart each time, change the code automatically in the container reload, local services do not need to start, locally installed sdk is to write code automatically prompted to use, the actual run is since the container lyumikael/go-modd-env:v1.0.0 golang environment. So use goland, vscode are the same
 
 Translated with www.DeepL.com/Translator (free version)
 
-
-
 [Note] Since this project has more middleware, starting docker on non-linux may consume more memory, so it is recommended that the memory allocated to docker on the physical machine be adjusted to 8G.
 
-
-
-#### 1.clone code & update dependencies
+### 1.clone code & update dependencies
 
 ```shell
-$ git clone https://github.com/Mikaelemmmm/go-zero-looklook
-$ go mod tidy
+git clone https://github.com/Mikaelemmmm/go-zero-looklook
+go mod tidy
 ```
 
-
-
-#### 2.The environment on which the project is launched
+### 2.The environment on which the project is launched
 
 ```shell
-$ docker-compose -f docker-compose-env.yml up -d
+docker-compose -f docker-compose-env.yml up -d
 ```
 
+### 3.Importing Data
 
-
-#### 3.Importing Data
-
-###### 3.1. Creating a kafka topic
+##### 3.1. Creating a kafka topic
 
 The system uses 3 topics, the default is not to allow the program to automatically create a topic, into the kafka container to create 3 topics
 
 Enter the container
 
 ```shell
-$ docker exec -it kafka /bin/sh
-$ cd /opt/kafka/bin/
+docker exec -it kafka /bin/sh
+cd /opt/kafka/bin/
 ```
 
 Create 3 topics
 
 ```shell
-$ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
-$ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic payment-update-paystatus-topic
+./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
+./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic payment-update-paystatus-topic
 ```
 
 looklook-log : The log collection uses the
@@ -159,21 +164,17 @@ payment-update-paystatus-topic : Payment success notification
 
 send-wx-mini-tpl-message:Send WeChat applet notifications
 
-
-
-###### 3.2Importing mysql data
+##### 3.2Importing mysql data
 
 For local tools to connect to mysql, you need to enter the container first and set remote connection privileges for root
 
 ```shell
 $ docker exec -it mysql mysql -uroot -p
-##input password:PXDN93VRKUm8TeE7
+#input password:PXDN93VRKUm8TeE7
 $ use mysql;
 $ update user set host='%' where user='root';
 $ FLUSH PRIVILEGES;
 ```
-
-
 
 Create database looklook_order && import deploy/sql/looklook_order.sql data
 
@@ -183,23 +184,21 @@ Create database looklook_travel && import deploy/sql/looklook_travel.sql data
 
 Create database looklook_usercenter && import looklook_usercenter.sql data
 
+### 4.View Service Environment
 
+Elastic search: <http://127.0.0.1:9200/> （⚠️ :This startup time is a bit long）
 
-#### 4.View Service Environment
-
-Elastic search: http://127.0.0.1:9200/ （⚠️ :This startup time is a bit long）
-
-jaeger: http://127.0.0.1:16686/search  (⚠️ :If it fails, rely on es, because es start time is long this may timeout, wait for es start play restart a)
+jaeger: <http://127.0.0.1:16686/search>  (⚠️ :If it fails, rely on es, because es start time is long this may timeout, wait for es start play restart a)
 
 go-stash : If you find that the logs are not collected when kibana clicks next and your kafka gets the data, please restart go-stash and wait for a minute.  (⚠️ :If you are mac m1 or linux arm, please change the go-stash image in docker-compose-env.yml kevinwan/go-stash:1.0-arm64, the default is for linux amd)
 
-asynq （Delayed tasks, sheduler tasks, message queues）: http://127.0.0.1:8980/
+asynq （Delayed tasks, sheduler tasks, message queues）: <http://127.0.0.1:8980/>
 
-kibana  : http://127.0.0.1:5601/
+kibana  : <http://127.0.0.1:5601/>
 
-Prometheus: http://127.0.0.1:9090/
+Prometheus: <http://127.0.0.1:9090/>
 
-Grafana: http://127.0.0.1:3001/  ， The default account and password are admin
+Grafana: <http://127.0.0.1:3001/>  ， The default account and password are admin
 
 Mysql :   Self-client tools (Navicat, Sequel Pro) to view
 
@@ -225,11 +224,9 @@ Kafka:  (pub.sub)Self-client tool view
 
 - port : 9092
 
+### 5.Start Service
 
-
-#### 5.Start Service
-
-##### 5.1. Pull the runtime environment image
+#### 5.1. Pull the runtime environment image
 
 Because this project is using docker + hot-loading, that is, the change is effective
 
@@ -238,44 +235,38 @@ All api + rpc services under frontend app use modd + golang
 Direct docker-compose to start can, but consider the dependencies may be relatively large, will affect the start of the project, so it is best to pull down this image before starting the project
 
 ```shell
-$ docker pull lyumikael/gomodd:v1.0.0 #This is used by all api+rpc startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
+docker pull lyumikael/gomodd:v1.0.0 #This is used by all api+rpc startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
 ```
 
 Note: If you add new services under the app, remember to add a copy of modd.conf in the root directory of the project.
 
-About modd more usage can go here to learn: https://github.com/cortesi/modd, the project image is only golang-1.17.7-alpine as the base image installed modd in the internal.
+About modd more usage can go here to learn: <https://github.com/cortesi/modd>, the project image is only golang-1.17.7-alpine as the base image installed modd in the internal.
 
 If you want to add goctl, protoc, golint, etc., do not use my image directly to create a mirror is the same ha
 
-
-
-##### 5.2. Start Project
+#### 5.2. Start Project
 
 ```shell
-$ docker-compose up -d
+docker-compose up -d
 ```
 
 [Note] The dependency is on the docker-compose.yml configuration in the project root directory
 
+### 6.View project operation
 
-
-#### 6.View project operation
-
-Visit http://127.0.0.1:9090/, click on the menu above "Status", click on Targets, the blue one is started, the red one is not started successfully
-
-
+Visit <http://127.0.0.1:9090/>, click on the menu above "Status", click on Targets, the blue one is started, the red one is not started successfully
 
 Note] If it is the first time to pull the project, each project container for the first time to build pull dependencies, this depends on the network situation, may be slightly slower to have the service, this is normal, if you encounter the project does not start up, such as order-api , manually in order-api code to write something randomly to save a trigger to recompile to see the log on it
 
 ```shell
-$ docker-compose logs -f
+docker-compose logs -f
 ```
 
 You can see that the prometheus also shows success, and similarly the other also row once, start successfully on it
 
 <img src="../chinese/images/1/image-20220120103641110.png" alt="image-20220120103641110.png" style="zoom:33%;" />
 
-#### 7.Access Program
+### 7.Access Program
 
 Since we use nginx as the gateway, the nginx gateway is configured in docker-compose, which is also configured in docker-compose, nginx exposes port 8888 to the public, so we access through port 8888
 
@@ -289,38 +280,24 @@ response:
 Note] If the access to nginx fails and the access success can be ignored, it may be that nginx depends on the back-end services, before the back-end services did not start up, nginx did not start up here, restart once nginx can, the project root directory restart
 
 ```shell
-$ docker-compose restart nginx
+docker-compose restart nginx
 ```
 
-
-
-
-
-### 6.Log Collection
+## 6.Log Collection
 
 Collect project logs to es (filebeat collects logs -> kafka -> go-stash consumes kafka logs -> output to es, kibana views es data)
 
-Visit kibana http://127.0.0.1:5601/ and create log index
-
-
+Visit kibana <http://127.0.0.1:5601/> and create log index
 
 Click on the top left menu (the three horizontal lines), find Analytics - > click on discover
 
 <img src="../chinese/images/1/image-20220120105829870.png" alt="image-20220120105829870" style="zoom:33%;" />
-
-
-
-
 
 Then on the current page, Create index pattern->type looklook-* -> Next Step -> select @timestamp->Create index pattern
 
 Then click the top left menu, find Analytics->click discover, the logs are displayed (if not, check filebeat, go-stash, use docker logs -f filebeat to view)
 
 ![image-20220120105947733](../chinese/images/1/image-20220120105947733.png)
-
-
-
-
 
 ⚠️ Common reasons for collection failure
 
@@ -346,7 +323,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
     This I did not actually encounter, but some students using docker version is 1.13 encountered, filebeat configuration file configuration to collect docker path low version docker may not be the same location resulting in the collection of docker internal logs, it is best to upgrade the docker18.03.1 above the current no problem, 17 did not actually test , 17 My side of the docker version is Version: 20.10.8
 
--  Internal kafka problem
+- Internal kafka problem
 
   Solution:
 
@@ -357,9 +334,9 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
     3) Go into the kafka container and execute consume kafka-log messages to see if the filebeat messages have been sent to kafka
 
   ```shell
-  $ docker exec -it kafka /bin/sh
-  $ cd /opt/kafka/bin
-  $ ./kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic looklook-log
+  docker exec -it kafka /bin/sh
+  cd /opt/kafka/bin
+  ./kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic looklook-log
   ```
 
   Note] If you can consume the messages, it means that filebeat and kafka are fine, so go check go-stash, es
@@ -372,7 +349,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
 ​
 
-### 7.Introduction of this project mirror
+## 7.Introduction of this project mirror
 
 - nginx : gateway （nginx->api->rpc）
 - cosmtrek/air.modd : Our business code development depends on the environment image, the reason why we use this is because air hot-loading, writing code compiled in real time is too convenient, this image is air + golang, in fact, after we start our own business services, our business services are running in this image
@@ -389,11 +366,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 - jaegertracing/all-in-one:Link Tracking
 - go-stash : After filebeat collects the logs to kafka, go-stash goes to consume kafka to desensitize the data, filter the content in the logs, and finally output to es
 
-
-
-
-
-### 8.Project Development Proposal
+## 8.Project Development Proposal
 
 - app: decentralizes all business service codes
 
@@ -406,7 +379,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 Usually when we generate api, rpc code manually to knock goctl command is rather long and can not remember, so we go directly to deploy/script/gencode/gen.sh to copy the code. For example, I added a new service in usercenter service, change the password, after writing the api file, go to usercenter/cmd/api/desc directory, copy the generate api command in deploy/script/gencode/gen.sh to run it
 
 ```shell
-$ goctl api go -api *.api -dir ../  -style=goZero
+goctl api go -api *.api -dir ../  -style=goZero
 ```
 
 After writing the proto file, just copy the generate rpc command from deploy/script/gencode/gen.sh and run it
@@ -414,15 +387,15 @@ After writing the proto file, just copy the generate rpc command from deploy/scr
 goctl >= 1.3 Go to the "services/cmd/rpc/pb" directory and execute the following command
 
 ```shell
-$ goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
-$ sed -i "" 's/,omitempty//g' *.pb.go
+goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+sed -i "" 's/,omitempty//g' *.pb.go
 ```
 
 goctl < 1.3 Enter the "service/cmd" directory and execute the following command
 
 ```shell
-$  goctl rpc proto -src rpc/pb/*.proto -dir ./rpc -style=goZero
-$  sed -i "" 's/,omitempty//g'  ./rpc/pb/*.pb.go
+goctl rpc proto -src rpc/pb/*.proto -dir ./rpc -style=goZero
+sed -i "" 's/,omitempty//g'  ./rpc/pb/*.pb.go
 ```
 
 Note] It is recommended that when generating the rpc file, execute the following command once more to remove the omitempty generated by protobuf, otherwise the field will not be returned if it is nil
@@ -435,17 +408,13 @@ Note] It is recommended that when generating the rpc file, execute the following
    kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic {topic}
   ```
 
-
-
 - To generate the model code, run deploy/script/mysql/genModel.sh directly with the parameters
 
 - api project in the .api file we did a split, unified into the desc folder of each api, because if all the content is written in the api may not be easy to view, so do a split, write all the methods to an api, other entities and req, rep unified into a folder defined separately is clearer
 
 - Generate mod, error handling when using the template redefinition, the project used a custom goctl template in the project deploy/goctl under
 
-
-
-### 9.Common mistakes in building environments
+## 9.Common mistakes in building environments
 
 ```dock
 1.Create stage, start docker-compose-env.yml container
@@ -463,33 +432,6 @@ The reason for the error is that es does not have permission to operate the moun
 4, jaeger depends on elasticsearch and does not fail to restart automatically
 ```
 
-
-
-
-
-### 10.Follow-up
+## 10.Follow-up
 
 Due to the project as it relates to the technology stack is slightly more, will gradually add a little bit by chapter
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

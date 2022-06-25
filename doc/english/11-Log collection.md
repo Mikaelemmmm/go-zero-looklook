@@ -1,32 +1,36 @@
-### 11. Log collection
+- [XI. Log collection](#xi-log-collection)
+  - [1, logging system](#1-logging-system)
+  - [2. Architectural solutions](#2-architectural-solutions)
+  - [3. Implementation options](#3-implementation-options)
+    - [3.1. kafka](#31-kafka)
+    - [3.2. filebeat](#32-filebeat)
+    - [3.3. Configuring go-stash](#33-configuring-go-stash)
+    - [3.4. elastic search.kibana](#34-elastic-searchkibana)
+  - [5. Conclusion](#5-conclusion)
 
-
+# XI. Log collection
 
 Before introducing, I will first say the overall idea, if your business log volume is not particularly large coincidentally you are using cloud services, then you can directly use the cloud service logs, such as Ali cloud SLS, is basically a point of mouse configuration a few steps you can collect your logs to Ali cloud SLS inside, directly in Ali cloud to view the collected logs, it does not feel necessary Toss.
 
 If your log volume is relatively large, then you can log system.
 
-
-
-#### 1, logging system
+## 1, logging system
 
 We will print the business logs to the console, file, after the more common way on the market is elk, efk and other basic ideas, we take the often said elk to example, the basic idea is that logstash collection filter to elasticsearch, and then kibana presents
 
-But logstash itself is the use of java development, take up resources is really high, we use go to do business, itself in addition to fast is to take up less resources to build blocks, now in the engage a logstash waste of resources, that we use go-stash instead of logstash, go-stash is go-zero official own development and online after long time a lot of practice, but it is not responsible for collecting logs, only for filtering the information collected (https://github.com/kevwan/go-stash)
+But logstash itself is the use of java development, take up resources is really high, we use go to do business, itself in addition to fast is to take up less resources to build blocks, now in the engage a logstash waste of resources, that we use go-stash instead of logstash, go-stash is go-zero official own development and online after long time a lot of practice, but it is not responsible for collecting logs, only for filtering the information collected (<https://github.com/kevwan/go-stash>)
 
-#### 2. Architectural solutions
+## 2. Architectural solutions
 
 ![image-20220124121025548](../chinese/images/9/Snipaste_2022-01-24_12-10-03.png)
 
 filebeat collects our business logs, then outputs the logs to kafka as a buffer, go-stash gets the logs in kafka to filter the fields according to the configuration, then outputs the filtered fields to elasticsearch, and finally kibana is responsible for rendering the logs
 
-
-
-#### 3. Implementation options
+## 3. Implementation options
 
 In the previous section on error handling, we can see that we have printed the error log we want to the console console, now we just need to do the subsequent collection
 
-##### 3.1. kafka
+### 3.1. kafka
 
 ```yaml
 
@@ -48,25 +52,21 @@ In the previous section on error handling, we can see that we have printed the e
       - zookeeper
 ```
 
-
-
 ⚠️  Create the topic for logging as follows: looklook-log If you have already created it when building the system development environment, you can ignore it here
 
 First configure kafka, zookeeper
 
-Then we go into kafka and create a filebeat to collect the logs to the kafka topic 
+Then we go into kafka and create a filebeat to collect the logs to the kafka topic
 
 Enter the kafka container
 
 ```shell
-$ docker exec -it kafka /bin/sh
-$ cd /opt/kafka/bin/
-$ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
+docker exec -it kafka /bin/sh
+cd /opt/kafka/bin/
+./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
 ```
 
-
-
-##### 3.2. filebeat
+### 3.2. filebeat
 
 In the docker-compose-env.yml file in the root of the project, you can see that we have configured filebeat
 
@@ -105,9 +105,7 @@ output.kafka:
 
 The configuration is relatively simple, you can see that we collect all the logs directly exported to our configured kafka , topic configuration can be created in the previous step kafka topic
 
-
-
-##### 3.3. Configuring go-stash
+### 3.3. Configuring go-stash
 
 ![image-20220124123624687](../chinese/images/9/image-20220124123624687.png)
 
@@ -163,25 +161,15 @@ Clusters:
 
 Configure the consumed kafka and the output elasticsearch, and the fields to be filtered, etc.
 
-
-
-##### 3.4. elastic search.kibana
+### 3.4. elastic search.kibana
 
 ![image-20220124125524034](../chinese/images/9/image-20220124125524034.png)
 
+Go to kibana <http://127.0.0.1:5601/> and create a log index
 
-
-Go to kibana http://127.0.0.1:5601/ and create a log index
-
-Click on the menu in the top left corner (the three horizontal lines), find Analytics -> click on discover 
+Click on the menu in the top left corner (the three horizontal lines), find Analytics -> click on discover
 
 <img src="../chinese/images/1/image-20220120105829870.png" alt="image-20220120105829870" style="zoom:33%;" />
-
-
-
-
-
-
 
 Then in the current page, Create index pattern -> enter looklook-* -> Next Step -> select @timestamp -> Create index pattern
 
@@ -189,16 +177,14 @@ Then click the top left menu, find Analytics->click discover, wait a while, the 
 
 ![image-20220120105947733](../chinese/images/1/image-20220120105947733.png)
 
-
-
 Let's add an error log to the code to try it out, the code is as follows
 
 ```go
 func (l *BusinessListLogic) BusinessList(req types.BusinessListReq) (*types.BusinessListResp, error) {
 
-	logx.Error("Test log")
+ logx.Error("Test log")
 
-	........
+ ........
 }
 ```
 
@@ -206,13 +192,9 @@ We access this business method by going to kibana and searching for data.log : "
 
 ![image-20220217153621502](../chinese/images/9/image-20220217153621502.png)
 
-
-
-
-
 - #### 4. Common reasons for log collection failure
 
-  - The go-stash image version is used wrongly 
+  - The go-stash image version is used wrongly
 
     Look at the go-stash log, if there is a core dumped, it means that the mirror is used wrongly.
 
@@ -236,12 +218,10 @@ We access this business method by going to kibana and searching for data.log : "
   
     3) Go into the kafka container and execute consume kafka-log messages to see if the filebeat messages have been sent to kafka
   
-  
-  
   ```shell
-  $ docker exec -it kafka /bin/sh
-  $ cd /opt/kafka/bin
-  $ ./kafka-console-producer.sh --bootstrap-server kafka:9092 --topic kafka-log 
+  docker exec -it kafka /bin/sh
+  cd /opt/kafka/bin
+  ./kafka-console-producer.sh --bootstrap-server kafka:9092 --topic kafka-log 
   ```
   
   Note] If you can consume the messages, it means that filebeat and kafka are fine, so go check go-stash, es
@@ -252,27 +232,8 @@ We access this business method by going to kibana and searching for data.log : "
   
   2) Use consumer.sh to consume kafka-log on the command line inside the kafka container, and use producer.sh to send messages to kafka-log on another terminal command line. kafka to see what the problem
 
-​	
+​ 
 
-
-
-#### 5. Conclusion
+## 5. Conclusion
 
 At this point the log collection is complete, next we have to implement link tracing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

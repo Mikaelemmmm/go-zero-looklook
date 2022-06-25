@@ -1,30 +1,34 @@
-### 15. Publish services to k8s
+- [XV. Publish services to k8s](#xv-publish-services-to-k8s)
+  - [1. Overview](#1-overview)
+  - [2. Deploy middleware](#2-deploy-middleware)
+  - [3. Independent configuration](#3-independent-configuration)
+  - [4. side write jenkins pipline](#4-side-write-jenkins-pipline)
+    - [4.2.1. Configuration parameters](#421-configuration-parameters)
+    - [4.2.2. Writing pipeline](#422-writing-pipeline)
+  - [5. configure k8s to pull private repository images](#5-configure-k8s-to-pull-private-repository-images)
+  - [6. Build](#6-build)
+  - [7. Add gateway](#7-add-gateway)
+  - [8. Concluding remarks](#8-concluding-remarks)
 
+# XV. Publish services to k8s
 
-
-#### 1. Overview
+## 1. Overview
 
 In the last section, we have gitlab, jenkins, harbor, k8s have been built, this section we will write jenkins pipline to publish our services to k8s through jenkins complete.
 
-
-
-#### 2. Deploy middleware
+## 2. Deploy middleware
 
 Deploy mysql, redis, es, etc. outside of k8s to simulate an online standalone environment (as for online you want to deploy some middleware to k8s internal this self-processing, this time the focus is how to deploy go-zero development microservices to k8s cluster internal), here I will directly use the project under the docker-compose-env. yaml, all the dependencies of the third-party middleware environment directly installed in srv-data.com (192.168.1.181) this server, provided that this server has installed docker, docker-compose.
 
-Login to 192.168.1.181 
+Login to 192.168.1.181
 
 ```shell
-$ mkdir data && cd data && vim docker-compose.yml
-$ docker-compose up -d
-$ docker-compose ps #View Confirmation
+mkdir data && cd data && vim docker-compose.yml
+docker-compose up -d
+docker-compose ps #View Confirmation
 ```
 
-
-
-
-
-#### 3. Independent configuration
+## 3. Independent configuration
 
 The configuration of each service are independent, unified in a git warehouse, so that only one person online warehouse permissions, if the online configuration has changed directly modify the files in this warehouse, in jenkins do cd, will first pull the code in pulling the corresponding service configuration automatically build, you can see the specific pipline later.
 
@@ -38,21 +42,17 @@ Independent online repository directory structure is as follows (this structure 
 
 <img src="../chinese/images/15/image-20220213134628497.png" alt="image-20220213134628497" style="zoom:50%;" />
 
-Repository address: https://github.com/Mikaelemmmm/go-zero-looklook-pro-conf , direct download on
+Repository address: <https://github.com/Mikaelemmmm/go-zero-looklook-pro-conf> , direct download on
 
 Note] 1, modify the configuration of the middleware, database, redis, etc. should be changed to 192.168.1.181 this machine, we take this machine as the online environment of the middleware.
 
 2, the other is our service discovery, online we deploy in k8s, go-zero directly support k8s service discovery, so do not need etc. etc., we have to change to target, k8s configuration method when configuring zrpc client.
 
+## 4. side write jenkins pipline
 
+### 4.2.1. Configuration parameters
 
-
-
-#### 4, side write jenkins pipline
-
-##### 2.1. Configuration parameters
-
-Visit http://192.168.1.180:8989/ open jenkins, go to jenkins home page, click the left menu `New Item`
+Visit <http://192.168.1.180:8989/> open jenkins, go to jenkins home page, click the left menu `New Item`
 
 We first create the identity` authorization service pipeline
 
@@ -68,7 +68,7 @@ Then write the content as follows
 
 Save directly.
 
-##### 2.2. Writing pipeline
+### 4.2.2. Writing pipeline
 
 Scroll down and find `Pipeline script`, fill in the script content
 
@@ -76,7 +76,7 @@ Scroll down and find `Pipeline script`, fill in the script content
 pipeline {
   agent any
   parameters {
-      gitParameter name: 'branch', 
+      gitParameter name: 'branch',
       type: 'PT_BRANCH',
       branchFilter: 'origin/(.*)',
       defaultValue: 'master',
@@ -96,13 +96,13 @@ pipeline {
 
       stage('Pull code') {
           steps {
-              checkout([$class: 'GitSCM', 
+              checkout([$class: 'GitSCM',
               branches: [[name: '$branch']],
-              doGenerateSubmoduleConfigurations: false, 
-              extensions: [], 
+              doGenerateSubmoduleConfigurations: false,
+              extensions: [],
               submoduleCfg: [],
               userRemoteConfigs: [[credentialsId: 'gitlab-cert', url: 'ssh://git@192.168.1.180:2222/root/go-zero-looklook.git']]])
-          }   
+          }
       }
       stage('get commit_id') {
           steps {
@@ -115,13 +115,13 @@ pipeline {
       }
       stage('Pull profile') {
               steps {
-                  checkout([$class: 'GitSCM', 
+                  checkout([$class: 'GitSCM',
                   branches: [[name: '$branch']],
-                  doGenerateSubmoduleConfigurations: false, 
-                  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'conf']], 
+                  doGenerateSubmoduleConfigurations: false,
+                  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'conf']],
                   submoduleCfg: [],
                   userRemoteConfigs: [[credentialsId: 'gitlab-cert', url: 'ssh://git@192.168.1.180:2222/root/go-zero-looklook-pro-conf.git']]])
-              }   
+              }
         }
 
       stage('goctl version') {
@@ -129,7 +129,7 @@ pipeline {
               sh '/usr/local/bin/goctl -v'
           }
       }
-      
+
       stage('Dockerfile Build') {
           steps{
                  sh 'yes | cp  -rf conf/${JOB_NAME}/${type}/${JOB_NAME}.yaml  app/${JOB_NAME}/cmd/${type}/etc'   //prod config
@@ -143,8 +143,8 @@ pipeline {
 
       stage('Uploading to the mirror repository') {
           steps{
-          	  //docker login Note here that the account password will be exported to the jenkins page, can be handled in a similar way through port.sh, the official website documentation has here I will not write in detail
-              sh 'docker login --username=${docker_username} --password=${docker_pwd} http://${docker_repo}' 
+             //docker login Note here that the account password will be exported to the jenkins page, can be handled in a similar way through port.sh, the official website documentation has here I will not write in detail
+              sh 'docker login --username=${docker_username} --password=${docker_pwd} http://${docker_repo}'
               sh 'docker tag  ${image} ${docker_repo}/go-zero-looklook/${image}'
               sh 'docker push ${docker_repo}/go-zero-looklook/${image}'
           }
@@ -178,11 +178,11 @@ pipeline {
 
 [Note]: !!! Very important!!!
 
-1, build optimization: pipline use "/usr/local/bin/goctl kube xxx" raw k8s yaml, we are using k8s way to deploy without etcd, but this way to deploy the generated k8s yaml need to specify the serviceAccount. The principle can be seen in this article below go -zero's k8s service discovery explanation: https://mp.weixin.qq.com/s/-WaWJaM_ePEQOf7ExNJe7w
+1, build optimization: pipline use "/usr/local/bin/goctl kube xxx" raw k8s yaml, we are using k8s way to deploy without etcd, but this way to deploy the generated k8s yaml need to specify the serviceAccount. The principle can be seen in this article below go -zero's k8s service discovery explanation: <https://mp.weixin.qq.com/s/-WaWJaM_ePEQOf7ExNJe7w>
 
 I have already specified the serviceAccount: find-endpoints in the template in the kube folder under templates:
 
-https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/deploy/goctl
+<https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/deploy/goctl>
 
 So you need to create the find-endpoints serviceAccount in your k8s and bind the appropriate permissions.
 
@@ -229,7 +229,7 @@ Note】If your goctl>=1.3.3, pipline can generate k8s yaml files without using t
 /usr/local/bin/goctl kube deploy -secret docker-login -replicas 2 -nodePort 3${port} -requestCpu 200 -requestMem 50 -limitCpu 300 -limitMem 100 -name ${JOB_NAME}-${type} -namespace go-zero-looklook -image ${docker_repo}/${image} -o ${deployYaml} -port ${port} --serviceAccount find-endpoints
 ```
 
-However, if your goctl <= 1.3.2, you can only manually modify the 2 templates under your template in the kube folder by adding serviceAccountName : find-endpoints to the template yourself (refer to the template link: https://github.com/Mikaelemmmm/go- zero-looklook/tree/v1.0.2/deploy/goctl), then use --home to specify your modified template to generate k8s yaml, the command is as follows, you should change the above command to the following command in pipline
+However, if your goctl <= 1.3.2, you can only manually modify the 2 templates under your template in the kube folder by adding serviceAccountName : find-endpoints to the template yourself (refer to the template link: <https://github.com/Mikaelemmmm/go>- zero-looklook/tree/v1.0.2/deploy/goctl), then use --home to specify your modified template to generate k8s yaml, the command is as follows, you should change the above command to the following command in pipline
 
 ```sh
 /usr/local/bin/goctl kube deploy -secret docker-login -replicas 2 -nodePort 3${port} -requestCpu 200 -requestMem 50 -limitCpu 300 -limitMem 100 -name ${JOB_NAME}-${type} -namespace go-zero-looklook -image ${docker_repo}/${image} -o ${deployYaml} -port ${port} --home /root/template
@@ -237,17 +237,11 @@ However, if your goctl <= 1.3.2, you can only manually modify the 2 templates un
 
 Because 1.3.3 start goctl support --serviceAccount parameter, if goctl <= 1.3.2 or through the template specified in the pipline to achieve
 
-
-
 2, ${credentialsId} to be replaced with your specific credentials value, that is, [add credentials] module in a string, we previously configured gitlab-cert so here to fill in the gitlab-cert, if you are not this own to replace, ${gitUrl} need to be replaced with the git repository address of your code, the other ${ xxx} form of variables do not need to be modified, keep the original can.
-
-
 
 3, here and the official documentation is a little different, due to my project folder directory is different, goctl generated dockerfile file I manually do a little adjustment, in a I am not in the build time generated dockerfile, is in the creation of the project when the dockerfile together in the directory, so that when building the image does not need goctl
 
-
-
-#### 5, configure k8s to pull private repository images
+## 5. configure k8s to pull private repository images
 
 By default, k8s can only pull the public image of the harbor image repository, if you pull the private repository image, it will report `ErrImagePull` and `ImagePullBackOff` errors
 
@@ -264,12 +258,12 @@ Login Succeeded
 
 ```shell
 #View the credentials generated by the previous step of logging into harbor
-$ cat /root/.docker/config.json  
+$ cat /root/.docker/config.json
 {
-	"auths": {
-		"192.168.1.180:8077": {
-			"auth": "YWRtaW46SGFyYm9yMTIzNDU="
-		}
+ "auths": {
+  "192.168.1.180:8077": {
+   "auth": "YWRtaW46SGFyYm9yMTIzNDU="
+  }
 }
 ```
 
@@ -299,29 +293,17 @@ $ kubectl create -f docker-secret.yaml -n go-zero-looklook
 secret "docker-login" created
 ```
 
-
-
-
-
-#### 6. Build
+## 6. Build
 
 We go to the home page and click idenity to enter the details page
 
 ![image-20220209201812134](../chinese/images/15/image-20220209201812134.png)
 
-
-
 Then you can see the identity service we configured above, as follows, click "Build with Parameters", then select rpc, and click "Start Building"
 
 ![image-20220209201927466](../chinese/images/15/image-20220209201927466.png)
 
-
-
 Note] The first build will fail when pulling the code, it should initialize something, just click it again.
-
-
-
-
 
 Deployment success
 
@@ -331,21 +313,11 @@ Deployment success
 
 ![image-20220211142729231](../chinese/images/15/image-20220211142729231.png)
 
-
-
-
-
 By the same token, before going to build identity-api, then go to configure the usercenter service Build usercenter-rpc, build usercenter-api, then configure the other services, build it, this time we first only build identity-api, identity-rpc, usercenter -rpc, usercenter-api to show you.
 
-
-
-
-
-#### 6. Add gateway
+## 7. Add gateway
 
 Because our api services published in k8s through goctl will expose the nodeport port, index we look at the nodeport port service of the service under the go-zero-looklook namespace in k8s, and then nodeport can be configured in nginx.
-
-
 
 This time we have an independent virtual machine outside of k8s, install nginx, expose the k8s backend api service to nginx by nodeporting the port, and then nginx configure this api service in the configuration so that nginx acts as a gateway.
 
@@ -360,11 +332,11 @@ server{
     error_log /var/log/nginx//looklook.com_error.log;
 
     location /auth {
-	    internal;
+     internal;
       proxy_set_header X-Original-URI $request_uri;
-	    proxy_pass_request_body off;
-	    proxy_set_header Content-Length "";
-	    proxy_pass http://192.168.1.182:31001/identity/v1/verify/token;
+     proxy_pass_request_body off;
+     proxy_set_header Content-Length "";
+     proxy_pass http://192.168.1.182:31001/identity/v1/verify/token;
     }
 
     location ~ /usercenter/ {
@@ -420,63 +392,6 @@ server{
 
 If it is online, you should configure multiple nginx to maintain high availability, in front of the nginx there will also be a slb, your domain name including https configuration should resolve channel slb, in front of the slb in a firewall and so on these.
 
-
-
-#### 8, concluding remarks
+## 8. Concluding remarks
 
 At this point, the entire series is over, the overall architecture diagram should be shown in the first, this series will hopefully bring you help.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
