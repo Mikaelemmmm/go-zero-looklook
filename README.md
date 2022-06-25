@@ -163,7 +163,7 @@ Docker compose is recommended in the development environment of the project. The
 
 For testing and online deployment, k8s (etcd, Nacos, consumer, etc.) has detailed tutorials (build + deploy), which can be communicated in the go zero community group, which is very easy
 
-project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+project doc ：[https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc](doc/)
 
 gitlab + jenkins + harbor + k8s
 
