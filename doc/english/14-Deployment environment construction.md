@@ -1,8 +1,8 @@
-### 14.Deployment environment building
+### 14. Deployment environment building
 
 
 
-#### 1.Overview
+#### 1. Overview
 
 After the project is developed, we need to deploy it, we will build the deployment environment based on gitlab + jenkins + harbor + k8s next
 
@@ -35,7 +35,7 @@ So we need to configure the following.
 
 #### 2. gitlab
 
-##### 2.1 Deploying gitlab
+##### 2.1. Deploying gitlab
 
 Create the folder
 
@@ -81,7 +81,7 @@ This execution time may be a little longer, you may want to go to make a cup of 
 
 
 
-##### 2.2 access gitlab
+##### 2.2. access gitlab
 
 Visit http://192.168.1.103 (i.e. http:// "ip/domain in docker-compose")
 
@@ -95,7 +95,7 @@ Account default is root
 
 
 
-##### 2.3 Creating a project
+##### 2.3. Creating a project
 
 <img src="../chinese/images/14/image-20220209100813435.png" alt="image-20220209100813435" style="zoom:50%;" />
 
@@ -103,7 +103,7 @@ Account default is root
 
 ![image-20220209101037256](../chinese/images/14/image-20220209101037256.png)
 
-##### 2.4 Configuring ssh public key
+##### 2.4. Configuring ssh public key
 
 Click on the down arrow in the header position, "Settings"
 
@@ -115,7 +115,7 @@ Configure your own public key and click on "Add key" (the public key will not be
 
 
 
-##### 2.5 Upload the project
+##### 2.5. Upload the project
 
 Click on the project, go back to the project you just created, Will go-zero-looklook Project upload to this warehouse ssh://git@192.168.1.180:2222/root/go-zero-looklook.git To, and our gitlab build is over.
 
@@ -127,7 +127,7 @@ Note] This time not to do gitlab-runner demo, the follow-up if there is time to 
 
 #### 3. harbor
 
-##### 3.1 Deploying harbor
+##### 3.1. Deploying harbor
 
 Download harbor https://github.com/goharbor/harbor/releases/download/v2.2.0/harbor-offline-installer-v2.2.0.tgz, download the offline installation will be faster
 
@@ -164,7 +164,7 @@ Run directly "sudo . /install.sh" and wait a bit.
 
 
 
-##### 3.2 Visit harbor
+##### 3.2. Visit harbor
 
 Enter http://192.168.1.180:8077 in your browser
 
@@ -180,7 +180,7 @@ Login successful
 
 
 
-##### 3.3 New private projects
+##### 3.3. New private projects
 
 <img src="../chinese/images/14/image-20220209190928092.png" alt="image-20220209190928092" style="zoom:50%;" />
 
@@ -202,7 +202,7 @@ View the push command
 
 
 
-##### 3.4 supports http
+##### 3.4. supports http
 
 The default pull and push to the mirror repository should use https , since we do not have https here, we need to use http , so we have to execute the following on the deploy-server.com server
 
@@ -222,7 +222,7 @@ This is the end of our harbor build.
 
 #### 4. jenkins
 
-##### 4.1 Deploying jenkins
+##### 4.1. Deploying jenkins
 
 Create the folder
 
@@ -297,7 +297,7 @@ This time is not slow, you can go for a cup of coffee again
 
 
 
-##### 4.2 Mounting tools
+##### 4.2. Mounting tools
 
 1) Copy goctl to the jenkins container
 
@@ -336,7 +336,7 @@ local-path-storage   Active   43m
 
 
 
-##### 4.3 visit jenkins
+##### 4.3. visit jenkins
 
 http://192.168.1.180:8989
 
@@ -364,7 +364,7 @@ Select "Install recommended plug-ins"
 
 
 
-##### 4.4 Creating Users
+##### 4.4. Creating Users
 
 root
 
@@ -372,7 +372,7 @@ root
 
 ![image-20220209111046674](../chinese/images/14/image-20220209111046674.png)
 
-##### 4.5 Deployment completion
+##### 4.5. Deployment completion
 
 ![image-20220209111135979](../chinese/images/14/image-20220209111135979.png)
 
@@ -382,7 +382,7 @@ This completes the deployment of jenkins
 
 
 
-##### 4.6 Adding credentials
+##### 4.6. Adding credentials
 
 Click on the left menu "Manage Jenkins"
 
@@ -406,7 +406,7 @@ Enter the "Add credentials" page, type we choose "SSH Username with private key"
 
 Just make sure.
 
-##### 4.7 Adding harbor repository configuration
+##### 4.7. Adding harbor repository configuration
 
 Enter the home page, click the left menu `Manage Jenkins`->`Configure System`
 
@@ -426,7 +426,7 @@ Click "Save"
 
 
 
-##### 4.8 Configuring git
+##### 4.8. Configuring git
 
 Go to `Manage Jenkins`->`Global Tool Configureation`, find the Git entry, fill in the path where the git executable is located on the machine where jenkins is located, if not, you need to download the Git plugin in jenkins plugin management, if you have it, you don't need to care (as below)
 
@@ -448,7 +448,7 @@ Install it, restart it, and the jenkins build is complete.
 
 
 
-#### 5.k8s
+#### 5. k8s
 
 k8s deployment here will not be introduced, their own kubeadm, rancher, kind to install it, or buy a per-volume cloud container services, in short, a k8s cluster is good.
 

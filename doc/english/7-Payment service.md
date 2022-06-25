@@ -22,7 +22,7 @@ order-rpc (order-rpc) depend on travel-rpc
 
 #### 3. WeChat payment example
 
-##### 3.1 Create payment preprocessing order
+##### 3.1. Create payment preprocessing order
 
 1. After creating an order on our side, the user has to go to the WeChat side to create a prepayment order
 
@@ -62,7 +62,7 @@ Then create a prepayment order associated with our local bill number on the WeCh
 
 
 
-##### 3.2 WeChat payment callback
+##### 3.2. WeChat payment callback
 
 The front end takes the WeChat preprocessing order we give to initiate payment, and after the user enters the password to pay successfully, the WeChat server will call back to our server, the callback address is filled in our configuration
 
@@ -92,7 +92,7 @@ Here you have to write a training interface to the front-end, the front-end user
 
 
 
-##### 3.3 Payment success send small program template message
+##### 3.3. Payment success send small program template message
 
 We pay callback success, will send the user an entry code, go to the merchant to show this code, the merchant through the background verification code, in fact, is the United States Mission look, we go to the United States Mission to place an order, the United States Mission will give you a code, the user take this code to check in or consumption, etc..
 
@@ -277,7 +277,7 @@ func (l *PaySuccessNotifyUserHandler) ProcessTask(ctx context.Context, t *asynq.
 
 
 
-#### 4.Conclusion
+#### 4. Conclusion
 
 Here basically the overall project service logic are almost finished, the follow-up will introduce the collection of logs, monitoring, deployment, etc.
 

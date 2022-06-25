@@ -1,18 +1,16 @@
-
-
-### 4.User Service
+### 4. User Service
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1.User Business Architecture Diagram
+#### 1. User Business Architecture Diagram
 
 <img src="../chinese/images/4/image-20220428105545020.png" alt="image-20220210090345135" style="zoom:50%;" />
 
 
 
-#### 2.Dependencies
+#### 2. Dependencies
 
  usercenter-api (user-center api) relies on usercenter-rpc (user-center rpc)
 
@@ -24,11 +22,11 @@ There are 4 business registration, login, get user information, WeChat applet au
 
 
 
-#### 3.Registration to give an example
+#### 3. Registration to give an example
 
 
 
-##### 1.Register api service
+##### 1. Register api service
 
 When we write api service code is to first define the methods in service in usercenter.api, and then write request, response in desc/user, the advantage of this split is not so bloated
 
@@ -87,7 +85,7 @@ Here is a tip, many students feel that the fields returned by the rpc service an
 
 
 
-##### 2.Register for rpc services
+##### 2. Register for rpc services
 
 - Define the protobuf file
 
@@ -260,7 +258,7 @@ Here is a tip, many students feel that the fields returned by the rpc service an
 
 
 
-#### 4.Business to get the login user id
+#### 4. Business to get the login user id
 
 In the file go-zero-looklook/common/ctxdata/ctxData.go
 

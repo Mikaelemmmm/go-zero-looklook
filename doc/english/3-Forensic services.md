@@ -1,10 +1,12 @@
-### 3.Authentication Services
+
+
+### 3. Authentication Services
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1.Forensic services
+#### 1. Forensic services
 
 ![image-20220118120646779](../chinese/images/3/go-zero-jwt.jpg)
 
@@ -12,7 +14,7 @@ Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1.1 go-zero jwt
+#### 1.1. go-zero jwt
 
 As we mentioned in the previous section, in the desc/api file we defined the jwt middleware that comes with go-zero, after generating the code we can see the routing of the api service that defines jwt, here we take the usercenter service as an example, we can look at the go-zero-looklook/app/usercenter/ cmd/api/internal/handler/routes.go The code is as follows
 
@@ -49,7 +51,7 @@ WithJwt , is for a set of routes using jwt forensics, the specific implementatio
 
 
 
-#### 2.install goctl . protoc.protoc-gen-go
+#### 2. install goctl . protoc.protoc-gen-go
 
 Note] This has nothing to do with forensics, just write the code to be used later, here it is best to install the
 
@@ -130,7 +132,7 @@ $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 
 
-### 3.Summary
+### 3. Summary
 
 In general, identity is quite simple. The whole process is as follows.
 

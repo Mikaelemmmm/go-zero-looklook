@@ -135,7 +135,7 @@ $ docker-compose -f docker-compose-env.yml up -d
 
 #### 3.Importing Data
 
-###### 3.1 Creating a kafka topic
+###### 3.1. Creating a kafka topic
 
 The system uses 3 topics, the default is not to allow the program to automatically create a topic, into the kafka container to create 3 topics
 
@@ -229,7 +229,7 @@ Kafka:  (pub.sub)Self-client tool view
 
 #### 5.Start Service
 
-##### 5.1 Pull the runtime environment image
+##### 5.1. Pull the runtime environment image
 
 Because this project is using docker + hot-loading, that is, the change is effective
 
@@ -249,7 +249,7 @@ If you want to add goctl, protoc, golint, etc., do not use my image directly to 
 
 
 
-##### 5.2 Start Project
+##### 5.2. Start Project
 
 ```shell
 $ docker-compose up -d

@@ -117,7 +117,7 @@ Then create order, stock corresponding request parameters
 
 Request dtm to get the global transaction id, based on this global transaction id open grpc saga distributed transactions, create orders, deduct inventory requests into the transaction, here using the grpc form request, each business to have a forward request, a rollback request, and request parameters, when the implementation of any one of the business forward request error will automatically call the transaction of all business rollback request to achieve the rollback effect.
 
-##### 2.order-srv
+##### 2. order-srv
 
 order-srv is the order rpc service that interacts with the order table in the dtm-gozero-order database
 
@@ -131,7 +131,7 @@ service order {
 
 
 
-###### 2.1 Create
+###### 2.1. Create
 
 When the order-api commit transaction is requested by the create method by default, we look at the logic
 
@@ -186,7 +186,7 @@ If dtm returns an error of nil when calling grpc, the call is considered success
 
 
 
-###### 2.2 CreateRollback
+###### 2.2. CreateRollback
 
 Aborted : dtm server will call all rollback operations when we call the order creation order or inventory deduction when the codes.Aborted is returned to dtm server, CreateRollback is the rollback operation corresponding to the order placed, the code is as follows
 
@@ -232,9 +232,9 @@ func (l *CreateRollbackLogic) CreateRollback(in *pb.CreateReq) (*pb.CreateResp, 
 
 In fact, if the previous order was successful, the previous successful order to cancel is the corresponding order rollback operation
 
-##### 3.stock-srv
+##### 3. stock-srv
 
-###### 3.1 Deduct
+###### 3.1. Deduct
 
 Deduct inventory, here and order Create the same, is the order transaction within the positive operation, deduction of inventory, the code is as follows
 
@@ -293,7 +293,7 @@ It is worth noting here is that when only insufficient inventory, or in the dedu
 
 
 
-###### 3.2 DeductRollback
+###### 3.2. DeductRollback
 
 Here is the rollback operation corresponding to the deduction of inventory
 
@@ -535,7 +535,7 @@ So, the overall analysis of the core statement is 2 insert, it helps us to solve
 
 ### VII. Notes in go-zero docking
 
-#### 1.dtm's rollback compensation
+#### 1. dtm's rollback compensation
 
 When using dtm's grpc, when we use saga, tcc, etc., if the first step of the attempt or implementation failed, it is hoped that it can perform the rollback, the service in the grpc if an error occurs, must return: status.Error(codes.Aborted, dtmcli. ResultFailure), return other errors, will not perform your rollback operation, dtm will keep retrying, as follows.
 
@@ -553,7 +553,7 @@ if stock == nil || stock.Num < in.Num {
 
 
 
-#### 2.barrier's empty compensation, suspension, etc.
+#### 2. barrier's empty compensation, suspension, etc.
 
 Before the preparation, we created the dtm_barrier library and the implementation of the barrier.mysql.sql, which is actually a check for our business services to prevent empty compensation, you can see the specific source code in the barrier.Call, not a few lines of code can be read.
 

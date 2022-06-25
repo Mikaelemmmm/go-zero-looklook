@@ -1,8 +1,8 @@
-### 13.Service monitoring
+### 13. Service monitoring
 
 
 
-#### 1.Overview
+#### 1. Overview
 
 A good service must be able to be monitored in time, in go-zero-looklook we use the currently popular prometheus as a monitoring tool, and then use grafana to show
 
@@ -54,7 +54,7 @@ func main() {
 
 #### 2. Implementation
 
-##### 2.1 Configure prometheus with grafana
+##### 2.1. Configure prometheus with grafana
 
 In the docker-compose-env.yml file under the project
 
@@ -189,7 +189,7 @@ scrape_configs:
 
 
 
-##### 2.2 Business configuration
+##### 2.2. Business configuration
 
 The implementation of our business also does not need to add any code (except for the serviceGroup managed services)
 
@@ -233,7 +233,7 @@ func main() {
 
 
 
-##### 2.3 View
+##### 2.3. View
 
 Visit http://127.0.0.1:9090/, click "Status" on the menu above, and click Targets, blue means it has been started, red means it has not been started successfully.
 
@@ -245,7 +245,7 @@ Visit http://127.0.0.1:9090/, click "Status" on the menu above, and click Target
 
 
 
-##### 2.4 Configuring grafana
+##### 2.4. Configuring grafana
 
 Access http://127.0.0.1:3001, the default account and password are admin
 

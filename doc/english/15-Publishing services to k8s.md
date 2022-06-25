@@ -24,7 +24,7 @@ $ docker-compose ps #View Confirmation
 
 
 
-#### 3.Independent configuration
+#### 3. Independent configuration
 
 The configuration of each service are independent, unified in a git warehouse, so that only one person online warehouse permissions, if the online configuration has changed directly modify the files in this warehouse, in jenkins do cd, will first pull the code in pulling the corresponding service configuration automatically build, you can see the specific pipline later.
 
@@ -50,7 +50,7 @@ Note] 1, modify the configuration of the middleware, database, redis, etc. shoul
 
 #### 4, side write jenkins pipline
 
-##### 2.1 Configuration parameters
+##### 2.1. Configuration parameters
 
 Visit http://192.168.1.180:8989/ open jenkins, go to jenkins home page, click the left menu `New Item`
 
@@ -68,7 +68,7 @@ Then write the content as follows
 
 Save directly.
 
-##### 2.2 Writing pipeline
+##### 2.2. Writing pipeline
 
 Scroll down and find `Pipeline script`, fill in the script content
 
@@ -303,7 +303,7 @@ secret "docker-login" created
 
 
 
-#### 6.Build
+#### 6. Build
 
 We go to the home page and click idenity to enter the details page
 
@@ -341,7 +341,7 @@ By the same token, before going to build identity-api, then go to configure the 
 
 
 
-#### 6.Add gateway
+#### 6. Add gateway
 
 Because our api services published in k8s through goctl will expose the nodeport port, index we look at the nodeport port service of the service under the go-zero-looklook namespace in k8s, and then nodeport can be configured in nginx.
 

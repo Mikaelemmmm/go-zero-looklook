@@ -4,7 +4,7 @@ This project address : https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1.Overview
+#### 1. Overview
 
 There are many kinds of message queues, there are rabbitmq, rocketmq, kafka and other common ones, of which go-queue (https://github.com/zeromicro/go-queue) is the official message queue component developed by go-zero, which is divided into 2 categories, one is kq, one is dq, kq is kq is a kafka-based message queue, dq is a beanstalkd-based delayed queue, but go-queue does not support timed tasks. Specific want to know more about go-queue I also wrote a tutorial before you can go to see here not to elaborate.
 
@@ -27,7 +27,7 @@ In our use of go-zero, goctl brought us a lot of convenience, but at present go-
 
 
 
-#### 2.How to use
+#### 2. How to use
 
 In the previous orders, messages and other scenarios we have actually demonstrated, here in an additional separate supplement once
 
@@ -35,7 +35,7 @@ We still take order-mq for example, obviously using goctl to generate api, rpc i
 
 
 
-##### 2.1 main
+##### 2.1. main
 
 ```go
 var configFile = flag.String("f", "etc/order.yaml", "Specify the config file")
@@ -87,7 +87,7 @@ func main() {
 
 
 
-##### 2.2 mq category management
+##### 2.2. mq category management
 
 go-zero-looklook/app/order/cmd/mq/internal/listen directory code
 
@@ -145,7 +145,7 @@ func KqMqs(c config.Config, ctx context.Context, svcContext *svc.ServiceContext)
 
 
 
-##### 2.3 Actual business
+##### 2.3. Actual business
 
 To write the actual business, we'll go under go-zero-looklook/app/order/cmd/mq/internal/listen/mqs, which is also categorized here for easy maintenance
 
@@ -296,7 +296,7 @@ We only need to implement the interface Consume in paymentUpdateStatus.go to rec
 
 
 
-#### 3.Timed tasks
+#### 3. Timed tasks
 
 About timed tasks, currently go-zero-looklook is not used, here I also explain
 

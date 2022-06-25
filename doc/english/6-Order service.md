@@ -24,7 +24,7 @@ order-rpc (order-rpc) depend on travel-rpc (B&B rpc)
 
 #### 3. Order examples
 
-##### 3.1 Placing an order
+##### 3.1. Placing an order
 
 1, the user in the travel service to browse the B&B homestay to choose the date to place an order, call the order api interface
 
@@ -126,7 +126,7 @@ So we start this mqueue-job, asynq will be loaded, define the route, when we pre
 
 
 
-##### 3.2 Order List
+##### 3.2. Order List
 
 There is no logic, just check out the display, just look at it yourself
 
@@ -147,7 +147,7 @@ service order {
 
 
 
-##### 3.3 Order details
+##### 3.3. Order details
 
 There is no logic, just check out the display, just look at it yourself
 

@@ -1,4 +1,4 @@
-### 11.Log collection
+### 11. Log collection
 
 
 
@@ -14,7 +14,7 @@ We will print the business logs to the console, file, after the more common way 
 
 But logstash itself is the use of java development, take up resources is really high, we use go to do business, itself in addition to fast is to take up less resources to build blocks, now in the engage a logstash waste of resources, that we use go-stash instead of logstash, go-stash is go-zero official own development and online after long time a lot of practice, but it is not responsible for collecting logs, only for filtering the information collected (https://github.com/kevwan/go-stash)
 
-#### 2.Architectural solutions
+#### 2. Architectural solutions
 
 ![image-20220124121025548](../chinese/images/9/Snipaste_2022-01-24_12-10-03.png)
 
@@ -26,7 +26,7 @@ filebeat collects our business logs, then outputs the logs to kafka as a buffer,
 
 In the previous section on error handling, we can see that we have printed the error log we want to the console console, now we just need to do the subsequent collection
 
-##### 3.1 kafka
+##### 3.1. kafka
 
 ```yaml
 
@@ -66,7 +66,7 @@ $ ./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -
 
 
 
-##### 3.2 filebeat
+##### 3.2. filebeat
 
 In the docker-compose-env.yml file in the root of the project, you can see that we have configured filebeat
 
@@ -107,7 +107,7 @@ The configuration is relatively simple, you can see that we collect all the logs
 
 
 
-##### 3.3 Configuring go-stash
+##### 3.3. Configuring go-stash
 
 ![image-20220124123624687](../chinese/images/9/image-20220124123624687.png)
 
@@ -165,7 +165,7 @@ Configure the consumed kafka and the output elasticsearch, and the fields to be 
 
 
 
-##### 3.4 elastic search.kibana
+##### 3.4. elastic search.kibana
 
 ![image-20220124125524034](../chinese/images/9/image-20220124125524034.png)
 

@@ -72,7 +72,7 @@ We just need to configure the parameters in our business code configuration, whi
 
 go-zero-looklook is implemented as jaeger
 
-##### 2.1 jaeger
+##### 2.1. jaeger
 
 The project's docker-compose-env.yaml is configured with jaeger
 
@@ -96,7 +96,7 @@ services:
       - LOG_LEVEL=debug
     networks:
       - looklook_net
-      
+
    ........
 ```
 
@@ -106,7 +106,7 @@ The jager_collector relies on elasticsearch to do the storage, so install elasti
 
 
 
-##### 2.2 Business Configuration
+##### 2.2. Business Configuration
 
 Let's take user service as an example
 
@@ -146,7 +146,7 @@ Telemetry:
 
 
 
-##### 2.3 Viewing links
+##### 2.3. Viewing links
 
 Request user service registration, login, and get login user information
 

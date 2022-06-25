@@ -1,18 +1,17 @@
 
-
-### 5.Travel Service
+### 5. Travel Service
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1.business structure diagram
+#### 1. business structure diagram
 
 <img src="../chinese/images/5/image-20220428110630664.png" alt="image-20220210185836212" style="zoom:50%;" />
 
 
 
-#### 2.Dependencies
+#### 2. Dependencies
 
  travel-api (B&B api) depends on travel-rpc (B&B rpc), usercenter-rpc (user-center rpc)
 
@@ -91,9 +90,9 @@ service travel {
 
 
 
-#### 3.Example: Room list (for your preference)
+#### 3. Example: Room list (for your preference)
 
-##### 1.api
+##### 1. api
 
 1.Writing api interface files
 
@@ -159,7 +158,7 @@ Here you can see, I got the id collection, not the ordinary foreach one by one t
 
 
 
-##### 3.rpc service
+##### 3. rpc service
 
 Define the protobuf file
 
