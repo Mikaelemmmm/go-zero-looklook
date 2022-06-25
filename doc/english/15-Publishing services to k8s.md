@@ -3,8 +3,8 @@
   - [2. Deploy middleware](#2-deploy-middleware)
   - [3. Independent configuration](#3-independent-configuration)
   - [4. side write jenkins pipline](#4-side-write-jenkins-pipline)
-    - [4.2.1. Configuration parameters](#421-configuration-parameters)
-    - [4.2.2. Writing pipeline](#422-writing-pipeline)
+    - [4.1 Configuration parameters](#41-configuration-parameters)
+    - [4.2. Writing pipeline](#42-writing-pipeline)
   - [5. configure k8s to pull private repository images](#5-configure-k8s-to-pull-private-repository-images)
   - [6. Build](#6-build)
   - [7. Add gateway](#7-add-gateway)
@@ -50,7 +50,7 @@ Note] 1, modify the configuration of the middleware, database, redis, etc. shoul
 
 ## 4. side write jenkins pipline
 
-### 4.2.1. Configuration parameters
+### 4.1 Configuration parameters
 
 Visit <http://192.168.1.180:8989/> open jenkins, go to jenkins home page, click the left menu `New Item`
 
@@ -68,7 +68,7 @@ Then write the content as follows
 
 Save directly.
 
-### 4.2.2. Writing pipeline
+### 4.2. Writing pipeline
 
 Scroll down and find `Pipeline script`, fill in the script content
 

@@ -1,5 +1,5 @@
 - [XI. Log collection](#xi-log-collection)
-  - [1, logging system](#1-logging-system)
+  - [1. logging system](#1-logging-system)
   - [2. Architectural solutions](#2-architectural-solutions)
   - [3. Implementation options](#3-implementation-options)
     - [3.1. kafka](#31-kafka)
@@ -14,7 +14,7 @@ Before introducing, I will first say the overall idea, if your business log volu
 
 If your log volume is relatively large, then you can log system.
 
-## 1, logging system
+## 1. logging system
 
 We will print the business logs to the console, file, after the more common way on the market is elk, efk and other basic ideas, we take the often said elk to example, the basic idea is that logstash collection filter to elasticsearch, and then kibana presents
 
