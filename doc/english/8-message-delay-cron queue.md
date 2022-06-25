@@ -4,7 +4,7 @@ This project address : https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、Overview
+#### 1.Overview
 
 There are many kinds of message queues, there are rabbitmq, rocketmq, kafka and other common ones, of which go-queue (https://github.com/zeromicro/go-queue) is the official message queue component developed by go-zero, which is divided into 2 categories, one is kq, one is dq, kq is kq is a kafka-based message queue, dq is a beanstalkd-based delayed queue, but go-queue does not support timed tasks. Specific want to know more about go-queue I also wrote a tutorial before you can go to see here not to elaborate.
 
@@ -27,7 +27,7 @@ In our use of go-zero, goctl brought us a lot of convenience, but at present go-
 
 
 
-#### 2、How to use
+#### 2.How to use
 
 In the previous orders, messages and other scenarios we have actually demonstrated, here in an additional separate supplement once
 
@@ -46,7 +46,7 @@ func main() {
 
 	conf.MustLoad(*configFile, &c)
   
-	// log、prometheus、trace、metricsUrl.
+	// log.prometheus.trace.metricsUrl.
 	if err := c.SetUp(); err != nil {
 		panic(err)
 	}
@@ -222,14 +222,14 @@ func (l *AsynqTask) closeHomestayOrderStateMqHandler(ctx context.Context, t *asy
 
 	var p asynqmq.HomestayOrderCloseTaskPayload
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
-		return errors.Wrapf(xerr.NewErrMsg("解析asynq task payload err"), "closeHomestayOrderStateMqHandler payload err:%v, payLoad:%+v", err, t.Payload())
+		return errors.Wrapf(xerr.NewErrMsg("Parse asynq task payload err"), "closeHomestayOrderStateMqHandler payload err:%v, payLoad:%+v", err, t.Payload())
 	}
 
 	resp, err := l.svcCtx.OrderRpc.HomestayOrderDetail(ctx, &order.HomestayOrderDetailReq{
 		Sn: p.Sn,
 	})
 	if err != nil || resp.HomestayOrder == nil {
-		return errors.Wrapf(xerr.NewErrMsg("获取订单失败"), "closeHomestayOrderStateMqHandler 获取订单失败 or 订单不存在 err:%v, sn:%s ,HomestayOrder : %+v", err, p.Sn, resp.HomestayOrder)
+		return errors.Wrapf(xerr.NewErrMsg("Failed to get order"), "closeHomestayOrderStateMqHandler Failure to get orders or The order does not exist err:%v, sn:%s ,HomestayOrder : %+v", err, p.Sn, resp.HomestayOrder)
 	}
 
 	if resp.HomestayOrder.TradeState == model.HomestayOrderTradeStateWaitPay {
@@ -238,7 +238,7 @@ func (l *AsynqTask) closeHomestayOrderStateMqHandler(ctx context.Context, t *asy
 			TradeState: model.HomestayOrderTradeStateCancel,
 		})
 		if err != nil {
-			return errors.Wrapf(xerr.NewErrMsg("关闭订单失败"), "closeHomestayOrderStateMqHandler 关闭订单失败  err:%v, sn:%s ", err, p.Sn)
+			return errors.Wrapf(xerr.NewErrMsg("Close the order failed"), "closeHomestayOrderStateMqHandler Close the order failed  err:%v, sn:%s ", err, p.Sn)
 		}
 	}
 
@@ -296,12 +296,12 @@ We only need to implement the interface Consume in paymentUpdateStatus.go to rec
 
 
 
-#### 3、Timed tasks
+#### 3.Timed tasks
 
 About timed tasks, currently go-zero-looklook is not used, here I also explain
 
 - If you want to keep it simple and use cron directly (bare metal, k8s are available).
-- If a little more complex you can use https://github.com/robfig/cron包 to define the time in the code
+- If a little more complex you can use https://github.com/robfig/cron Bag to define the time in the code
 - Use xxl-job, gocron distributed timing task system access
 - asynq's shedule
 
@@ -387,7 +387,7 @@ func main() {
 			Password: redisPwd,
 		}, nil)
 
-	payload, err := json.Marshal(tpl.EmailPayload{Email: "546630576@qq.com", Content: "发邮件呀"})
+	payload, err := json.Marshal(tpl.EmailPayload{Email: "546630576@qq.com", Content: "Send an email"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -438,7 +438,7 @@ func main() {
 
 	mux := asynq.NewServeMux()
 
-	//关闭民宿订单任务
+	//Close the homestay order task
 	mux.HandleFunc(tpl.EMAIL_TPL, emailMqHandler)
 
 	if err := srv.Run(mux); err != nil {

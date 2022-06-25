@@ -1,12 +1,12 @@
 
 
-### 十、 Error handling
+### 10. Error handling
 
 This project address : https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、Overview
+#### 1.Overview
 
 We in the usual development time, the program in the error, hope that the error log can quickly locate the problem (then the parameters passed in, including the stack information must be printed to the log), but at the same time want to return to the front-end users more friendly, can understand the error tips, that these two points if only through a fmt. Error information is certainly impossible to do, unless the front-end error hints in the return of the place at the same time in the log, so that the log is flying, the code is difficult to see, not to mention that the log will also be very difficult to see.
 
@@ -14,7 +14,7 @@ Then we think about it, if there is a unified place to record logs, while in the
 
 
 
-#### 2、rpc error handling
+#### 2.rpc error handling
 
 Under normal circumstances, go-zero's rpc service is based on grpc, the default error returned is grpc status.Error can't give us a custom error merge, and is not suitable for our custom error, its error code, error type are defined dead in the grpc package, ok, if we can use custom error return in the rpc, and then in the interceptor unified return when Error, then our rpc's err and api's err can be unified to manage our own errors?
 
@@ -215,7 +215,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 		return nil, err
 	}
 
-	//2、gen token.
+	//2.gen token.
 	resp, err := l.svcCtx.IdentityRpc.GenerateToken(l.ctx, &identity.GenerateTokenReq{
 		UserId: userId,
 	})
@@ -301,7 +301,7 @@ Because we grpc internal business in the return of errors when
 
 
 
-#### 3、api error
+#### 3.api error
 
 When our api calls rpc's Register in the logic, rpc returns the error message in step 2 above Code is as follows
 
@@ -343,7 +343,7 @@ For this case, write the following (of course you can put xerr.NewErrMsg("user r
 func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, error) {
 	.......
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("用户注册失败"), "req: %+v,rpc err:%+v", req,err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("User registration failed"), "req: %+v,rpc err:%+v", req,err)
 	}
 	.....
 }

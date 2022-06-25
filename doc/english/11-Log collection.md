@@ -1,4 +1,4 @@
-### 11、Log collection
+### 11.Log collection
 
 
 
@@ -14,7 +14,7 @@ We will print the business logs to the console, file, after the more common way 
 
 But logstash itself is the use of java development, take up resources is really high, we use go to do business, itself in addition to fast is to take up less resources to build blocks, now in the engage a logstash waste of resources, that we use go-stash instead of logstash, go-stash is go-zero official own development and online after long time a lot of practice, but it is not responsible for collecting logs, only for filtering the information collected (https://github.com/kevwan/go-stash)
 
-#### 2、Architectural solutions
+#### 2.Architectural solutions
 
 ![image-20220124121025548](../chinese/images/9/Snipaste_2022-01-24_12-10-03.png)
 
@@ -165,7 +165,7 @@ Configure the consumed kafka and the output elasticsearch, and the fields to be 
 
 
 
-##### 3.4 elastic search、kibana
+##### 3.4 elastic search.kibana
 
 ![image-20220124125524034](../chinese/images/9/image-20220124125524034.png)
 
@@ -196,7 +196,7 @@ Let's add an error log to the code to try it out, the code is as follows
 ```go
 func (l *BusinessListLogic) BusinessList(req types.BusinessListReq) (*types.BusinessListResp, error) {
 
-	logx.Error("测试的日志")
+	logx.Error("Test log")
 
 	........
 }

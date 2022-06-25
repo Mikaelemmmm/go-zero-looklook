@@ -24,7 +24,7 @@ git clone https://github.com/yedf/dtm.git
 
 #### III. Configuration file
 
-1、Find conf.sample.yml under the project and folder
+1.Find conf.sample.yml under the project and folder
 
 2, cp conf.sample.yml conf.yml
 
@@ -117,7 +117,7 @@ Then create order, stock corresponding request parameters
 
 Request dtm to get the global transaction id, based on this global transaction id open grpc saga distributed transactions, create orders, deduct inventory requests into the transaction, here using the grpc form request, each business to have a forward request, a rollback request, and request parameters, when the implementation of any one of the business forward request error will automatically call the transaction of all business rollback request to achieve the rollback effect.
 
-##### 2、order-srv
+##### 2.order-srv
 
 order-srv is the order rpc service that interacts with the order table in the dtm-gozero-order database
 
@@ -138,7 +138,7 @@ When the order-api commit transaction is requested by the create method by defau
 ```go
 func (l *CreateLogic) Create(in *pb.CreateReq) (*pb.CreateResp, error) {
 
-   fmt.Printf("创建订单 in : %+v \n", in)
+   fmt.Printf("Create Order in : %+v \n", in)
 
     //barrier to prevent empty compensation, empty suspension, etc. specific look at the dtm official website can be, do not forget to add the barrier table in the current library, because the judgment compensation with the sql to be executed together with local transactions
    barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
@@ -232,7 +232,7 @@ func (l *CreateRollbackLogic) CreateRollback(in *pb.CreateReq) (*pb.CreateResp, 
 
 In fact, if the previous order was successful, the previous successful order to cancel is the corresponding order rollback operation
 
-##### 3、stock-srv
+##### 3.stock-srv
 
 ###### 3.1 Deduct
 
@@ -276,7 +276,7 @@ func (l *DeductLogic) Deduct(in *pb.DecuctReq) (*pb.DeductResp, error) {
 		}
 
 		//!!! Turn on the test!!! : Test order rollback change status is invalid, and the current library buckle failure does not need to be rolled back
-		//return fmt.Errorf("扣库存失败 err : %v , in:%+v \n",err,in)
+		//return fmt.Errorf("Deductive inventory failed err : %v , in:%+v \n",err,in)
 
 		return nil
 	}); err != nil {
@@ -300,7 +300,7 @@ Here is the rollback operation corresponding to the deduction of inventory
 ```go
 func (l *DeductRollbackLogic) DeductRollback(in *pb.DecuctReq) (*pb.DeductResp, error) {
 
-	fmt.Printf("库存回滚 in : %+v \n", in)
+	fmt.Printf("Inventory in : %+v \n", in)
 
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	db, err := l.svcCtx.StockModel.SqlDB()
@@ -535,7 +535,7 @@ So, the overall analysis of the core statement is 2 insert, it helps us to solve
 
 ### VII. Notes in go-zero docking
 
-#### 1、dtm's rollback compensation
+#### 1.dtm's rollback compensation
 
 When using dtm's grpc, when we use saga, tcc, etc., if the first step of the attempt or implementation failed, it is hoped that it can perform the rollback, the service in the grpc if an error occurs, must return: status.Error(codes.Aborted, dtmcli. ResultFailure), return other errors, will not perform your rollback operation, dtm will keep retrying, as follows.
 
@@ -553,7 +553,7 @@ if stock == nil || stock.Num < in.Num {
 
 
 
-#### 2、barrier's empty compensation, suspension, etc.
+#### 2.barrier's empty compensation, suspension, etc.
 
 Before the preparation, we created the dtm_barrier library and the implementation of the barrier.mysql.sql, which is actually a check for our business services to prevent empty compensation, you can see the specific source code in the barrier.Call, not a few lines of code can be read.
 

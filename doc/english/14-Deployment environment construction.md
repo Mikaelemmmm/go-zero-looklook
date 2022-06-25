@@ -1,8 +1,8 @@
-### 14、Deployment environment building
+### 14.Deployment environment building
 
 
 
-#### 1、Overview
+#### 1.Overview
 
 After the project is developed, we need to deploy it, we will build the deployment environment based on gitlab + jenkins + harbor + k8s next
 
@@ -24,12 +24,12 @@ k8s deployment here will not be introduced, if there is no k8s environment to bu
 
 So we need to configure the following.
 
-| Server Name       | Role                                                         | Ip            |
-| ----------------- | ------------------------------------------------------------ | ------------- |
-| deploy-server.com | Deploy gitlab, jenkins, harbor (pre-installed docker, docker-compose) | 192.168.1.180 |
+| Server Name       | Role                                                                                                        | Ip            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- | ------------- |
+| deploy-server.com | Deploy gitlab, jenkins, harbor (pre-installed docker, docker-compose)                                       | 192.168.1.180 |
 | srv-data.com      | Deploy mysql, redis, es, etc., to simulate a standalone environment, k8s internal connection to this server | 192.168.1.181 |
-| nginx-gateway.com | Gateway, independent of the k8s cluster                      | 192.168.1.182 |
-| K8s Cluster       | K8s Cluster                                                  | 192.168.1.183 |
+| nginx-gateway.com | Gateway, independent of the k8s cluster                                                                     | 192.168.1.182 |
+| K8s Cluster       | K8s Cluster                                                                                                 | 192.168.1.183 |
 
 
 
@@ -81,13 +81,13 @@ This execution time may be a little longer, you may want to go to make a cup of 
 
 
 
-##### 2.2 访问gitlab
+##### 2.2 access gitlab
 
 Visit http://192.168.1.103 (i.e. http:// "ip/domain in docker-compose")
 
 <img src="../chinese/images/14/image-20220209100353045.png" alt="image-20220209100353045" style="zoom:50%;" />
 
-Set a new password for the first time  ： 12345678
+Set a new password for the first time  : 12345678
 
 Account default is root
 
@@ -117,7 +117,7 @@ Configure your own public key and click on "Add key" (the public key will not be
 
 ##### 2.5 Upload the project
 
-Click on the project, go back to the project you just created, 将go-zero-looklook项目上传到此仓库ssh://git@192.168.1.180:2222/root/go-zero-looklook.git即可, and our gitlab build is over.
+Click on the project, go back to the project you just created, Will go-zero-looklook Project upload to this warehouse ssh://git@192.168.1.180:2222/root/go-zero-looklook.git To, and our gitlab build is over.
 
 <img src="../chinese/images/14/image-20220209175734040.png" alt="image-20220209175734040" style="zoom:50%;" />
 
@@ -448,7 +448,7 @@ Install it, restart it, and the jenkins build is complete.
 
 
 
-#### 5、k8s
+#### 5.k8s
 
 k8s deployment here will not be introduced, their own kubeadm, rancher, kind to install it, or buy a per-volume cloud container services, in short, a k8s cluster is good.
 

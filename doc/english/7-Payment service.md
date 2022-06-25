@@ -108,7 +108,7 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 
 	.....
 
-	//3、update .
+	//3.update .
 	thirdPayment.TradeState = in.TradeState
 	thirdPayment.TransactionId = in.TransactionId
 	thirdPayment.TradeType = in.TradeType
@@ -119,7 +119,7 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err,thirdPayment,in)
 	}
 
-	//4、notify  sub "payment-update-paystatus-topic"  services(order-mq ..), pub、sub use kq
+	//4.notify  sub "payment-update-paystatus-topic"  services(order-mq ..), pub.sub use kq
 	if err:=l.pubKqPaySuccess(in.Sn,in.PayStatus);err != nil{
 		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v",err)
 	}
@@ -210,13 +210,13 @@ func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *p
 
 	......
 
-	// 3、Pre-update status judgment.
+	// 3.Pre-update status judgment.
 	homestayOrder.TradeState = in.TradeState
 	if err := l.svcCtx.HomestayOrderModel.UpdateWithVersion(l.ctx,nil, homestayOrder); err != nil {
 		return nil, errors.Wrapf(xerr.NewErrMsg("Failed to update homestay order status"), "Failed to update homestay order status db UpdateWithVersion err:%v , in : %v", err, in)
 	}
 
-	//4、notify user
+	//4.notify user
 	if in.TradeState == model.HomestayOrderTradeStateWaitUse {
 		payload, err := json.Marshal(jobtype.PaySuccessNotifyUserPayload{Order: homestayOrder})
 		if err != nil {
@@ -249,7 +249,7 @@ func (l *PaySuccessNotifyUserHandler) ProcessTask(ctx context.Context, t *asynq.
 		return errors.Wrapf(ErrPaySuccessNotifyFail, "PaySuccessNotifyUserHandler payload err:%v, payLoad:%+v", err, t.Payload())
 	}
 
-	// 1、get user openid
+	// 1.get user openid
 	usercenterResp, err := l.svcCtx.UsercenterRpc.GetUserAuthByUserId(ctx, &usercenter.GetUserAuthByUserIdReq{
 		UserId:   p.Order.UserId,
 		AuthType: usercenterModel.UserAuthTypeSmallWX,
@@ -263,7 +263,7 @@ func (l *PaySuccessNotifyUserHandler) ProcessTask(ctx context.Context, t *asynq.
 	openId := usercenterResp.UserAuth.AuthKey
 
 
-	// 2、send notify
+	// 2.send notify
 	msgs := l.getData(ctx,p.Order,openId)
 	for _, msg := range msgs  {
 		l.SendWxMini(ctx,msg)
@@ -277,7 +277,7 @@ func (l *PaySuccessNotifyUserHandler) ProcessTask(ctx context.Context, t *asynq.
 
 
 
-#### 4、Conclusion
+#### 4.Conclusion
 
 Here basically the overall project service logic are almost finished, the follow-up will introduce the collection of logs, monitoring, deployment, etc.
 

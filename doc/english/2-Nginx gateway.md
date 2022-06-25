@@ -1,10 +1,10 @@
-### 二、Using nginx as a gateway
+### 2.Using nginx as a gateway
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、go-zero gateway concept
+#### 1.go-zero gateway concept
 
 go-zero architecture to the big say there are mainly 2 parts, one is api, one is rpc. api is mainly http external access, rpc is mainly internal business interaction using protobuf + grpc, when our project volume is not large, we can use api to do a monolithic project, and after the subsequent volume up, you can split to rpc to do microservices, from a single body to microservices is very easy, much like the java springboot to springcloud, very convenient.
 
@@ -12,7 +12,7 @@ api is understood by many students as a gateway, in a practical sense when your 
 
 
 
-#### 2、nginx网关
+#### 2.nginx gateway
 
 [Note]: When looking here, it is recommended to look at the business architecture diagram in the previous section first
 
@@ -64,7 +64,7 @@ Container internal nginx port is 8081, use docker to expose out 8888 mapping por
 
 
 
-#### 3、Examples
+#### 3.Examples
 
 When we access the user service, http://127.0.0.1:8888/usercenter/v1/user/detail , we access the external port 8888, then map to nginx internal looklook gateway 8081, then the location matches to /usercenter/ then We have defined 2 groups of routes in the desc/api file, one group needs jwt authentication and one group does not need jwt authentication, /usercenter/v1/user/detail needs authentication so we will use go-zero's own jwt function to authentication, desc/usercenter.api file content as follows.
 
@@ -102,7 +102,7 @@ func (l *DetailLogic) Detail(req types.UserInfoReq) (*types.UserInfoResp, error)
 
 
 
-#### 4、Summary
+#### 4.Summary
 
 So that we can unify the entrance, but also unified collection of logs reported, used as error analysis, or access to the user's behavior analysis. Because our daily use of nginx more, and more familiar, if you students are more familiar with kong, apisix, in understanding the above go-zero use of the concept of gateway can be directly replaced is also the same.
 

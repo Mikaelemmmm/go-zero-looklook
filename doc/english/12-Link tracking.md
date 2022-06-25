@@ -128,7 +128,7 @@ Telemetry:
   Batcher: jaeger
 ```
 
-2）rpc配置
+2）rpc Configuration
 
 ```yaml
 Name: usercenter-rpc
@@ -150,7 +150,7 @@ Telemetry:
 
 Request user service registration, login, and get login user information
 
-Enter http://127.0.0.1:16686/search即可查看 in your browser
+Enter http://127.0.0.1:16686/search You can view in your browser
 
 ![image-20220124131708426](../chinese/images/1/image-20220117181505739.png)
 

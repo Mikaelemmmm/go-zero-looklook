@@ -1,18 +1,18 @@
 
 
-### 四、User Service
+### 4.User Service
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、User Business Architecture Diagram
+#### 1.User Business Architecture Diagram
 
 <img src="../chinese/images/4/image-20220428105545020.png" alt="image-20220210090345135" style="zoom:50%;" />
 
 
 
-#### 2、Dependencies
+#### 2.Dependencies
 
  usercenter-api (user-center api) relies on usercenter-rpc (user-center rpc)
 
@@ -24,24 +24,24 @@ There are 4 business registration, login, get user information, WeChat applet au
 
 
 
-#### 3、Registration to give an example
+#### 3.Registration to give an example
 
 
 
-##### 1、Register api service
+##### 1.Register api service
 
 When we write api service code is to first define the methods in service in usercenter.api, and then write request, response in desc/user, the advantage of this split is not so bloated
 
 1. Define the registration method in usercenter.api as follows
 
 ```go
-//用户模块v1版本的接口
+// Interface for user module v1 version
 @server(
 	prefix: usercenter/v1
 	group: user
 )
 service usercenter {
-  @doc "注册"
+  @doc "register"
 	@handler register
 	post /user/register (RegisterReq) returns (RegisterResp)
   
@@ -49,7 +49,7 @@ service usercenter {
 }
 ```
 
-2、在app/usercenter/cmd/api/desc/user/user.api中定义RegisterReq\RegisterResp
+2. Exists in app/usercenter/cmd/api/desc/user/user.api - Defined in RegisterReq\RegisterResp
 
 ```go
 type (
@@ -65,7 +65,7 @@ type (
 )
 ```
 
-3、goctl generate api code
+3.goctl generate api code
 
 1）Go to the app/usercenter/cmd/api/desc directory on the command line.
 
@@ -87,14 +87,14 @@ Here is a tip, many students feel that the fields returned by the rpc service an
 
 
 
-##### 2、Register for rpc services
+##### 2.Register for rpc services
 
 - Define the protobuf file
 
   We create a new usercenter.proto in app/usercenter/cmd/rpc/pb and write the registration method
 
   ```protobuf
-  //req 、resp
+  //req .resp
   message RegisterReq {
     string mobile = 1;
     string nickname = 2;
@@ -174,7 +174,7 @@ Here is a tip, many students feel that the fields returned by the rpc service an
   		return nil, err
   	}
   
-  	//2、Generate the token, so that the service doesn't call rpc internally
+  	//2.Generate the token, so that the service doesn't call rpc internally
   	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
   	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
   		UserId: userId,
@@ -212,7 +212,7 @@ Here is a tip, many students feel that the fields returned by the rpc service an
   After the successful registration of usercenter-rpc, you need to request a token for the front-end login
   
   ```go
-  	//2、Generate the token, so that the service doesn't call rpc internally
+  	//2.Generate the token, so that the service doesn't call rpc internally
   	generateTokenLogic :=NewGenerateTokenLogic(l.ctx,l.svcCtx)
   	tokenResp,err:=generateTokenLogic.GenerateToken(&usercenter.GenerateTokenReq{
   		UserId: userId,
@@ -260,7 +260,7 @@ Here is a tip, many students feel that the fields returned by the rpc service an
 
 
 
-#### 4、Business to get the login user id
+#### 4.Business to get the login user id
 
 In the file go-zero-looklook/common/ctxdata/ctxData.go
 

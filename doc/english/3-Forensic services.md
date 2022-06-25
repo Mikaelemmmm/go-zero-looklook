@@ -1,10 +1,10 @@
-### 三、Authentication Services
+### 3.Authentication Services
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、Forensic services
+#### 1.Forensic services
 
 ![image-20220118120646779](../chinese/images/3/go-zero-jwt.jpg)
 
@@ -49,11 +49,11 @@ WithJwt , is for a set of routes using jwt forensics, the specific implementatio
 
 
 
-#### 2、install goctl 、 protoc、protoc-gen-go
+#### 2.install goctl . protoc.protoc-gen-go
 
 Note] This has nothing to do with forensics, just write the code to be used later, here it is best to install the
 
-1、install goctl
+1.install goctl
 
 ```shell
 # for Go 1.15 and earlier
@@ -77,7 +77,7 @@ $ cp -r data/goctl ~/.goctl
 
 
 
-2、Install protoc
+2.Install protoc
 
 Link: https://github.com/protocolbuffers/protobuf/releases
 
@@ -91,7 +91,7 @@ $ protoc --version
 
 
 
-3、install protoc-gen-go
+3.install protoc-gen-go
 
 ```shell
 $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest 
@@ -99,7 +99,7 @@ $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 Just check if there is protoc-gen-go under $GOPATH/bin
 
-Note】：If you encounter the following problems when using goctl to generate code
+Note】:If you encounter the following problems when using goctl to generate code
 
 ```shell
 protoc  --proto_path=/Users/seven/Developer/goenv/go-zero-looklook/app/usercenter/cmd/rpc/pb usercenter.proto --go_out=plugins=grpc:/Users/seven/Developer/goenv/go-zero-looklook/app/usercenter/cmd/rpc --go_opt=Musercenter.proto=././pb
@@ -120,7 +120,7 @@ $ go get -u github.com/golang/protobuf/protoc-gen-go
 
 
 
-4、install protoc-gen-go-grpc
+4.install protoc-gen-go-grpc
 
 ```shell
 $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
@@ -130,7 +130,7 @@ $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 
 
-### 3、Summary
+### 3.Summary
 
 In general, identity is quite simple. The whole process is as follows.
 

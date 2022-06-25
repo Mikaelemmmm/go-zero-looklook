@@ -1,18 +1,18 @@
 
 
-### 五、Travel Service
+### 5.Travel Service
 
 Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 
 
-#### 1、business structure diagram
+#### 1.business structure diagram
 
 <img src="../chinese/images/5/image-20220428110630664.png" alt="image-20220210185836212" style="zoom:50%;" />
 
 
 
-#### 2、Dependencies
+#### 2.Dependencies
 
  travel-api (B&B api) depends on travel-rpc (B&B rpc), usercenter-rpc (user-center rpc)
 
@@ -20,7 +20,7 @@ Address of this project :  https://github.com/Mikaelemmmm/go-zero-looklook
 
 travel is divided into several businesses
 
-- homestay ：room listings
+- homestay :room listings
 
 ```protobuf
 
@@ -49,7 +49,7 @@ service travel {
 }
 ```
 
-- homestayBusiness ： travel bisuness
+- homestayBusiness : travel bisuness
 
 ```protobuf
 
@@ -72,7 +72,7 @@ service travel {
 }
 ```
 
-- homestayComment ： travel-comment
+- homestayComment : travel-comment
 
 ```protobuf
 
@@ -91,11 +91,11 @@ service travel {
 
 
 
-#### 3、Example: Room list (for your preference)
+#### 3.Example: Room list (for your preference)
 
-##### 1、api
+##### 1.api
 
-1、Writing api interface files
+1.Writing api interface files
 
 app/travel/cmd/api/desc/homestay/homestay.api
 
@@ -137,7 +137,7 @@ service travel {
 }
 ```
 
-2、goctl generate api code
+2.goctl generate api code
 
 1）Go to app/travel/cmd/api/desc directory in the command line.
 
@@ -147,7 +147,7 @@ service travel {
 $ goctl api go -api *.api -dir ../  -style=goZero
 ```
 
-3、Open app/travel/cmd/api/internal/logic/homestay/homestayListLogic.go
+3.Open app/travel/cmd/api/internal/logic/homestay/homestayListLogic.go
 
 ![image-20220210190926487](../chinese/images/5/image-20220210190926487.png)
 
@@ -159,7 +159,7 @@ Here you can see, I got the id collection, not the ordinary foreach one by one t
 
 
 
-##### 3、rpc service
+##### 3.rpc service
 
 Define the protobuf file
 
@@ -184,7 +184,7 @@ message Homestay {
     int64   marketHomestayPrice = 14; //market room price (cent) 
 }
 
-//req 、resp
+//req .resp
 message HomestayDetailReq {
   int64   id = 1;
 }

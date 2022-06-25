@@ -1,8 +1,8 @@
-### 13、Service monitoring
+### 13.Service monitoring
 
 
 
-#### 1、Overview
+#### 1.Overview
 
 A good service must be able to be monitored in time, in go-zero-looklook we use the currently popular prometheus as a monitoring tool, and then use grafana to show
 
@@ -38,7 +38,7 @@ package main
 .....
 func main() {
 	....
-	// log、prometheus、trace、metricsUrl.
+	// log.prometheus.trace.metricsUrl.
 	if err := c.SetUp(); err != nil {
 		panic(err)
 	}
@@ -218,7 +218,7 @@ package main
 .....
 func main() {
 	....
-	// log、prometheus、trace、metricsUrl.
+	// log.prometheus.trace.metricsUrl.
 	if err := c.SetUp(); err != nil {
 		panic(err)
 	}
