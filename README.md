@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/main/README-cn.md)
+English | [简体中文](README-cn.md)
 
 
 
@@ -51,7 +51,7 @@ At the end of this tutorial, we will also share go-zero -looklook. Please look f
 
 ## Doc
 
- https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/english   Under the doc directory of the project
+ Documentation can de found under [doc/english](doc/english/) in the project.
 
 
 
