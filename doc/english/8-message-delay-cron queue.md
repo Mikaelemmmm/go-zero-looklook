@@ -305,7 +305,7 @@ About timed tasks, currently go-zero-looklook is not used, here I also explain
 - Use xxl-job, gocron distributed timing task system access
 - asynq's shedule
 
-⚠️ Project specific look at app/mqueue/cmd/scheduler and app/mqueue/cmd/job
+⚠️  Project specific look at app/mqueue/cmd/scheduler and app/mqueue/cmd/job
 
 
 

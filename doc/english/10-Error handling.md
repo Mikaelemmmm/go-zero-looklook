@@ -243,7 +243,7 @@ The second parameter, which is recorded in the server log, can be written in det
 
 Then let's see why the first parameter can be returned to the front-end, the second parameter is the logging
 
-⚠️ [Note] we in the rpc startup file main method, add the grpc global interceptor, this is very important, if not add this no way to achieve
+⚠️  [Note] we in the rpc startup file main method, add the grpc global interceptor, this is very important, if not add this no way to achieve
 
 ```go
 package main

@@ -102,7 +102,7 @@ The project directory structure is as follows:
 
 ### 5.Project Environment Setup
 
-##### ⚠️If you encounter problems during the build process, you can see "9. Common Errors"
+##### ⚠️ If you encounter problems during the build process, you can see "9. Common Errors"
 
 
 
@@ -187,11 +187,11 @@ Create database looklook_usercenter && import looklook_usercenter.sql data
 
 #### 4.View Service Environment
 
-Elastic search: http://127.0.0.1:9200/ （⚠️:This startup time is a bit long）
+Elastic search: http://127.0.0.1:9200/ （⚠️ :This startup time is a bit long）
 
-jaeger: http://127.0.0.1:16686/search  (⚠️:If it fails, rely on es, because es start time is long this may timeout, wait for es start play restart a)
+jaeger: http://127.0.0.1:16686/search  (⚠️ :If it fails, rely on es, because es start time is long this may timeout, wait for es start play restart a)
 
-go-stash : If you find that the logs are not collected when kibana clicks next and your kafka gets the data, please restart go-stash and wait for a minute.  (⚠️:If you are mac m1 or linux arm, please change the go-stash image in docker-compose-env.yml kevinwan/go-stash:1.0-arm64, the default is for linux amd)
+go-stash : If you find that the logs are not collected when kibana clicks next and your kafka gets the data, please restart go-stash and wait for a minute.  (⚠️ :If you are mac m1 or linux arm, please change the go-stash image in docker-compose-env.yml kevinwan/go-stash:1.0-arm64, the default is for linux amd)
 
 asynq （Delayed tasks, sheduler tasks, message queues）: http://127.0.0.1:8980/
 
@@ -322,7 +322,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
 
 
-⚠️Common reasons for collection failure
+⚠️ Common reasons for collection failure
 
 - There is no topic in kafka to create a log: looklook-log
 

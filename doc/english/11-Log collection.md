@@ -50,7 +50,7 @@ In the previous section on error handling, we can see that we have printed the e
 
 
 
-⚠️ Create the topic for logging as follows: looklook-log If you have already created it when building the system development environment, you can ignore it here
+⚠️  Create the topic for logging as follows: looklook-log If you have already created it when building the system development environment, you can ignore it here
 
 First configure kafka, zookeeper
 
