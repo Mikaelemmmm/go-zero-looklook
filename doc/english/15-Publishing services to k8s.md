@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [XV. Publish services to k8s](#xv-publish-services-to-k8s)
   - [1. Overview](#1-overview)
   - [2. Deploy middleware](#2-deploy-middleware)

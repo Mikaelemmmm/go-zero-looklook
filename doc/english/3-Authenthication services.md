@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [III. Authentication Services](#iii-authentication-services)
   - [1. Forensic services](#1-forensic-services)
     - [1.1. go-zero jwt](#11-go-zero-jwt)

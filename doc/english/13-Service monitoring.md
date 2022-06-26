@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [XIII. Service monitoring](#xiii-service-monitoring)
   - [1. Overview](#1-overview)
   - [2. Implementation](#2-implementation)

@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [IV. User Service](#iv-user-service)
   - [1. User Business Architecture Diagram](#1-user-business-architecture-diagram)
   - [2. Dependencies](#2-dependencies)

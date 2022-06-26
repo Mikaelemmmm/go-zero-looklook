@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [XI. Log collection](#xi-log-collection)
   - [1. logging system](#1-logging-system)
   - [2. Architectural solutions](#2-architectural-solutions)

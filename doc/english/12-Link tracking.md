@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [XII. Link tracing](#xii-link-tracing)
   - [1. Overview](#1-overview)
   - [2. Implementation](#2-implementation)

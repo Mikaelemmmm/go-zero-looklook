@@ -1,3 +1,6 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
 - [I. Development environment](#i-development-environment)
   - [1. Project Profile](#1-project-profile)
   - [2. Use to technology stack](#2-use-to-technology-stack)
@@ -415,11 +418,15 @@ Note] It is recommended that when generating the rpc file, execute the following
 
 ## 9. Common mistakes in building environments
 
-```dock
-1.Create stage, start docker-compose-env.yml container
-Grafana reports an error You may have issues with file permissions, more information here: http://docs.grafana.org/installation/docker/#migrate-to-v51-or- later
+- Grafana reports an error at creation stage, start docker-compose-env.yml container
+
+  - Error: File permissions, more information here: <http://docs.grafana.org/installation/docker/#migrate-to-v51-or-later>
+
+```
 mkdir: can't create directory '/var/lib/grafana/plugins': Permission denied
-Permission denied: Permission denied. Add user: root to grafana in docker-compose-env.yml.
+```
+
+- Solution: Add `user: root` to grafana in docker-compose-env.yml
 
 2, filebeat container startup error Exiting: error loading config file: config file ("filebeat.yml") must be owned by the user identifier (uid=0) or root
 Due to different file owners (I clone the project under normal user), the config file of filebeat must be owned by root, you need to modify sudo chown root deploy/filebeat/conf/filebeat.yml
@@ -429,7 +436,6 @@ Likely root cause: java.nio.file.AccessDeniedException: /usr/share/elasticsearch
 The reason for the error is that es does not have permission to operate the mount directory and cannot bind the nodes, solution, modify the permissions sudo chmod 777 data/elasticsearch/data (I don't know which user started es, so I changed 777 hard)
 
 4, jaeger depends on elasticsearch and does not fail to restart automatically
-```
 
 ## 10. Follow-up
 
