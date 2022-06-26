@@ -20,7 +20,7 @@
   - [6. Log Collection](#6-log-collection)
   - [7. Introduction of this project mirror](#7-introduction-of-this-project-mirror)
   - [8. Project Development Proposal](#8-project-development-proposal)
-  - [9. Common mistakes in building environments](#9-common-mistakes-in-building-environments)
+  - [9. Common errors](#9-common-errors)
   - [10. Follow-up](#10-follow-up)
 
 # I. Development environment
@@ -415,26 +415,26 @@ Note] It is recommended that when generating the rpc file, execute the following
 
 - Generate mod, error handling when using the template redefinition, the project used a custom goctl template in the project deploy/goctl under
 
-## 9. Common mistakes in building environments
+## 9. Common errors
 
-- Grafana reports an error at creation stage, start docker-compose-env.yml container
+1. Grafana reports an error at creation stage, start docker-compose-env.yml container
 
-  - Error: File permissions, more information here: <http://docs.grafana.org/installation/docker/#migrate-to-v51-or-later>
+- **Error:** File permissions, more information here: <http://docs.grafana.org/installation/docker/#migrate-to-v51-or-later>
+`mkdir: can't create directory '/var/lib/grafana/plugins': Permission denied`
+- **Solution:** Add `user: root` to grafana in docker-compose-env.yml
 
-```
-mkdir: can't create directory '/var/lib/grafana/plugins': Permission denied
-```
+2. Issue when starting filebeat:
 
-- Solution: Add `user: root` to grafana in docker-compose-env.yml
+- **Error:** `filebeat container startup error Exiting: error loading config file: config file ("filebeat.yml") must be owned by the user identifier (uid=0) or root`
+- **Solution:** Due to different file owners (I clone the project under normal user), the config file of filebeat must be owned by root, you need to run `sudo chown root deploy/filebeat/conf/filebeat.yml`
 
-2, filebeat container startup error Exiting: error loading config file: config file ("filebeat.yml") must be owned by the user identifier (uid=0) or root
-Due to different file owners (I clone the project under normal user), the config file of filebeat must be owned by root, you need to modify sudo chown root deploy/filebeat/conf/filebeat.yml
+3. Issue when starting Elasticsearch:
 
-3.elasticsearch container startup error ElasticsearchException[failed to bind service]; nested: AccessDeniedException[/usr/share/elasticsearch/data/nodes] ;
-Likely root cause: java.nio.file.AccessDeniedException: /usr/share/elasticsearch/data/nodes
-The reason for the error is that es does not have permission to operate the mount directory and cannot bind the nodes, solution, modify the permissions sudo chmod 777 data/elasticsearch/data (I don't know which user started es, so I changed 777 hard)
+- **Error:** elasticsearch container startup error `ElasticsearchException[failed to bind service]; nested: AccessDeniedException[/usr/share/elasticsearch/data/nodes] ;
+Likely root cause: java.nio.file.AccessDeniedException: /usr/share/elasticsearch/data/nodes``
+- **Solution:** The reason for the error is that es does not have permission to operate the mount directory and cannot bind the nodes, solution, modify the permissions `sudo chmod 777 data/elasticsearch/data` (I don't know which user started es, so I changed 777 the files permission)
 
-4, jaeger depends on elasticsearch and does not fail to restart automatically
+4. Jaeger depends on elasticsearch and does not fail to restart automatically
 
 ## 10. Follow-up
 
