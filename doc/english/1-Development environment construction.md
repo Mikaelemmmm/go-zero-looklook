@@ -1,30 +1,29 @@
 - [I. Development environment](#i-development-environment)
-  - [1.Project Profile](#1project-profile)
-  - [2.Use to technology stack](#2use-to-technology-stack)
-  - [3.Project Architecture Diagram](#3project-architecture-diagram)
-  - [4.Business Architecture Diagram](#4business-architecture-diagram)
-  - [5.Project Environment Setup](#5project-environment-setup)
-      - [⚠️ If you encounter problems during the build process, you can see "9. Common Errors"](#️-if-you-encounter-problems-during-the-build-process-you-can-see-9-common-errors)
-    - [1.clone code & update dependencies](#1clone-code--update-dependencies)
-    - [2.The environment on which the project is launched](#2the-environment-on-which-the-project-is-launched)
-    - [3.Importing Data](#3importing-data)
-        - [3.1. Creating a kafka topic](#31-creating-a-kafka-topic)
-        - [3.2Importing mysql data](#32importing-mysql-data)
-    - [4.View Service Environment](#4view-service-environment)
-    - [5.Start Service](#5start-service)
-      - [5.1. Pull the runtime environment image](#51-pull-the-runtime-environment-image)
-      - [5.2. Start Project](#52-start-project)
-    - [6.View project operation](#6view-project-operation)
-    - [7.Access Program](#7access-program)
-  - [6.Log Collection](#6log-collection)
-  - [7.Introduction of this project mirror](#7introduction-of-this-project-mirror)
-  - [8.Project Development Proposal](#8project-development-proposal)
-  - [9.Common mistakes in building environments](#9common-mistakes-in-building-environments)
-  - [10.Follow-up](#10follow-up)
+  - [1. Project Profile](#1-project-profile)
+  - [2. Use to technology stack](#2-use-to-technology-stack)
+  - [3. Project Architecture Diagram](#3-project-architecture-diagram)
+  - [4. Business Architecture Diagram](#4-business-architecture-diagram)
+  - [5. Project Environment Setup](#5-project-environment-setup)
+    - [5.1. clone code & update dependencies](#51-clone-code--update-dependencies)
+    - [5.2. The environment on which the project is launched](#52-the-environment-on-which-the-project-is-launched)
+    - [5.3. Importing Data](#53-importing-data)
+        - [5.3.1. Creating a kafka topic](#531-creating-a-kafka-topic)
+        - [5.3.2. Importing mysql data](#532-importing-mysql-data)
+    - [5.4. View Service Environment](#54-view-service-environment)
+    - [5.5. Start Service](#55-start-service)
+      - [5.5.1. Pull the runtime environment image](#551-pull-the-runtime-environment-image)
+      - [5.5.2. Start Project](#552-start-project)
+    - [5.6. View project operation](#56-view-project-operation)
+    - [7. Access Program](#7-access-program)
+  - [6. Log Collection](#6-log-collection)
+  - [7. Introduction of this project mirror](#7-introduction-of-this-project-mirror)
+  - [8. Project Development Proposal](#8-project-development-proposal)
+  - [9. Common mistakes in building environments](#9-common-mistakes-in-building-environments)
+  - [10. Follow-up](#10-follow-up)
 
 # I. Development environment
 
-## 1.Project Profile
+## 1. Project Profile
 
 Address of this project :  <https://github.com/Mikaelemmmm/go-zero-looklook>
 
@@ -59,7 +58,7 @@ The project directory structure is as follows:
 
     Translated with www.DeepL.com/Translator (free version)
 
-## 2.Use to technology stack
+## 2. Use to technology stack
 
 - k8s
 
@@ -107,17 +106,17 @@ The project directory structure is as follows:
 
 - harbor
 
-## 3.Project Architecture Diagram
+## 3. Project Architecture Diagram
 
 ![gozerolooklook](../chinese/images/1/gozerolooklook.png)
 
-## 4.Business Architecture Diagram
+## 4. Business Architecture Diagram
 
 ![gozerolooklook](../chinese/images/1/go-zero-looklook-service.png)
 
-## 5.Project Environment Setup
+## 5. Project Environment Setup
 
-#### ⚠️ If you encounter problems during the build process, you can see "9. Common Errors"
+> ⚠️ If you encounter problems during the build process, you can see "9. Common Errors"
 
 The project uses modd hot-loading function instantly modify the code in time to take effect, and do not need to restart each time, change the code automatically in the container reload, local services do not need to start, locally installed sdk is to write code automatically prompted to use, the actual run is since the container lyumikael/go-modd-env:v1.0.0 golang environment. So use goland, vscode are the same
 
@@ -125,22 +124,22 @@ Translated with www.DeepL.com/Translator (free version)
 
 [Note] Since this project has more middleware, starting docker on non-linux may consume more memory, so it is recommended that the memory allocated to docker on the physical machine be adjusted to 8G.
 
-### 1.clone code & update dependencies
+### 5.1. clone code & update dependencies
 
 ```shell
 git clone https://github.com/Mikaelemmmm/go-zero-looklook
 go mod tidy
 ```
 
-### 2.The environment on which the project is launched
+### 5.2. The environment on which the project is launched
 
 ```shell
 docker-compose -f docker-compose-env.yml up -d
 ```
 
-### 3.Importing Data
+### 5.3. Importing Data
 
-##### 3.1. Creating a kafka topic
+##### 5.3.1. Creating a kafka topic
 
 The system uses 3 topics, the default is not to allow the program to automatically create a topic, into the kafka container to create 3 topics
 
@@ -164,7 +163,7 @@ payment-update-paystatus-topic : Payment success notification
 
 send-wx-mini-tpl-message:Send WeChat applet notifications
 
-##### 3.2Importing mysql data
+##### 5.3.2. Importing mysql data
 
 For local tools to connect to mysql, you need to enter the container first and set remote connection privileges for root
 
@@ -184,7 +183,7 @@ Create database looklook_travel && import deploy/sql/looklook_travel.sql data
 
 Create database looklook_usercenter && import looklook_usercenter.sql data
 
-### 4.View Service Environment
+### 5.4. View Service Environment
 
 Elastic search: <http://127.0.0.1:9200/> （⚠️ :This startup time is a bit long）
 
@@ -224,9 +223,9 @@ Kafka:  (pub.sub)Self-client tool view
 
 - port : 9092
 
-### 5.Start Service
+### 5.5. Start Service
 
-#### 5.1. Pull the runtime environment image
+#### 5.5.1. Pull the runtime environment image
 
 Because this project is using docker + hot-loading, that is, the change is effective
 
@@ -244,7 +243,7 @@ About modd more usage can go here to learn: <https://github.com/cortesi/modd>, t
 
 If you want to add goctl, protoc, golint, etc., do not use my image directly to create a mirror is the same ha
 
-#### 5.2. Start Project
+#### 5.5.2. Start Project
 
 ```shell
 docker-compose up -d
@@ -252,7 +251,7 @@ docker-compose up -d
 
 [Note] The dependency is on the docker-compose.yml configuration in the project root directory
 
-### 6.View project operation
+### 5.6. View project operation
 
 Visit <http://127.0.0.1:9090/>, click on the menu above "Status", click on Targets, the blue one is started, the red one is not started successfully
 
@@ -266,7 +265,7 @@ You can see that the prometheus also shows success, and similarly the other also
 
 <img src="../chinese/images/1/image-20220120103641110.png" alt="image-20220120103641110.png" style="zoom:33%;" />
 
-### 7.Access Program
+### 7. Access Program
 
 Since we use nginx as the gateway, the nginx gateway is configured in docker-compose, which is also configured in docker-compose, nginx exposes port 8888 to the public, so we access through port 8888
 
@@ -283,7 +282,7 @@ Note] If the access to nginx fails and the access success can be ignored, it may
 docker-compose restart nginx
 ```
 
-## 6.Log Collection
+## 6. Log Collection
 
 Collect project logs to es (filebeat collects logs -> kafka -> go-stash consumes kafka logs -> output to es, kibana views es data)
 
@@ -349,7 +348,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
 ​
 
-## 7.Introduction of this project mirror
+## 7. Introduction of this project mirror
 
 - nginx : gateway （nginx->api->rpc）
 - cosmtrek/air.modd : Our business code development depends on the environment image, the reason why we use this is because air hot-loading, writing code compiled in real time is too convenient, this image is air + golang, in fact, after we start our own business services, our business services are running in this image
@@ -366,7 +365,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 - jaegertracing/all-in-one:Link Tracking
 - go-stash : After filebeat collects the logs to kafka, go-stash goes to consume kafka to desensitize the data, filter the content in the logs, and finally output to es
 
-## 8.Project Development Proposal
+## 8. Project Development Proposal
 
 - app: decentralizes all business service codes
 
@@ -414,7 +413,7 @@ Note] It is recommended that when generating the rpc file, execute the following
 
 - Generate mod, error handling when using the template redefinition, the project used a custom goctl template in the project deploy/goctl under
 
-## 9.Common mistakes in building environments
+## 9. Common mistakes in building environments
 
 ```dock
 1.Create stage, start docker-compose-env.yml container
@@ -432,6 +431,6 @@ The reason for the error is that es does not have permission to operate the moun
 4, jaeger depends on elasticsearch and does not fail to restart automatically
 ```
 
-## 10.Follow-up
+## 10. Follow-up
 
 Due to the project as it relates to the technology stack is slightly more, will gradually add a little bit by chapter
