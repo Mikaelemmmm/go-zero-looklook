@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [V. Travel Service](#v-travel-service)
   - [1. business structure diagram](#1-business-structure-diagram)
   - [2. Dependencies](#2-dependencies)

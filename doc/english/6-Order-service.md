@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [VI. Order Service](#vi-order-service)
   - [1. Order service business architecture diagram](#1-order-service-business-architecture-diagram)
   - [2. Dependencies](#2-dependencies)

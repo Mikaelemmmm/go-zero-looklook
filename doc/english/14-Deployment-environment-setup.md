@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [XIV. Deployment environment building](#xiv-deployment-environment-building)
   - [1. Overview](#1-overview)
   - [2. gitlab](#2-gitlab)

@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [IX. distributed transactions](#ix-distributed-transactions)
 	- [1. First of all, you need to pay attention to](#1-first-of-all-you-need-to-pay-attention-to)
 	- [2. clone dtm](#2-clone-dtm)

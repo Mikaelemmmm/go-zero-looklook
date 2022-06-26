@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [II. Using nginx as a gateway](#ii-using-nginx-as-a-gateway)
   - [1. go-zero gateway concept](#1-go-zero-gateway-concept)
   - [2. nginx gateway](#2-nginx-gateway)

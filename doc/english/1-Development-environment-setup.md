@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [I. Development environment](#i-development-environment)
   - [1. Project Profile](#1-project-profile)
   - [2. Use to technology stack](#2-use-to-technology-stack)
@@ -10,8 +9,8 @@
     - [5.1. clone code & update dependencies](#51-clone-code--update-dependencies)
     - [5.2. The environment on which the project is launched](#52-the-environment-on-which-the-project-is-launched)
     - [5.3. Importing Data](#53-importing-data)
-        - [5.3.1. Creating a kafka topic](#531-creating-a-kafka-topic)
-        - [5.3.2. Importing mysql data](#532-importing-mysql-data)
+      - [5.3.1. Creating a kafka topic](#531-creating-a-kafka-topic)
+      - [5.3.2. Importing mysql data](#532-importing-mysql-data)
     - [5.4. View Service Environment](#54-view-service-environment)
     - [5.5. Start Service](#55-start-service)
       - [5.5.1. Pull the runtime environment image](#551-pull-the-runtime-environment-image)
@@ -142,7 +141,7 @@ docker-compose -f docker-compose-env.yml up -d
 
 ### 5.3. Importing Data
 
-##### 5.3.1. Creating a kafka topic
+#### 5.3.1. Creating a kafka topic
 
 The system uses 3 topics, the default is not to allow the program to automatically create a topic, into the kafka container to create 3 topics
 
@@ -166,7 +165,7 @@ payment-update-paystatus-topic : Payment success notification
 
 send-wx-mini-tpl-message:Send WeChat applet notifications
 
-##### 5.3.2. Importing mysql data
+#### 5.3.2. Importing mysql data
 
 For local tools to connect to mysql, you need to enter the container first and set remote connection privileges for root
 

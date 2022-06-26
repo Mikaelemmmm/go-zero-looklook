@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
   - [VIII. Messages, Delays, Timed Queues](#viii-messages-delays-timed-queues)
     - [1. Overview](#1-overview)
     - [2. How to use](#2-how-to-use)

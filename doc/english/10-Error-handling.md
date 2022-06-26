@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [X. Error handling](#x-error-handling)
   - [1. Overview](#1-overview)
   - [2. rpc error handling](#2-rpc-error-handling)

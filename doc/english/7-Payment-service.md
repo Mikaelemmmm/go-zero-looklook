@@ -1,6 +1,5 @@
-# Table of Contents
+<h1>Table of Contents</h1>
 
-- [Table of Contents](#table-of-contents)
 - [VII. Payment services](#vii-payment-services)
   - [1. Payment service business architecture diagram](#1-payment-service-business-architecture-diagram)
   - [2. Dependencies](#2-dependencies)
