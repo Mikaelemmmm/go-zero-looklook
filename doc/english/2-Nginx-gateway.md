@@ -12,9 +12,9 @@ Address of this project :  <https://github.com/Mikaelemmmm/go-zero-looklook>
 
 ## 1. go-zero gateway concept
 
-go-zero architecture to the big say there are mainly 2 parts, one is api, one is rpc. api is mainly http external access, rpc is mainly internal business interaction using protobuf + grpc, when our project volume is not large, we can use api to do a monolithic project, and after the subsequent volume up, you can split to rpc to do microservices, from a single body to microservices is very easy, much like the java springboot to springcloud, very convenient.
+go-zero architecture to the big say there are mainly 2 parts, one is API, one is RPC. API is mainly http external access, RPC is mainly internal business interaction using protobuf + gRPC, when our project volume is not large, we can use API to do a monolithic project, and after the subsequent volume up, you can split to RPC to do microservices, from a single body to microservices is very easy, much like the java springboot to springcloud, very convenient.
 
-api is understood by many students as a gateway, in a practical sense when your project is using go-zero to do microservices, you api as a gateway is not a big problem, but this leads to the problem that an api corresponds to the back of multiple rpc, api acts as a gateway, so if I update the subsequent business code, update any business to change the For example, if I just change a small and insignificant service, I have to reconstruct the whole api, which is not very reasonable and very inefficient and inconvenient. So, we just treat the api as an aggregated service, can be split into multiple api, such as user services have user services rpc and api, order services, order services rpc and api, so that when I modify the user service, I only need to update the user rpc and api, all the api is only used to aggregate the back-end rpc business. Then some students will say, I can't resolve a domain name for each service corresponding to your api, of course not, this time there should be a gateway in front of the api, this gateway is the real sense of the gateway, such as we often say nginx, kong, apisix, many microservices have built-in gateway, such as springcloud provides springcloud-gateway, go-zero does not provide, and actually do not need to write a separate gateway, the gateway on the market has been enough, go-zero official in the dawn of blackboard nginx enough to use, of course, if you are more familiar with kong, apisix can be replaced, essentially nothing different, just a unified traffic Entrance, unified authentication, etc.
+API is understood by many students as a gateway, in a practical sense when your project is using go-zero to do microservices, you API as a gateway is not a big problem, but this leads to the problem that an API corresponds to the back of multiple RPC, API acts as a gateway, so if I update the subsequent business code, update any business to change the For example, if I just change a small and insignificant service, I have to reconstruct the whole API, which is not very reasonable and very inefficient and inconvenient. So, we just treat the API as an aggregated service, can be split into multiple API, such as user services have user services RPC and API, order services, order services RPC and API, so that when I modify the user service, I only need to update the user RPC and API, all the API is only used to aggregate the back-end RPC business. Then some students will say, I can't resolve a domain name for each service corresponding to your API, of course not, this time there should be a gateway in front of the API, this gateway is the real sense of the gateway, such as we often say nginx, kong, apisix, many microservices have built-in gateway, such as springcloud provides springcloud-gateway, go-zero does not provide, and actually do not need to write a separate gateway, the gateway on the market has been enough, go-zero official in the dawn of blackboard nginx enough to use, of course, if you are more familiar with kong, apisix can be replaced, essentially nothing different, just a unified traffic Entrance, unified authentication, etc.
 
 ## 2. nginx gateway
 
@@ -64,11 +64,11 @@ server{
 
 ```
 
-Container internal nginx port is 8081, use docker to expose out 8888 mapping port 8081, so that the external through 8888 to access the gateway, use location to match each service, of course, there will be people say, did not add an api service are to nginx configuration is too much trouble, you can also use confd unified configuration, self Baidu.
+Container internal nginx port is 8081, use docker to expose out 8888 mapping port 8081, so that the external through 8888 to access the gateway, use location to match each service, of course, there will be people say, did not add an API service are to nginx configuration is too much trouble, you can also use confd unified configuration, self Baidu.
 
 ## 3. Examples
 
-When we access the user service, <http://127.0.0.1:8888/usercenter/v1/user/detail> , we access the external port 8888, then map to nginx internal looklook gateway 8081, then the location matches to /usercenter/ then We have defined 2 groups of routes in the desc/api file, one group needs jwt authentication and one group does not need jwt authentication, /usercenter/v1/user/detail needs authentication so we will use go-zero's own jwt function to authentication, desc/usercenter.api file content as follows.
+When we access the user service, <http://127.0.0.1:8888/usercenter/v1/user/detail> , we access the external port 8888, then map to nginx internal looklook gateway 8081, then the location matches to /usercenter/ then We have defined 2 groups of routes in the desc/API file, one group needs jwt authentication and one group does not need jwt authentication, /usercenter/v1/user/detail needs authentication so we will use go-zero's own jwt function to authentication, desc/usercenter.api file content as follows.
 
 ```doc
 .........
@@ -88,7 +88,7 @@ service usercenter {
 }
 ```
 
-Since the jwt token we generate in usercenter-rpc when the user registers and logs in, we are putting the userId in, so here in /usercenter/v1/user/detail, we can get the userId in ctx after the jwt authentication that comes with go-zero, with the following code.
+Since the jwt token we generate in usercenter-RPC when the user registers and logs in, we are putting the userId in, so here in /usercenter/v1/user/detail, we can get the userId in ctx after the jwt authentication that comes with go-zero, with the following code.
 
 ```go
 func (l *DetailLogic) Detail(req types.UserInfoReq) (*types.UserInfoResp, error) {
