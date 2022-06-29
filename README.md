@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/main/README-cn.md)
+English | [简体中文](README-cn.md)
 
 
 
@@ -51,7 +51,7 @@ At the end of this tutorial, we will also share go-zero -looklook. Please look f
 
 ## Doc
 
- https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/english   Under the doc directory of the project
+ Documentation can de found under [doc/english](doc/english/) in the project.
 
 
 
@@ -163,7 +163,7 @@ Docker compose is recommended in the development environment of the project. The
 
 For testing and online deployment, k8s (etcd, Nacos, consumer, etc.) has detailed tutorials (build + deploy), which can be communicated in the go zero community group, which is very easy
 
-project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+project doc ：[https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc](doc/)
 
 gitlab + jenkins + harbor + k8s
 
