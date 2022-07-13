@@ -25,6 +25,11 @@ Redis:
   Type: node
   Pass: G62m50oigInC30sf
 
+
+AsynqConf:
+  # mq的线程数量
+  MqConcurrency: 1
+
 #WxMiniConf
 WxMiniConf:
   AppId: wx2add729fadddddd
