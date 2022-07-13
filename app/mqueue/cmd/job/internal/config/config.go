@@ -8,10 +8,13 @@ import (
 
 type Config struct {
 	service.ServiceConf
-	Redis redis.RedisConf
-	WxMiniConf    WxMiniConf
+	Redis      redis.RedisConf
+	WxMiniConf WxMiniConf
+	AsynqConf  struct {
+		MqConcurrency int64
+	}
 
-	SettleRpcConf zrpc.RpcClientConf
-	OrderRpcConf zrpc.RpcClientConf
+	SettleRpcConf     zrpc.RpcClientConf
+	OrderRpcConf      zrpc.RpcClientConf
 	UsercenterRpcConf zrpc.RpcClientConf
 }
