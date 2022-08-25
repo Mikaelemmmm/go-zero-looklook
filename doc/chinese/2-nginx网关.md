@@ -18,7 +18,7 @@ api被很多同学理解成了网关，实际意义上来说当你的项目在�
 
 ![nginx-svc](./images/2/nginx-gateway.jpg)
 
-本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（设计到资产的最好业务内部做二次鉴权，主要多一层安全），nginx的网关配置在项目的deploy/nginx/conf.d/looklook-gateway.conf
+本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（涉及到资产的最好业务内部做二次鉴权，主要多一层安全），nginx的网关配置在项目的deploy/nginx/conf.d/looklook-gateway.conf
 
 ```conf
 server{
