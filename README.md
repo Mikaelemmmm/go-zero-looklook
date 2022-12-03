@@ -15,6 +15,12 @@ English | [简体中文](README-cn.md)
 I may have contacted go zero earlier. I have been using go zero since about 1000star. Later, I became familiar with the go zero author through wechat. The go zero author was very enthusiastic and patient to help me answer many questions. I also want to actively help go zero promote the community, Basically, I answered the relevant questions in the community group, because in this process, I found that many people felt that go zero did not have a complete project example. As a member of the community who wanted to promote the community, I made an available version open source. The main technology stack includes the following：
 
 
+
+##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
+
+
+
+
 - k8s
 - go-zero
 - nginx-gateway
@@ -38,10 +44,6 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 - jenkins
 - gitlab
 - harbor
-
-
-
-##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
 
 
 

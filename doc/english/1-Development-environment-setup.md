@@ -62,6 +62,8 @@ The project directory structure is as follows:
 
 ## 2. Use to technology stack
 
+
+
 ##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
 
 

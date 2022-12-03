@@ -110,7 +110,3 @@ require (
 	github.com/zeromicro/go-zero v1.4.2
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 )
-
-replace github.com/casbin/casbin/v2 => github.com/casbin/casbin/v2 v2.11.0
-
-replace github.com/casbin/gorm-adapter/v3 => github.com/casbin/gorm-adapter/v3 v3.0.2
