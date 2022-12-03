@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-[English](https://github.com/Mikaelemmmm/go-zero-looklook/blob/main/README.md) | 简体中文
+[English](README.md) | 简体中文
 
 
 
@@ -12,8 +12,13 @@
 
 #### 老规矩，看之前先给个star哈～～,不star被抓住要打屁股，哈哈哈哈哈哈
 
-
 本人接触go-zero可能比较早，go-zero在大约1000star左右我就在用了，后来跟go-zero作者加了微信也熟悉了，go-zero作者非常热心以及耐心的帮我解答了很多问题，我也想积极帮助go-zero推广社区，基本是在社区群内回答大家相关的问题，因为在这个过程中发现很多人觉得go-zero没有一个完整的项目例子，作为想推动社区的一员，我就搞了个可用版本开源出来，主要技术栈包含如下：
+
+
+
+##### Tips : 如果你不熟悉这里面很多技术栈也不要怕，只要你会mysql、redis可以先启动这两个中间件在启动项目先跑起来项目，其他可以慢慢学。
+
+
 
 
 - k8s
@@ -52,7 +57,7 @@
 
 ## 项目文档
 
-（地址一）https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/chinese 即该项目的doc目录下
+（地址一）[doc/chinese](doc/chinese/) 即该项目的doc目录下
 
 （地址二）go-zero官方微信公众号（微服务从代码到k8s部署应有尽有系列）
 
@@ -71,6 +76,7 @@
 ## 项目简介
 
 整个项目使用了go-zero开发的微服务，基本包含了go-zero以及相关go-zero作者开发的一些中间件，所用到的技术栈基本是go-zero项目组的自研组件，基本是go-zero全家桶了
+
 另外，前端是小程序，本项目已经对接好了小程序授权登录 以及 微信支付了 ，前端看看后面是否能开源吧
 
 
@@ -123,7 +129,7 @@ nginx做对外网关，网关前面是slb，另外，很多同学觉得nginx做�
 
 关于日志，统一使用filebeat收集，上报到kafka中，由于logstash懂得都懂，资源占用太夸张了，这里使用了go-stash替换了logstash
 
-链接：https://github.com/kevwan/go-stash  ， go-stash是由go-zero开发团队开发的，性能很高不占资源，主要代码量没多少，只需要配置就可以使用，很简单。它是吧kafka数据源同步到elasticsearch中，默认不支持elasticsearch账号密码，我fork了一份修改了一下，很简单支持了账号、密码
+链接：https://github.com/kevwan/go-stash  ， go-stash是由go-zero开发团队开发的，性能很高不占资源，主要代码量没多少，只需要配置就可以使用，很简单。它是把kafka数据源同步到elasticsearch中，默认不支持elasticsearch账号密码，我fork了一份修改了一下，很简单支持了账号、密码
 
 
 
@@ -173,7 +179,7 @@ kafka ， 发布订阅使用的是go-zero开发团队开发的go-queue，链接�
 
 gitlab + jenkins + harbor + k8s
 
-在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->自动构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nignx做网关统一入口
+在jenkins中点击部署对应的服务，会去gitlab拉取代码-->再去拉取线上配置（线上配置单独一个git库，为什么不用配置中心，部署文档中有介绍）---->自动构建镜像-->推送到harbor镜像仓库--->使用kubectl自动发布到k8s中---->前面要挂一个nginx做网关统一入口
 
 
 

@@ -16,9 +16,9 @@ api被很多同学理解成了网关，实际意义上来说当你的项目在�
 
 【注】：在看这里的时候，建议先看一下前一节的业务架构图
 
-![nignx-svc](./images/2/nginx-gateway.jpg)
+![nginx-svc](./images/2/nginx-gateway.jpg)
 
-本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（设计到资产的最好业务内部做二次鉴权，主要多一层安全），nignx的网关配置在项目的deploy/nginx/conf.d/looklook-gateway.conf
+本项目中实际也使用了nginx做为网关，使用nginx的auth_request模块作为统一鉴权，业务内部不做鉴权（涉及到资产的最好业务内部做二次鉴权，主要多一层安全），nginx的网关配置在项目的deploy/nginx/conf.d/looklook-gateway.conf
 
 ```conf
 server{
@@ -59,7 +59,7 @@ server{
 }
 ```
 
-容器内部nginx端口是8081，使用docker暴露出去8888映射端口8081，这样外部通过8888来访问网关，使用location来匹配每个服务，当然会有人说，每加一个api服务都要来nignx配置太麻烦，你也可以使用confd统一配置，自行百度。
+容器内部nginx端口是8081，使用docker暴露出去8888映射端口8081，这样外部通过8888来访问网关，使用location来匹配每个服务，当然会有人说，每加一个api服务都要来nginx配置太麻烦，你也可以使用confd统一配置，自行百度。
 
 
 

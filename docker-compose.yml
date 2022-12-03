@@ -1,10 +1,11 @@
 version: '3'
 
-######## app下api+rpc ,  启动本项目之前，要先启动本项目依赖的环境docker-compose-env.yml #######
+######## app下api+rpc ,  Before starting this project, start the environment that the project depends on docker-compose-env.yml #######
 
 services:
 
   #前端网关nginx-gateay (只代理looklook，admin-api不在这里做代理)
+  # Front-end gateway nginx-gateway (Only agent looklook，admin-api Do not be an agent here)
   nginx-gateway:
     image: nginx:1.21.5
     container_name: nginx-gateway
@@ -22,13 +23,13 @@ services:
     depends_on:
       - looklook
 
-  #前端api + 业务rpc
+  #前端api + 业务rpc - Front-end API + business RPC
   looklook:
     image: lyumikael/gomodd:v1.0.0 # if you "macOs intel" or "linux amd"
     #image: lyumikael/go-modd-env:v1.0.0  # if you macOs m1
     container_name: looklook
     environment:
-      # 时区上海
+      # 时区上海 - Timezone Shanghai
       TZ: Asia/Shanghai
       GOPROXY: https://goproxy.cn,direct
     working_dir: /go/looklook

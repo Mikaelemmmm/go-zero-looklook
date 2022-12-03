@@ -2,7 +2,7 @@
 
 ## go-zero-looklook
 
-English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/main/README-cn.md)
+English | [简体中文](README-cn.md)
 
 
 
@@ -13,6 +13,12 @@ English | [简体中文](https://github.com/Mikaelemmmm/go-zero-looklook/blob/ma
 #### The old rule is to give a star before you see it. Ha ~ ~, if the star is caught, you have to spank, ha ha
 
 I may have contacted go zero earlier. I have been using go zero since about 1000star. Later, I became familiar with the go zero author through wechat. The go zero author was very enthusiastic and patient to help me answer many questions. I also want to actively help go zero promote the community, Basically, I answered the relevant questions in the community group, because in this process, I found that many people felt that go zero did not have a complete project example. As a member of the community who wanted to promote the community, I made an available version open source. The main technology stack includes the following：
+
+
+
+##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
+
+
 
 
 - k8s
@@ -51,7 +57,7 @@ At the end of this tutorial, we will also share go-zero -looklook. Please look f
 
 ## Doc
 
- https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc/english   Under the doc directory of the project
+ Documentation can de found under [doc/english](doc/english/) in the project.
 
 
 
@@ -68,9 +74,6 @@ The whole project uses the micro services developed by go zero, which basically 
 
 
 The project directory structure is as follows：
-
--  admin：Background code (integrated with gin Vue admin, acting as a large background gateway) uses grpc to interact with RPC business under app. There is an example of code interaction between background gin Vue admin and go zero. If you don't want the background, you can directly delete the whole folder of admin and execute go mod tidy once
-- admin/web : Background web side code, gin-Vue-admin(https://github.com/flipped-aurora/gin-vue-admin)
 
 
 - app：All business codes include API, RPC and MQ (message queue, delay queue, scheduled task)
@@ -166,11 +169,11 @@ Docker compose is recommended in the development environment of the project. The
 
 For testing and online deployment, k8s (etcd, Nacos, consumer, etc.) has detailed tutorials (build + deploy), which can be communicated in the go zero community group, which is very easy
 
-project doc ：https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc
+project doc ：[https://github.com/Mikaelemmmm/go-zero-looklook/tree/main/doc](doc/)
 
 gitlab + jenkins + harbor + k8s
 
-Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nignx do gateway unified portal
+Click in jenkins to deploy the corresponding service, will go to gitlab to pull the code --> then go to pull the online configuration (online configuration of a separate git repository, why not use the configuration center, the deployment documentation has an introduction) ----> automatically build the image --> push to harbor mirror repository --> use kubectl to automatically publish to k8s ----> in front to hang a nginx do gateway unified portal
 
 
 

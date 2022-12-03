@@ -6,8 +6,9 @@
 **/.DS_Store
 
 #deploy data
-data
+
 data/*
+!data/.gitkeep
 
 # gitlab ci
 .cache

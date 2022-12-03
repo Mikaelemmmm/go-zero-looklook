@@ -13,7 +13,7 @@ type ServiceContext struct {
 	Config config.Config
 
 	OrderRpc   order.Order
-	PaymentrPC payment.Payment
+	PaymentRpc payment.Payment
 	TravelRpc  travel.Travel
 }
 
@@ -22,7 +22,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config: c,
 
 		OrderRpc:   order.NewOrder(zrpc.MustNewClient(c.OrderRpcConf)),
-		PaymentrPC: payment.NewPayment(zrpc.MustNewClient(c.PaymentRpcConf)),
+		PaymentRpc: payment.NewPayment(zrpc.MustNewClient(c.PaymentRpcConf)),
 		TravelRpc:  travel.NewTravel(zrpc.MustNewClient(c.TravelRpcConf)),
 	}
 }

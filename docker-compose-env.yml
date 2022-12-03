@@ -1,9 +1,10 @@
 version: '3'
 
 ######## 项目依赖的环境，启动项目之前要先启动此环境 #######
+######## The environment that the project depends on, starting this environment before starting the project #######
 
 services:
-  #jaeger链路追踪
+  #jaeger链路追踪 — Jaeger for tracing
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
@@ -23,12 +24,12 @@ services:
     networks:
       - looklook_net
 
-  #prometheus监控
+  #prometheus监控 — Prometheus for monitoring
   prometheus:
     image: prom/prometheus:v2.28.1
     container_name: prometheus
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     volumes:
       - ./deploy/prometheus/server/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -43,14 +44,14 @@ services:
     networks:
       - looklook_net
 
-  #查看prometheus监控数据
+  #查看prometheus监控数据 - Grafana to view Prometheus monitoring data
   grafana:
     image: grafana/grafana:8.0.6
     container_name: grafana
     hostname: grafana
     user: root
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     restart: always
     volumes:
@@ -60,7 +61,7 @@ services:
     networks:
         - looklook_net
 
-#  #搜集kafka业务日志、存储prometheus监控数据
+#  #搜集kafka业务日志、存储prometheus监控数据 - Kafka for collecting business logs and storing Prometheus monitoring data
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     container_name: elasticsearch
@@ -78,7 +79,7 @@ services:
     networks:
       - looklook_net
 
-  #查看elasticsearch数据
+  #查看elasticsearch数据 - Kibana to view Elasticsearch data
   kibana:
     image: docker.elastic.co/kibana/kibana:7.13.4
     container_name: kibana
@@ -93,13 +94,13 @@ services:
     depends_on:
       - elasticsearch
 
-  #消费kafka中filebeat收集的数据输出到es
+  #消费kafka中filebeat收集的数据输出到es - The data output collected by FileBeat in Kafka is output to ES
   go-stash:
     image: kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
 #    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
     container_name: go-stash
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     user: root
     restart: always
@@ -111,20 +112,20 @@ services:
       - elasticsearch
       - kafka
 
-  #收集业务数据
+  #收集业务数据 - Collect business data
   filebeat:
     image: elastic/filebeat:7.13.4
     container_name: filebeat
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     user: root
     restart: always
-    entrypoint: "filebeat -e -strict.perms=false"  #解决配置文件权限问题
+    entrypoint: "filebeat -e -strict.perms=false"  #解决配置文件权限问题 - Solving the configuration file permissions
     volumes:
       - ./deploy/filebeat/conf/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      # 此处需指定docker的containers目录，取决于你docker的配置
-      # 如snap安装的docker，则为/var/snap/docker/common/var-lib-docker/containers
+      # 此处需指定docker的containers目录，取决于你docker的配置 - The containers directory of docker needs to be specified here, depending on your docker configuration
+      # 如snap安装的docker，则为/var/snap/docker/common/var-lib-docker/containers - Example if docker is installed by Snap /var/snap/docker/common/var-lib-docker/containers
       # - /var/snap/docker/common/var-lib-docker/containers:/var/lib/docker/containers
       - /var/lib/docker/containers:/var/lib/docker/containers
     networks:
@@ -133,12 +134,12 @@ services:
       - kafka
 
 
-  #zookeeper是kafka的依赖
+  #zookeeper是kafka的依赖 - Zookeeper is the dependencies of Kafka
   zookeeper:
     image: wurstmeister/zookeeper
     container_name: zookeeper
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     restart: always
     ports:
@@ -146,7 +147,7 @@ services:
     networks:
       - looklook_net
 
-  #消息队列
+  #消息队列 - Message queue
   kafka:
     image: wurstmeister/kafka
     container_name: kafka
@@ -165,7 +166,7 @@ services:
     depends_on:
       - zookeeper
 
-  #asynqmon asynq延迟队列、定时队列的webui
+  #asynqmon asynq延迟队列、定时队列的webui - Asynqmon asynq delay queue, timing queue's webUI
   asynqmon:
     image: hibiken/asynqmon:latest
     container_name: asynqmon
@@ -184,18 +185,19 @@ services:
     image: mysql/mysql-server:8.0.28
     container_name: mysql
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
-      # root 密码
+      # root 密码 - root password
       MYSQL_ROOT_PASSWORD: PXDN93VRKUm8TeE7
     ports:
       - 33069:3306
     volumes:
-      # 数据挂载
+      # 数据挂载 - Data mounting
       - ./data/mysql/data:/var/lib/mysql
       # 日志
     command:
-      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配) 
+      # Modify the Mysql 8.0 default password strategy to the original strategy (MySQL8.0 to change its default strategy will cause the password to be unable to match)
       --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
@@ -206,17 +208,17 @@ services:
     networks:
       - looklook_net
 
-  #redis容器
+  #redis容器 - Redis container
   redis:
     image: redis:6.2.5
     container_name: redis
     ports:
       - 36379:6379
     environment:
-      # 时区上海
+      # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai
     volumes:
-      # 数据文件
+      # 数据文件 - data files
       - ./data/redis/data:/data:rw
     command: "redis-server --requirepass G62m50oigInC30sf  --appendonly yes"
     privileged: true
