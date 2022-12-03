@@ -62,50 +62,32 @@ The project directory structure is as follows:
 
 ## 2. Use to technology stack
 
+##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
+
+
+
 - Kubernetes _(a.k.a k8s)_
-
 - go-zero
-
 - Nginx server (as a Gateway)
-
 - Filebeat
-
 - Kafka
-
 - Go-stash
-
 - Elasticsearch
-
 - Kibana
-
 - Prometheus
-
 - Grafana
-
 - Jaeger
-
 - Go-queue
-
 - Asynq
-
 - Asynqmon
-
 - DTM
-
 - docker
-
 - docker-compose
-
 - mysql
-
 - redis
-
 - modd
-
 - jenkins
-
 - gitlab
-
 - harbor
 
 ## 3. Project Architecture Diagram
@@ -348,7 +330,7 @@ Then click the top left menu, find Analytics->click discover, the logs are displ
 
   2) In the kafka container internal command line using consumer.sh consumption looklook-log, another terminal command line with producer.sh to looklook-log send messages, if the consumer can not receive, indicating that the kafka problem, docker logs -f kafka to see what the problem
 
-​
+
 
 ## 7. Introduction of this project mirror
 

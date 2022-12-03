@@ -42,6 +42,10 @@
 
 
 
+##### Tips : 如果你不熟悉这里面很多技术栈也不要怕，只要你会mysql、redis可以先启动这两个中间件在启动项目先跑起来项目，其他可以慢慢学。
+
+
+
 ## 视频教程
 
 这个是我正在录制的go-zero教程：https://www.bilibili.com/medialist/play/389552232?from=space&business=space_series&business_id=2122723&desc=1
@@ -71,6 +75,7 @@
 ## 项目简介
 
 整个项目使用了go-zero开发的微服务，基本包含了go-zero以及相关go-zero作者开发的一些中间件，所用到的技术栈基本是go-zero项目组的自研组件，基本是go-zero全家桶了
+
 另外，前端是小程序，本项目已经对接好了小程序授权登录 以及 微信支付了 ，前端看看后面是否能开源吧
 
 

@@ -41,6 +41,10 @@ I may have contacted go zero earlier. I have been using go zero since about 1000
 
 
 
+##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
+
+
+
 ## Tutorial video
 
 This is the go zero tutorial I'm recording ：https://www.bilibili.com/medialist/play/389552232?from=space&business=space_series&business_id=2122723&desc=1
