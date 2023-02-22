@@ -49,7 +49,7 @@
 
 ## 视频教程
 
-这个是我正在录制的go-zero教程：https://www.bilibili.com/medialist/play/389552232?from=space&business=space_series&business_id=2122723&desc=1
+这个是我正在录制的go-zero教程：https://space.bilibili.com/389552232/video
 
 此教程最后也会给大家分享一下go-zero-looklook，敬请期待哦～
 
