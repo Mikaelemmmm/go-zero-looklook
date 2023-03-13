@@ -362,7 +362,7 @@ func RegisterHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 
 Here you can see, go-zero-looklook generated handler code There are two places with the default official goctl generated code is not the same, is in the processing of error handling, here replaced with our own error handling, in common/result/httpResult.go
 
-Note】Some people will say, every time you use goctl to manually change, that is not to trouble dead, here we use go-zero to provide us with the template template function (do not know this will have to go to the official documentation to learn a little), modify the handler to generate the template can be, the entire project template file placed under deploy/goctl. Here hanlder modify the template in deploy/goctl/1.2.3-cli/api/handler.tpl
+Note】Some people will say, every time you use goctl to manually change, that is not to trouble dead, here we use go-zero to provide us with the template template function (do not know this will have to go to the official documentation to learn a little), modify the handler to generate the template can be, the entire project template file placed under deploy/goctl. Here handler modify the template in deploy/goctl/1.2.3-cli/api/handler.tpl
 
 ParamErrorResult is very simple, dedicated to handling parameter errors
 
