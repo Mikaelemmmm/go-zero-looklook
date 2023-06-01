@@ -7,17 +7,20 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
 	"time"
 
-	"looklook/common/globalkey"
-	"looklook/common/xerr"
-
+	"github.com/Masterminds/squirrel"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
+	"looklook/common/globalkey"
 )
+
+var ErrNoRowsUpdate = errors.New("update db no rows change")
 
 var (
 	userAuthFieldNames          = builder.RawFieldNames(&UserAuth{})
@@ -25,9 +28,9 @@ var (
 	userAuthRowsExpectAutoSet   = strings.Join(stringx.Remove(userAuthFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
 	userAuthRowsWithPlaceHolder = strings.Join(stringx.Remove(userAuthFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
-	cacheLooklookUsercenterUserAuthIdPrefix              = "cache:looklookUsercenter:userAuth:id:"
-	cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix = "cache:looklookUsercenter:userAuth:authType:authKey:"
-	cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix  = "cache:looklookUsercenter:userAuth:userId:authType:"
+	cacheSysOaUserAuthIdPrefix              = "cache:sysOa:userAuth:id:"
+	cacheSysOaUserAuthAuthTypeAuthKeyPrefix = "cache:sysOa:userAuth:authType:authKey:"
+	cacheSysOaUserAuthUserIdAuthTypePrefix  = "cache:sysOa:userAuth:userId:authType:"
 )
 
 type (
@@ -38,6 +41,16 @@ type (
 		FindOneByUserIdAuthType(ctx context.Context, userId int64, authType string) (*UserAuth, error)
 		Update(ctx context.Context, session sqlx.Session, data *UserAuth) (sql.Result, error)
 		UpdateWithVersion(ctx context.Context, session sqlx.Session, data *UserAuth) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		DeleteSoft(ctx context.Context, session sqlx.Session, data *UserAuth) error
+		FindSum(ctx context.Context, sumBuilder squirrel.SelectBuilder, field string) (float64, error)
+		FindCount(ctx context.Context, countBuilder squirrel.SelectBuilder, field string) (int64, error)
+		FindAll(ctx context.Context, rowBuilder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error)
+		FindPageListByPage(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error)
+		FindPageListByPageWithTotal(ctx context.Context, rowBuilder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, int64, error)
+		FindPageListByIdDESC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error)
+		FindPageListByIdASC(ctx context.Context, rowBuilder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error)
 		Delete(ctx context.Context, session sqlx.Session, id int64) error
 	}
 
@@ -68,22 +81,23 @@ func newUserAuthModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultUserAuthMode
 
 func (m *defaultUserAuthModel) Insert(ctx context.Context, session sqlx.Session, data *UserAuth) (sql.Result, error) {
 	data.DeleteTime = time.Unix(0, 0)
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+	data.DelState = globalkey.DelStateNo
+	sysOaUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
+	sysOaUserAuthIdKey := fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, data.Id)
+	sysOaUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, userAuthRowsExpectAutoSet)
 		if session != nil {
 			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType)
 		}
 		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType)
-	}, looklookUsercenterUserAuthUserIdAuthTypeKey, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey)
+	}, sysOaUserAuthAuthTypeAuthKeyKey, sysOaUserAuthIdKey, sysOaUserAuthUserIdAuthTypeKey)
 }
 
 func (m *defaultUserAuthModel) FindOne(ctx context.Context, id int64) (*UserAuth, error) {
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, id)
+	sysOaUserAuthIdKey := fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, id)
 	var resp UserAuth
-	err := m.QueryRowCtx(ctx, &resp, looklookUsercenterUserAuthIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+	err := m.QueryRowCtx(ctx, &resp, sysOaUserAuthIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", userAuthRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id, globalkey.DelStateNo)
 	})
@@ -98,9 +112,9 @@ func (m *defaultUserAuthModel) FindOne(ctx context.Context, id int64) (*UserAuth
 }
 
 func (m *defaultUserAuthModel) FindOneByAuthTypeAuthKey(ctx context.Context, authType string, authKey string) (*UserAuth, error) {
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, authType, authKey)
+	sysOaUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthAuthTypeAuthKeyPrefix, authType, authKey)
 	var resp UserAuth
-	err := m.QueryRowIndexCtx(ctx, &resp, looklookUsercenterUserAuthAuthTypeAuthKeyKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowIndexCtx(ctx, &resp, sysOaUserAuthAuthTypeAuthKeyKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
 		query := fmt.Sprintf("select %s from %s where `auth_type` = ? and `auth_key` = ? and del_state = ? limit 1", userAuthRows, m.table)
 		if err := conn.QueryRowCtx(ctx, &resp, query, authType, authKey, globalkey.DelStateNo); err != nil {
 			return nil, err
@@ -118,9 +132,9 @@ func (m *defaultUserAuthModel) FindOneByAuthTypeAuthKey(ctx context.Context, aut
 }
 
 func (m *defaultUserAuthModel) FindOneByUserIdAuthType(ctx context.Context, userId int64, authType string) (*UserAuth, error) {
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, userId, authType)
+	sysOaUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthUserIdAuthTypePrefix, userId, authType)
 	var resp UserAuth
-	err := m.QueryRowIndexCtx(ctx, &resp, looklookUsercenterUserAuthUserIdAuthTypeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowIndexCtx(ctx, &resp, sysOaUserAuthUserIdAuthTypeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
 		query := fmt.Sprintf("select %s from %s where `user_id` = ? and `auth_type` = ? and del_state = ? limit 1", userAuthRows, m.table)
 		if err := conn.QueryRowCtx(ctx, &resp, query, userId, authType, globalkey.DelStateNo); err != nil {
 			return nil, err
@@ -137,37 +151,45 @@ func (m *defaultUserAuthModel) FindOneByUserIdAuthType(ctx context.Context, user
 	}
 }
 
-func (m *defaultUserAuthModel) Update(ctx context.Context, session sqlx.Session, data *UserAuth) (sql.Result, error) {
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+func (m *defaultUserAuthModel) Update(ctx context.Context, session sqlx.Session, newData *UserAuth) (sql.Result, error) {
+	data, err := m.FindOne(ctx, newData.Id)
+	if err != nil {
+		return nil, err
+	}
+	sysOaUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
+	sysOaUserAuthIdKey := fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, data.Id)
+	sysOaUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
-			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType, data.Id)
+			return session.ExecCtx(ctx, query, newData.DeleteTime, newData.DelState, newData.Version, newData.UserId, newData.AuthKey, newData.AuthType, newData.Id)
 		}
-		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType, data.Id)
-	}, looklookUsercenterUserAuthUserIdAuthTypeKey, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey)
+		return conn.ExecCtx(ctx, query, newData.DeleteTime, newData.DelState, newData.Version, newData.UserId, newData.AuthKey, newData.AuthType, newData.Id)
+	}, sysOaUserAuthAuthTypeAuthKeyKey, sysOaUserAuthIdKey, sysOaUserAuthUserIdAuthTypeKey)
 }
 
-func (m *defaultUserAuthModel) UpdateWithVersion(ctx context.Context, session sqlx.Session, data *UserAuth) error {
+func (m *defaultUserAuthModel) UpdateWithVersion(ctx context.Context, session sqlx.Session, newData *UserAuth) error {
 
-	oldVersion := data.Version
-	data.Version += 1
+	oldVersion := newData.Version
+	newData.Version += 1
 
 	var sqlResult sql.Result
 	var err error
 
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, data.Id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+	data, err := m.FindOne(ctx, newData.Id)
+	if err != nil {
+		return err
+	}
+	sysOaUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
+	sysOaUserAuthIdKey := fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, data.Id)
+	sysOaUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	sqlResult, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ? and version = ? ", m.table, userAuthRowsWithPlaceHolder)
 		if session != nil {
-			return session.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType, data.Id, oldVersion)
+			return session.ExecCtx(ctx, query, newData.DeleteTime, newData.DelState, newData.Version, newData.UserId, newData.AuthKey, newData.AuthType, newData.Id, oldVersion)
 		}
-		return conn.ExecCtx(ctx, query, data.DeleteTime, data.DelState, data.Version, data.UserId, data.AuthKey, data.AuthType, data.Id, oldVersion)
-	}, looklookUsercenterUserAuthUserIdAuthTypeKey, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey)
+		return conn.ExecCtx(ctx, query, newData.DeleteTime, newData.DelState, newData.Version, newData.UserId, newData.AuthKey, newData.AuthType, newData.Id, oldVersion)
+	}, sysOaUserAuthAuthTypeAuthKeyKey, sysOaUserAuthIdKey, sysOaUserAuthUserIdAuthTypeKey)
 	if err != nil {
 		return err
 	}
@@ -176,33 +198,234 @@ func (m *defaultUserAuthModel) UpdateWithVersion(ctx context.Context, session sq
 		return err
 	}
 	if updateCount == 0 {
-		return xerr.NewErrCode(xerr.DB_UPDATE_AFFECTED_ZERO_ERROR)
+		return ErrNoRowsUpdate
 	}
 
 	return nil
 }
 
+func (m *defaultUserAuthModel) DeleteSoft(ctx context.Context, session sqlx.Session, data *UserAuth) error {
+	data.DelState = globalkey.DelStateYes
+	data.DeleteTime = time.Now()
+	if err := m.UpdateWithVersion(ctx, session, data); err != nil {
+		return errors.Wrapf(errors.New("delete soft failed "), "UserAuthModel delete err : %+v", err)
+	}
+	return nil
+}
+
+func (m *defaultUserAuthModel) FindSum(ctx context.Context, builder squirrel.SelectBuilder, field string) (float64, error) {
+
+	if len(field) == 0 {
+		return 0, errors.Wrapf(errors.New("FindSum Least One Field"), "FindSum Least One Field")
+	}
+
+	builder = builder.Columns("IFNULL(SUM(" + field + "),0)")
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	if err != nil {
+		return 0, err
+	}
+
+	var resp float64
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return 0, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindCount(ctx context.Context, builder squirrel.SelectBuilder, field string) (int64, error) {
+
+	if len(field) == 0 {
+		return 0, errors.Wrapf(errors.New("FindCount Least One Field"), "FindCount Least One Field")
+	}
+
+	builder = builder.Columns("COUNT(" + field + ")")
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	if err != nil {
+		return 0, err
+	}
+
+	var resp int64
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return 0, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindAll(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*UserAuth, error) {
+
+	builder = builder.Columns(userAuthRows)
+
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*UserAuth
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindPageListByPage(ctx context.Context, builder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, error) {
+
+	builder = builder.Columns(userAuthRows)
+
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+
+	if page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageSize
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*UserAuth
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindPageListByPageWithTotal(ctx context.Context, builder squirrel.SelectBuilder, page, pageSize int64, orderBy string) ([]*UserAuth, int64, error) {
+
+	total, err := m.FindCount(ctx, builder, "id")
+	if err != nil {
+		return nil, 0, err
+	}
+
+	builder = builder.Columns(userAuthRows)
+
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+
+	if page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageSize
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).Offset(uint64(offset)).Limit(uint64(pageSize)).ToSql()
+	if err != nil {
+		return nil, total, err
+	}
+
+	var resp []*UserAuth
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, total, nil
+	default:
+		return nil, total, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindPageListByIdDESC(ctx context.Context, builder squirrel.SelectBuilder, preMinId, pageSize int64) ([]*UserAuth, error) {
+
+	builder = builder.Columns(userAuthRows)
+
+	if preMinId > 0 {
+		builder = builder.Where(" id < ? ", preMinId)
+	}
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id DESC").Limit(uint64(pageSize)).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*UserAuth
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserAuthModel) FindPageListByIdASC(ctx context.Context, builder squirrel.SelectBuilder, preMaxId, pageSize int64) ([]*UserAuth, error) {
+
+	builder = builder.Columns(userAuthRows)
+
+	if preMaxId > 0 {
+		builder = builder.Where(" id > ? ", preMaxId)
+	}
+
+	query, values, err := builder.Where("del_state = ?", globalkey.DelStateNo).OrderBy("id ASC").Limit(uint64(pageSize)).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*UserAuth
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserAuthModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
+}
+
+func (m *defaultUserAuthModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
 func (m *defaultUserAuthModel) Delete(ctx context.Context, session sqlx.Session, id int64) error {
 	data, err := m.FindOne(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	looklookUsercenterUserAuthIdKey := fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, id)
-	looklookUsercenterUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
-	looklookUsercenterUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheLooklookUsercenterUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
+	sysOaUserAuthAuthTypeAuthKeyKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthAuthTypeAuthKeyPrefix, data.AuthType, data.AuthKey)
+	sysOaUserAuthIdKey := fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, id)
+	sysOaUserAuthUserIdAuthTypeKey := fmt.Sprintf("%s%v:%v", cacheSysOaUserAuthUserIdAuthTypePrefix, data.UserId, data.AuthType)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
 		if session != nil {
 			return session.ExecCtx(ctx, query, id)
 		}
 		return conn.ExecCtx(ctx, query, id)
-	}, looklookUsercenterUserAuthIdKey, looklookUsercenterUserAuthAuthTypeAuthKeyKey, looklookUsercenterUserAuthUserIdAuthTypeKey)
+	}, sysOaUserAuthAuthTypeAuthKeyKey, sysOaUserAuthIdKey, sysOaUserAuthUserIdAuthTypeKey)
 	return err
 }
-
 func (m *defaultUserAuthModel) formatPrimary(primary interface{}) string {
-	return fmt.Sprintf("%s%v", cacheLooklookUsercenterUserAuthIdPrefix, primary)
+	return fmt.Sprintf("%s%v", cacheSysOaUserAuthIdPrefix, primary)
 }
 func (m *defaultUserAuthModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary interface{}) error {
 	query := fmt.Sprintf("select %s from %s where `id` = ? and del_state = ? limit 1", userAuthRows, m.table)
