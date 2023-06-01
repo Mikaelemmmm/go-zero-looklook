@@ -6,7 +6,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
-//统一model 执行接口
+// 统一model 执行接口
 type Executable interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)
 }
@@ -21,6 +21,6 @@ var HomestayOrderTradeStateUsed int64 = 2
 var HomestayOrderTradeStateRefund int64 = 3
 var HomestayOrderTradeStateExpire int64 = 4
 
-//是否需要餐食
+// 是否需要餐食
 var HomestayOrderNeedFoodNo int64 = 0
 var HomestayOrderNeedFoodYes int64 = 1
