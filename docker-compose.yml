@@ -25,8 +25,9 @@ services:
 
   #前端api + 业务rpc - Front-end API + business RPC
   looklook:
-    image: lyumikael/gomodd:v1.20.3 # if you "macOs intel" or "linux amd"
-    #image: lyumikael/go-modd-env:v1.0.0  # if you macOs m1
+    # docker-hub : https://hub.docker.com/r/lyumikael/gomodd
+    # dockerfile: https://github.com/Mikaelemmmm/gomodd , If you are macOs m1\m2 use dockerfile yourself to build the image
+    image: lyumikael/gomodd:v1.20.3
     container_name: looklook
     environment:
       # 时区上海 - Timezone Shanghai
