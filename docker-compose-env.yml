@@ -6,7 +6,7 @@ version: '3'
 services:
   #jaeger链路追踪 — Jaeger for tracing
   jaeger:
-    image: jaegertracing/all-in-one:latest
+    image: jaegertracing/all-in-one:1.42.0
     container_name: jaeger
     restart: always
     ports:
@@ -61,7 +61,7 @@ services:
     networks:
         - looklook_net
 
-#  #搜集kafka业务日志、存储prometheus监控数据 - Kafka for collecting business logs and storing Prometheus monitoring data
+  #搜集kafka业务日志、存储prometheus监控数据 - Kafka for collecting business logs and storing Prometheus monitoring data
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     container_name: elasticsearch
@@ -232,5 +232,5 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.16.0.0/16
 

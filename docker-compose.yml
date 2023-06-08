@@ -25,7 +25,7 @@ services:
 
   #前端api + 业务rpc - Front-end API + business RPC
   looklook:
-    image: lyumikael/gomodd:v1.0.0 # if you "macOs intel" or "linux amd"
+    image: lyumikael/gomodd:v1.20.3 # if you "macOs intel" or "linux amd"
     #image: lyumikael/go-modd-env:v1.0.0  # if you macOs m1
     container_name: looklook
     environment:
