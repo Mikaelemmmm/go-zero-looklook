@@ -32,11 +32,11 @@ func NewGoodBossLogic(ctx context.Context, svcCtx *svc.ServiceContext) GoodBossL
 
 func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, error) {
 
-	whereBuilder := l.svcCtx.HomestayActivityModel.RowBuilder().Where(squirrel.Eq{
-		"row_type":  model.HomestayActivityGoodBusiType,
-		"row_status" : model.HomestayActivityUpStatus,
+	whereBuilder := l.svcCtx.HomestayActivityModel.SelectBuilder().Where(squirrel.Eq{
+		"row_type":   model.HomestayActivityGoodBusiType,
+		"row_status": model.HomestayActivityUpStatus,
 	})
-	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx,whereBuilder,0, 10,"data_id desc")
+	homestayActivityList, err := l.svcCtx.HomestayActivityModel.FindPageListByPage(l.ctx, whereBuilder, 0, 10, "data_id desc")
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "get GoodBoss db err. rowType: %s ,err : %v", model.HomestayActivityGoodBusiType, err)
 	}
@@ -48,7 +48,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 			for _, homestayActivity := range homestayActivityList {
 				source <- homestayActivity.DataId
 			}
-		}, func(item interface{}, writer mr.Writer, cancel func(error)) {
+		}, func(item interface{}, writer mr.Writer[*usercenter.User], cancel func(error)) {
 			id := item.(int64)
 
 			userResp, err := l.svcCtx.UsercenterRpc.GetUserInfo(l.ctx, &usercenter.GetUserInfoReq{
@@ -61,7 +61,7 @@ func (l *GoodBossLogic) GoodBoss(req types.GoodBossReq) (*types.GoodBossResp, er
 			if userResp.User != nil && userResp.User.Id > 0 {
 				writer.Write(userResp.User)
 			}
-		}, func(pipe <-chan interface{}, cancel func(error)) {
+		}, func(pipe <-chan *usercenter.User, cancel func(error)) {
 
 			for item := range pipe {
 				var typesHomestayBusiness types.HomestayBusinessBoss

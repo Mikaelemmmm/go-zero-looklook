@@ -30,13 +30,13 @@ func NewUserHomestayOrderListLogic(ctx context.Context, svcCtx *svc.ServiceConte
 
 func (l *UserHomestayOrderListLogic) UserHomestayOrderList(in *pb.UserHomestayOrderListReq) (*pb.UserHomestayOrderListResp, error) {
 
-	whereBuilder:= l.svcCtx.HomestayOrderModel.RowBuilder().Where(squirrel.Eq{"user_id":in.UserId})
+	whereBuilder := l.svcCtx.HomestayOrderModel.SelectBuilder().Where(squirrel.Eq{"user_id": in.UserId})
 	//There are supported states in the filter, otherwise return all
-	if in.TraderState >= model.HomestayOrderTradeStateCancel &&  in.TraderState <= model.HomestayOrderTradeStateExpire {
-		whereBuilder = whereBuilder.Where(squirrel.Eq{"trade_state":in.TraderState})
+	if in.TraderState >= model.HomestayOrderTradeStateCancel && in.TraderState <= model.HomestayOrderTradeStateExpire {
+		whereBuilder = whereBuilder.Where(squirrel.Eq{"trade_state": in.TraderState})
 	}
 
-	list, err := l.svcCtx.HomestayOrderModel.FindPageListByIdDESC(l.ctx,whereBuilder,in.LastId, in.PageSize)
+	list, err := l.svcCtx.HomestayOrderModel.FindPageListByIdDESC(l.ctx, whereBuilder, in.LastId, in.PageSize)
 	if err != nil && err != model.ErrNotFound {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Failed to get user's homestay order err : %v , in :%+v", err, in)
 	}
