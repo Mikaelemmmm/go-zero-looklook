@@ -325,7 +325,7 @@ There are 2 points to note here
 
 1) api service wants to return the rpc to the front-end friendly error message, we want to return directly to the front-end without any processing (for example, the rpc has returned "user already exists", api does not want to do any processing, you want to return this error message directly to the front-end)
 
-Wrapf the first parameter, but the second parameter is best to record the detailed logs you need to facilitate the follow-up in api China it view
+Wrapf the first parameter, but the second parameter is best to record the detailed logs you need to facilitate the follow-up in api view
 
 (2) api service regardless of what error information is returned by the rpc, I would like to redefine the error information returned to the front-end (for example, the rpc has returned "user already exists", api want to call the rpc as long as there is an error I will return to the front-end "User registration failed")
 
