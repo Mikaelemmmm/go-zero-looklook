@@ -224,7 +224,7 @@ All API + RPC services under frontend app use modd + golang
 Direct docker-compose to start can, but consider the dependencies may be relatively large, will affect the start of the project, so it is best to pull down this image before starting the project
 
 ```shell
-docker pull lyumikael/gomodd:v1.0.0 #This is used by all API+RPC startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
+docker pull lyumikael/gomodd:v1.20.3 #This is used by all API+RPC startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
 ```
 
 Note: If you add new services under the app, remember to add a copy of modd.conf in the root directory of the project.
