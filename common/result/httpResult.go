@@ -80,6 +80,6 @@ func AuthHttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, er
 
 //http 参数错误返回
 func ParamErrorResult(r *http.Request, w http.ResponseWriter, err error) {
-	errMsg := fmt.Sprintf("%s ,%s", xerr.MapErrMsg(xerr.REUQEST_PARAM_ERROR), err.Error())
-	httpx.WriteJson(w, http.StatusBadRequest, Error(xerr.REUQEST_PARAM_ERROR, errMsg))
+	errMsg := fmt.Sprintf("%s ,%s", xerr.MapErrMsg(xerr.REQUEST_PARAM_ERROR), err.Error())
+	httpx.WriteJson(w, http.StatusBadRequest, Error(xerr.REQUEST_PARAM_ERROR, errMsg))
 }
