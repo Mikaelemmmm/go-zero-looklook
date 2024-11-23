@@ -21,21 +21,20 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	logx.DisableStat()
+
 	// log、prometheus、trace、metricsUrl.
 	if err := c.SetUp(); err != nil {
 		panic(err)
 	}
-
 
 	svcContext := svc.NewServiceContext(c)
 	ctx := context.Background()
 	mqueueScheduler := logic.NewCronScheduler(ctx, svcContext)
 	mqueueScheduler.Register()
 
-	if err:=svcContext.Scheduler.Run();err!= nil{
-		logx.Errorf("!!!MqueueSchedulerErr!!!  run err:%+v",err)
+	if err := svcContext.Scheduler.Run(); err != nil {
+		logx.Errorf("!!!MqueueSchedulerErr!!!  run err:%+v", err)
 		os.Exit(1)
 	}
-
 
 }
