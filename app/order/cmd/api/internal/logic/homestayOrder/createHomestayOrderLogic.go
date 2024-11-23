@@ -3,12 +3,12 @@ package homestayOrder
 import (
 	"context"
 	"looklook/app/travel/cmd/rpc/pb"
-	"looklook/common/ctxdata"
+	"looklook/pkg/ctxdata"
 
 	"looklook/app/order/cmd/api/internal/svc"
 	"looklook/app/order/cmd/api/internal/types"
 	"looklook/app/order/cmd/rpc/order"
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -31,14 +31,14 @@ func NewCreateHomestayOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext
 // create order
 func (l *CreateHomestayOrderLogic) CreateHomestayOrder(req types.CreateHomestayOrderReq) (*types.CreateHomestayOrderResp, error) {
 
-	homestayResp , err:=l.svcCtx.TravelRpc.HomestayDetail(l.ctx,&pb.HomestayDetailReq{
+	homestayResp, err := l.svcCtx.TravelRpc.HomestayDetail(l.ctx, &pb.HomestayDetailReq{
 		Id: req.HomestayId,
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
-	if homestayResp.Homestay == nil || homestayResp.Homestay .Id == 0{
-		return nil,errors.Wrapf(xerr.NewErrMsg("homestay no exists"),"CreateHomestayOrder homestay no exists id : %d",req.HomestayId)
+	if homestayResp.Homestay == nil || homestayResp.Homestay.Id == 0 {
+		return nil, errors.Wrapf(xerr.NewErrMsg("homestay no exists"), "CreateHomestayOrder homestay no exists id : %d", req.HomestayId)
 	}
 
 	userId := ctxdata.GetUidFromCtx(l.ctx)

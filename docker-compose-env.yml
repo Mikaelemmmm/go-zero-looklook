@@ -25,24 +25,24 @@ services:
       - looklook_net
 
   #prometheus监控 — Prometheus for monitoring
-  prometheus:
-    image: prom/prometheus:v2.28.1
-    container_name: prometheus
-    environment:
-      # 时区上海 - Time zone Shanghai (Change if needed)
-      TZ: Asia/Shanghai
-    volumes:
-      - ./deploy/prometheus/server/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./data/prometheus/data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    restart: always
-    user: root
-    ports:
-      - 9090:9090
-    networks:
-      - looklook_net
+#  prometheus:
+#    image: prom/prometheus:v2.28.1
+#    container_name: prometheus
+#    environment:
+#      # 时区上海 - Time zone Shanghai (Change if needed)
+#      TZ: Asia/Shanghai
+#    volumes:
+#      - ./deploy/prometheus/server/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - ./data/prometheus/data:/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#    restart: always
+#    user: root
+#    ports:
+#      - 9090:9090
+#    networks:
+#      - looklook_net
 
   #查看prometheus监控数据 - Grafana to view Prometheus monitoring data
   grafana:
@@ -62,37 +62,37 @@ services:
         - looklook_net
 
   #搜集kafka业务日志、存储prometheus监控数据 - Kafka for collecting business logs and storing Prometheus monitoring data
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
-    container_name: elasticsearch
-    user: root
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - TZ=Asia/Shanghai
-    volumes:
-      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
-    restart: always
-    ports:
-    - 9200:9200
-    - 9300:9300
-    networks:
-      - looklook_net
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+#    container_name: elasticsearch
+#    user: root
+#    environment:
+#      - discovery.type=single-node
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#      - TZ=Asia/Shanghai
+#    volumes:
+#      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+#    restart: always
+#    ports:
+#    - 9200:9200
+#    - 9300:9300
+#    networks:
+#      - looklook_net
 
   #查看elasticsearch数据 - Kibana to view Elasticsearch data
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.13.4
-    container_name: kibana
-    environment:
-      - elasticsearch.hosts=http://elasticsearch:9200
-      - TZ=Asia/Shanghai
-    restart: always
-    networks:
-      - looklook_net
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.13.4
+#    container_name: kibana
+#    environment:
+#      - elasticsearch.hosts=http://elasticsearch:9200
+#      - TZ=Asia/Shanghai
+#    restart: always
+#    networks:
+#      - looklook_net
+#    ports:
+#      - "5601:5601"
+#    depends_on:
+#      - elasticsearch
 
   #消费kafka中filebeat收集的数据输出到es - The data output collected by FileBeat in Kafka is output to ES
   go-stash:

@@ -8,7 +8,7 @@ import (
 	"looklook/app/payment/cmd/api/internal/types"
 	"looklook/app/payment/cmd/rpc/payment"
 	"looklook/app/payment/model"
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
@@ -70,7 +70,7 @@ func (l *ThirdPaymentWxPayCallbackLogic) ThirdPaymentWxPayCallback(rw http.Respo
 
 }
 
-//Verify and update relevant flow data
+// Verify and update relevant flow data
 func (l *ThirdPaymentWxPayCallbackLogic) verifyAndUpdateState(notifyTrasaction *payments.Transaction) error {
 
 	paymentResp, err := l.svcCtx.PaymentRpc.GetPaymentBySn(l.ctx, &payment.GetPaymentBySnReq{

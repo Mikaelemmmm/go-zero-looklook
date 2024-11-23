@@ -5,8 +5,8 @@ import (
 	"looklook/app/travel/cmd/api/internal/svc"
 	"looklook/app/travel/cmd/api/internal/types"
 	"looklook/app/travel/cmd/rpc/travel"
-	"looklook/common/tool"
-	"looklook/common/xerr"
+	"looklook/pkg/tool"
+	"looklook/pkg/xerr"
 
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"

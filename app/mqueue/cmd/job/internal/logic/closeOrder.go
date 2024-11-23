@@ -9,9 +9,8 @@ import (
 	"looklook/app/mqueue/cmd/job/jobtype"
 	"looklook/app/order/cmd/rpc/order"
 	"looklook/app/order/model"
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 )
-
 
 var ErrCloseOrderFal = xerr.NewErrMsg("close order fail")
 
@@ -22,7 +21,7 @@ type CloseHomestayOrderHandler struct {
 
 func NewCloseHomestayOrderHandler(svcCtx *svc.ServiceContext) *CloseHomestayOrderHandler {
 	return &CloseHomestayOrderHandler{
-		svcCtx:svcCtx,
+		svcCtx: svcCtx,
 	}
 }
 

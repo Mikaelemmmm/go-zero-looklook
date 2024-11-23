@@ -6,7 +6,7 @@ import (
 	"looklook/app/travel/cmd/api/internal/logic/homestay"
 	"looklook/app/travel/cmd/api/internal/svc"
 	"looklook/app/travel/cmd/api/internal/types"
-	"looklook/common/result"
+	"looklook/pkg/result"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )

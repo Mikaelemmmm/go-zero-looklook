@@ -10,8 +10,8 @@ import (
 	"looklook/app/payment/model"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 	usercenterModel "looklook/app/usercenter/model"
-	"looklook/common/ctxdata"
-	"looklook/common/xerr"
+	"looklook/pkg/ctxdata"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/wechatpay-apiv3/wechatpay-go/core"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//http返回
+// http返回
 func HttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, err error) {
 
 	if err == nil {
@@ -45,7 +45,7 @@ func HttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, err er
 	}
 }
 
-//授权的http方法
+// 授权的http方法
 func AuthHttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, err error) {
 
 	if err == nil {
@@ -78,7 +78,7 @@ func AuthHttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, er
 	}
 }
 
-//http 参数错误返回
+// http 参数错误返回
 func ParamErrorResult(r *http.Request, w http.ResponseWriter, err error) {
 	errMsg := fmt.Sprintf("%s ,%s", xerr.MapErrMsg(xerr.REUQEST_PARAM_ERROR), err.Error())
 	httpx.WriteJson(w, http.StatusBadRequest, Error(xerr.REUQEST_PARAM_ERROR, errMsg))

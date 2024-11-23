@@ -8,9 +8,9 @@ import (
 	"looklook/app/order/cmd/rpc/order"
 	"looklook/app/order/model"
 	"looklook/app/payment/cmd/rpc/payment"
-	"looklook/common/ctxdata"
-	"looklook/common/tool"
-	"looklook/common/xerr"
+	"looklook/pkg/ctxdata"
+	"looklook/pkg/tool"
+	"looklook/pkg/xerr"
 
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
@@ -47,7 +47,7 @@ func (l *UserHomestayOrderDetailLogic) UserHomestayOrderDetail(req types.UserHom
 
 		copier.Copy(&typesOrderDetail, resp.HomestayOrder)
 
-		//重置价格.
+		// format price.
 		typesOrderDetail.OrderTotalPrice = tool.Fen2Yuan(resp.HomestayOrder.OrderTotalPrice)
 		typesOrderDetail.FoodTotalPrice = tool.Fen2Yuan(resp.HomestayOrder.FoodTotalPrice)
 		typesOrderDetail.HomestayTotalPrice = tool.Fen2Yuan(resp.HomestayOrder.HomestayTotalPrice)
@@ -55,7 +55,7 @@ func (l *UserHomestayOrderDetailLogic) UserHomestayOrderDetail(req types.UserHom
 		typesOrderDetail.FoodPrice = tool.Fen2Yuan(resp.HomestayOrder.FoodPrice)
 		typesOrderDetail.MarketHomestayPrice = tool.Fen2Yuan(resp.HomestayOrder.MarketHomestayPrice)
 
-		//支付信息.
+		// payment info.
 		if typesOrderDetail.TradeState != model.HomestayOrderTradeStateCancel && typesOrderDetail.TradeState != model.HomestayOrderTradeStateWaitPay {
 			paymentResp, err := l.svcCtx.PaymentRpc.GetPaymentSuccessRefundByOrderSn(l.ctx, &payment.GetPaymentSuccessRefundByOrderSnReq{
 				OrderSn: resp.HomestayOrder.Sn,

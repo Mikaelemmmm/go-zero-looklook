@@ -5,8 +5,8 @@ import (
 	"looklook/app/payment/cmd/rpc/internal/svc"
 	"looklook/app/payment/cmd/rpc/pb"
 	"looklook/app/payment/model"
-	"looklook/common/uniqueid"
-	"looklook/common/xerr"
+	"looklook/pkg/uniqueid"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -37,7 +37,7 @@ func (l *CreatePaymentLogic) CreatePayment(in *pb.CreatePaymentReq) (*pb.CreateP
 	data.OrderSn = in.OrderSn
 	data.ServiceType = model.ThirdPaymentServiceTypeHomestayOrder
 
-	_, err := l.svcCtx.ThirdPaymentModel.Insert(l.ctx,nil, data)
+	_, err := l.svcCtx.ThirdPaymentModel.Insert(l.ctx, nil, data)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "create wechat pay prepayorder db insert fail , err:%v ,data : %+v  ", err, data)
 	}
