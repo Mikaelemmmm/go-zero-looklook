@@ -8,7 +8,7 @@ import (
 	"looklook/app/usercenter/cmd/api/internal/types"
 	"looklook/app/usercenter/cmd/rpc/usercenter"
 	usercenterModel "looklook/app/usercenter/model"
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	wechat "github.com/silenceper/wechat/v2"
