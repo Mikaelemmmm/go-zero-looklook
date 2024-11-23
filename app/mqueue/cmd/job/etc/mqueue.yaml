@@ -1,6 +1,4 @@
 Name: mqueue-job
-Host: 0.0.0.0
-Port: 3002
 Mode: dev
 
 #监控
