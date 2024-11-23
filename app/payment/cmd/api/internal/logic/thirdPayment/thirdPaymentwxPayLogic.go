@@ -54,7 +54,7 @@ func (l *ThirdPaymentwxPayLogic) ThirdPaymentwxPay(req types.ThirdPaymentWxPayRe
 		return nil, errors.Wrapf(xerr.NewErrMsg("Payment for this business type is not supported"), "Payment for this business type is not supported req: %+v", req)
 	}
 
-	// Create microsoft pre-processing orders
+	// Create WechatPay pre-processing orders
 	wechatPrepayRsp, err := l.createWxPrePayOrder(req.ServiceType, req.OrderSn, totalPrice, description)
 	if err != nil {
 		return nil, err

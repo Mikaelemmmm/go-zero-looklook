@@ -3,7 +3,7 @@
 - [I. Development environment](#i-development-environment)
   - [1. Project Profile](#1-project-profile)
   - [2. Use to technology stack](#2-use-to-technology-stack)
-        - [Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.](#tips--if-you-are-not-familiar-with-many-of-the-technology-stack-here-do-not-be-afraid-as-long-as-you-will-mysql-redis-can-start-these-two-middleware-in-the-start-of-the-project-first-run-up-the-project-the-other-can-slowly-learn)
+        - [Tips : If you are unfamiliar with the technologies in the current stack, don't worry. Simply start by mastering MySQL and Redis. Begin your project by running these two middleware components, and gradually expand your knowledge of the remaining technologies as you progress.](#tips--if-you-are-not-familiar-with-many-of-the-technology-stack-here-do-not-be-afraid-as-long-as-you-will-mysql-redis-can-start-these-two-middleware-in-the-start-of-the-project-first-run-up-the-project-the-other-can-slowly-learn)
   - [3. Project Architecture Diagram](#3-project-architecture-diagram)
   - [4. Business Architecture Diagram](#4-business-architecture-diagram)
   - [5. Project Environment Setup](#5-project-environment-setup)
@@ -65,7 +65,7 @@ The project directory structure is as follows:
 
 
 
-##### Tips : If you are not familiar with many of the technology stack here, do not be afraid, as long as you will mysql, redis can start these two middleware in the start of the project first run up the project, the other can slowly learn.
+##### Tips : If you are unfamiliar with the technologies in the current stack, don't worry. Simply start by mastering MySQL and Redis. Begin your project by running these two middleware components, and gradually expand your knowledge of the remaining technologies as you progress.
 
 
 
@@ -224,7 +224,7 @@ All API + RPC services under frontend app use modd + golang
 Direct docker-compose to start can, but consider the dependencies may be relatively large, will affect the start of the project, so it is best to pull down this image before starting the project
 
 ```shell
-docker pull lyumikael/gomodd:v1.0.0 #This is used by all API+RPC startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
+docker pull lyumikael/gomodd:v1.20.3 #This is used by all API+RPC startup services under the app, if you are "mac m1" : lyumikael/go-modd-env:v1.0.0
 ```
 
 Note: If you add new services under the app, remember to add a copy of modd.conf in the root directory of the project.
