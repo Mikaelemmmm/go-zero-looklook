@@ -27,7 +27,7 @@ services:
   looklook:
     # docker-hub : https://hub.docker.com/r/lyumikael/gomodd
     # dockerfile: https://github.com/Mikaelemmmm/gomodd , If you are macOs m1\m2 use dockerfile yourself to build the image
-    image: lyumikael/gomodd:v1.20.3
+    image: lyumikael/gomodd:v1.22.1
     container_name: looklook
     environment:
       # 时区上海 - Timezone Shanghai
