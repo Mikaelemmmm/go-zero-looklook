@@ -6,7 +6,7 @@ import (
 	"looklook/app/payment/cmd/api/internal/logic/thirdPayment"
 	"looklook/app/payment/cmd/api/internal/svc"
 	"looklook/app/payment/cmd/api/internal/types"
-	"looklook/common/result"
+	"looklook/pkg/result"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
