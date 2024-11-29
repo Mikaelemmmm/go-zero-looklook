@@ -179,11 +179,11 @@ Click in jenkins to deploy the corresponding service, will go to gitlab to pull 
 
 ## Thanks
 
-go-zero : https://github.com/zeromicro/go-zero
+go-zero: https://github.com/zeromicro/go-zero
 
-dtm：https://github.com/dtm-labs/dtm
+dtm: https://github.com/dtm-labs/dtm
 
-jetbrains:https://www.jetbrains.com/
+jetbrains: https://www.jetbrains.com/
 
 
 
