@@ -140,8 +140,8 @@ cd /opt/kafka/bin/
 Create 3 topics
 
 ```shell
-./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic looklook-log
-./kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 -partitions 1 --topic payment-update-paystatus-topic
+$ ./kafka-topics.sh --create --bootstrap-server localhost:9094 --replication-factor 1 --partitions 1 --topic looklook-log
+$ ./kafka-topics.sh --create --bootstrap-server localhost:9094 --replication-factor 1 --partitions 1 --topic payment-update-paystatus-topic
 ```
 
 looklook-log : The log collection uses the
