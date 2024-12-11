@@ -3,8 +3,6 @@ syntax = "v1"
 info(
 	title: "用户实例"
 	desc: "用户实例"
-	author: "Mikael"
-	email: "13247629622@163.com"
 )
 
 type User {
