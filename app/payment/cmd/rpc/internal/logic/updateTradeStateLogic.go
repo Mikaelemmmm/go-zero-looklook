@@ -3,13 +3,13 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"looklook/common/kqueue"
+	"looklook/pkg/kqueue"
 	"time"
 
 	"looklook/app/payment/cmd/rpc/internal/svc"
 	"looklook/app/payment/cmd/rpc/pb"
 	"looklook/app/payment/model"
-	"looklook/common/xerr"
+	"looklook/pkg/xerr"
 
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -32,9 +32,9 @@ func NewUpdateTradeStateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*pb.UpdateTradeStateResp, error) {
 
 	//1、payment record confirm
-	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(l.ctx,in.Sn)
+	thirdPayment, err := l.svcCtx.ThirdPaymentModel.FindOneBySn(l.ctx, in.Sn)
 	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "UpdateTradeState FindOneBySn db err , sn : %s , err : %+v", in.Sn,err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "UpdateTradeState FindOneBySn db err , sn : %s , err : %+v", in.Sn, err)
 	}
 
 	if thirdPayment == nil {
@@ -65,22 +65,22 @@ func (l *UpdateTradeStateLogic) UpdateTradeState(in *pb.UpdateTradeStateReq) (*p
 	thirdPayment.TradeStateDesc = in.TradeStateDesc
 	thirdPayment.PayStatus = in.PayStatus
 	thirdPayment.PayTime = time.Unix(in.PayTime, 0)
-	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(l.ctx,nil, thirdPayment); err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err,thirdPayment,in)
+	if err := l.svcCtx.ThirdPaymentModel.UpdateWithVersion(l.ctx, nil, thirdPayment); err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), " UpdateTradeState UpdateWithVersion db  err:%v ,thirdPayment : %+v , in : %+v", err, thirdPayment, in)
 	}
 
 	//4、notify  sub "payment-update-paystatus-topic"  services(order-mq ..), pub、sub use kq
-	if err:=l.pubKqPaySuccess(in.Sn,in.PayStatus);err != nil{
-		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v",err)
+	if err := l.pubKqPaySuccess(in.Sn, in.PayStatus); err != nil {
+		logx.WithContext(l.ctx).Errorf("l.pubKqPaySuccess : %+v", err)
 	}
 
 	return &pb.UpdateTradeStateResp{}, nil
 }
 
-func (l *UpdateTradeStateLogic) pubKqPaySuccess(orderSn string,payStatus int64) error{
+func (l *UpdateTradeStateLogic) pubKqPaySuccess(orderSn string, payStatus int64) error {
 
 	m := kqueue.ThirdPaymentUpdatePayStatusNotifyMessage{
-		OrderSn:  orderSn ,
+		OrderSn:   orderSn,
 		PayStatus: payStatus,
 	}
 
@@ -89,5 +89,5 @@ func (l *UpdateTradeStateLogic) pubKqPaySuccess(orderSn string,payStatus int64) 
 		return errors.Wrapf(xerr.NewErrMsg("kq UpdateTradeStateLogic pushKqPaySuccess task marshal error "), "kq UpdateTradeStateLogic pushKqPaySuccess task marshal error  , v : %+v", m)
 	}
 
-	return  l.svcCtx.KqueuePaymentUpdatePayStatusClient.Push(string(body))
+	return l.svcCtx.KqueuePaymentUpdatePayStatusClient.Push(string(body))
 }

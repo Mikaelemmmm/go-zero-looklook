@@ -8,7 +8,7 @@ import (
 	"looklook/app/order/cmd/rpc/internal/server"
 	"looklook/app/order/cmd/rpc/internal/svc"
 	"looklook/app/order/cmd/rpc/pb"
-	"looklook/common/interceptor/rpcserver"
+	"looklook/pkg/interceptor/rpcserver"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
