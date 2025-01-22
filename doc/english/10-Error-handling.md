@@ -52,7 +52,7 @@ const OK uint32 = 200
 
 //global error code
 const SERVER_COMMON_ERROR uint32 = 100001
-const REUQEST_PARAM_ERROR uint32 = 100002
+const REQUEST_PARAM_ERROR uint32 = 100002
 const TOKEN_EXPIRE_ERROR uint32 = 100003
 const TOKEN_GENERATE_ERROR uint32 = 100004
 const DB_ERROR uint32 = 100005
@@ -71,7 +71,7 @@ func init() {
    message = make(map[uint32]string)
    message[OK] = "SUCCESS"
    message[SERVER_COMMON_ERROR] = "The server is deserted, try again later"
-   message[REUQEST_PARAM_ERROR] = "Parameter error"
+   message[REQUEST_PARAM_ERROR] = "Parameter error"
    message[TOKEN_EXPIRE_ERROR] = "token is invalid, please log in again"
    message[TOKEN_GENERATE_ERROR] = "Failed to generate a token"
    message[DB_ERROR] = "The database is busy, please try again later"
@@ -369,8 +369,8 @@ ParamErrorResult is very simple, dedicated to handling parameter errors
 ```
 //http Parameter error returned
 func ParamErrorResult(r *http.Request, w http.ResponseWriter, err error) {
-   errMsg := fmt.Sprintf("%s ,%s", xerr.MapErrMsg(xerr.REUQEST_PARAM_ERROR), err.Error())
-   httpx.WriteJson(w, http.StatusBadRequest, Error(xerr.REUQEST_PARAM_ERROR, errMsg))
+   errMsg := fmt.Sprintf("%s ,%s", xerr.MapErrMsg(xerr.REQUEST_PARAM_ERROR), err.Error())
+   httpx.WriteJson(w, http.StatusBadRequest, Error(xerr.REQUEST_PARAM_ERROR, errMsg))
 }
 ```
 
