@@ -19,7 +19,7 @@ services:
       - ./deploy/nginx/conf.d:/etc/nginx/conf.d
       - ./data/nginx/log:/var/log/nginx
     networks:
-      - looklook_net
+      - go-zero-looklook_looklook_net
     depends_on:
       - looklook
 
@@ -39,10 +39,11 @@ services:
     privileged: true
     restart: always
     networks:
-      - looklook_net
+      - go-zero-looklook_looklook_net
 
 networks:
-  looklook_net:
+  go-zero-looklook_looklook_net:
+    external: true
     driver: bridge
     ipam:
       config:
