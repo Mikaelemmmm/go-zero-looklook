@@ -1,4 +1,4 @@
-version: '3'
+
 
 ######## 项目依赖的环境，启动项目之前要先启动此环境 #######
 ######## The environment that the project depends on, starting this environment before starting the project #######
@@ -6,6 +6,7 @@ version: '3'
 services:
   #jaeger链路追踪 — Jaeger for tracing
   jaeger:
+    platform: linux/amd64
     image: jaegertracing/all-in-one:1.63.0
     container_name: jaeger
     restart: always
@@ -48,6 +49,7 @@ services:
 
   #查看prometheus监控数据 - Grafana to view Prometheus monitoring data
   grafana:
+    platform: linux/amd64
     image: grafana/grafana:8.0.6
     container_name: grafana
     hostname: grafana
@@ -64,6 +66,7 @@ services:
         - looklook_net
 
   elasticsearch:
+    platform: linux/amd64
     container_name: elasticsearch
     image: elasticsearch:8.12.2
     restart: unless-stopped
@@ -82,6 +85,7 @@ services:
       - looklook_net
 
   kibana:
+    platform: linux/amd64
     container_name: kibana
     image: kibana:8.12.2
     restart: unless-stopped
@@ -99,6 +103,7 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es - The data output collected by FileBeat in Kafka is output to ES
   go-stash:
+    platform: linux/amd64
     image: kevinwan/go-stash:1.1.1
     container_name: go-stash
     environment:
@@ -115,6 +120,7 @@ services:
 
   #收集业务数据 - Collect business data
   filebeat:
+    platform: linux/amd64
     image: elastic/filebeat:8.12.2
     container_name: filebeat
     environment:
@@ -137,6 +143,7 @@ services:
 
   #消息队列 - Message queue
   kafka:
+    platform: linux/amd64
     image: apache/kafka:3.9.0
     container_name: kafka
     ports:
@@ -165,6 +172,7 @@ services:
 
   #asynqmon asynq延迟队列、定时队列的webui - Asynqmon asynq delay queue, timing queue's webUI
   asynqmon:
+    platform: linux/amd64
     image: hibiken/asynqmon:latest
     container_name: asynqmon
     ports:
